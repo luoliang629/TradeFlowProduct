@@ -41,46 +41,58 @@ TradeFlow是一款基于AI的B2B贸易智能助手，通过自然语言交互帮
 
 ### 整体架构图
 
-```
-┌─────────────────────────────────────────────────────┐
-│                  Frontend Layer                      │
-│  ┌─────────────┐  ┌─────────────┐  ┌────────────┐ │
-│  │  React App  │  │   i18n      │  │  OAuth     │ │
-│  │  (SPA)      │  │  Support    │  │  Client    │ │
-│  └─────────────┘  └─────────────┘  └────────────┘ │
-└─────────────────────────┬───────────────────────────┘
-                          │ HTTPS/WebSocket
-┌─────────────────────────▼───────────────────────────┐
-│                  API Gateway Layer                   │
-│  ┌─────────────┐  ┌─────────────┐  ┌────────────┐ │
-│  │   FastAPI   │  │  WebSocket  │  │    Auth    │ │
-│  │   REST API  │  │   Handler   │  │ Middleware │ │
-│  └─────────────┘  └─────────────┘  └────────────┘ │
-└─────────────────────────┬───────────────────────────┘
-                          │
-┌─────────────────────────▼───────────────────────────┐
-│                Business Logic Layer                  │
-│  ┌─────────────┐  ┌─────────────┐  ┌────────────┐ │
-│  │Agent Gateway│  │  Business   │  │  Payment   │ │
-│  │  Service    │  │   Services  │  │  Service   │ │
-│  └─────────────┘  └─────────────┘  └────────────┘ │
-└─────────────────────────┬───────────────────────────┘
-                          │
-┌─────────────────────────▼───────────────────────────┐
-│              Google ADK Agent Layer                  │
-│  ┌────────────┐  ┌────────────┐  ┌──────────────┐ │
-│  │   Buyer    │  │  Supplier  │  │    Market    │ │
-│  │   Agent    │  │   Agent    │  │  Analysis    │ │
-│  └────────────┘  └────────────┘  └──────────────┘ │
-└─────────────────────────┬───────────────────────────┘
-                          │
-┌─────────────────────────▼───────────────────────────┐
-│                   Data Layer                         │
-│  ┌────────────┐  ┌────────────┐  ┌──────────────┐ │
-│  │ PostgreSQL │  │  MongoDB   │  │    Redis     │ │
-│  │(Structured)│  │(Dialogues) │  │   (Cache)    │ │
-│  └────────────┘  └────────────┘  └──────────────┘ │
-└─────────────────────────────────────────────────────┘
+```mermaid
+graph TD
+    subgraph "Frontend Layer"
+        A[React App SPA]
+        B[i18n Support] 
+        C[OAuth Client]
+    end
+    
+    subgraph "API Gateway Layer"
+        D[FastAPI REST API]
+        E[SSE Handler]
+        F[Auth Middleware]
+    end
+    
+    subgraph "Business Logic Layer"
+        G[Agent Gateway Service]
+        H[Business Services]
+        I[Payment Service]
+    end
+    
+    subgraph "Google ADK Agent Layer"
+        J[Buyer Agent]
+        K[Supplier Agent]
+        L[Market Analysis Agent]
+    end
+    
+    subgraph "Data Layer"
+        M[PostgreSQL<br/>Structured]
+        N[MongoDB<br/>Dialogues]
+        O[Redis<br/>Cache]
+    end
+    
+    A --> D
+    A -.-> E
+    B --> D
+    C --> D
+    
+    D --> G
+    E --> G
+    F --> D
+    F --> E
+    
+    G --> J
+    G --> K
+    G --> L
+    H --> M
+    I --> M
+    
+    J --> N
+    K --> N
+    L --> N
+    G --> O
 ```
 
 ### 核心组件说明
@@ -92,7 +104,7 @@ TradeFlow是一款基于AI的B2B贸易智能助手，通过自然语言交互帮
 
 #### 2. API Gateway Layer
 - **FastAPI REST**: 提供RESTful API接口
-- **WebSocket Handler**: 支持实时对话流式响应
+- **SSE Handler**: 支持实时对话流式响应
 - **Auth Middleware**: JWT token验证和权限控制
 
 #### 3. Business Logic Layer
@@ -330,38 +342,63 @@ POST   /api/v1/subscription/cancel       # 取消订阅
 GET    /api/v1/usage/summary             # 使用统计
 ```
 
-### WebSocket接口
+### SSE（Server-Sent Events）接口
+
+#### 技术选择说明
+
+**SSE vs WebSocket对比**：
+
+| 特性 | SSE | WebSocket |
+|-----|-----|-----------|
+| 通信方向 | 单向（服务器→客户端） | 双向 |
+| 协议复杂度 | 简单（基于HTTP） | 复杂（独立协议） |
+| 浏览器支持 | 原生支持 | 需要额外处理 |
+| 自动重连 | 内置 | 需要手动实现 |
+| 代理友好 | 是 | 可能有问题 |
+| 并发连接限制 | 6个/域名 | 无限制 |
+
+对于TradeFlow这种主要是AI流式响应的场景，SSE更加简单可靠。
+
+#### 接口定义
 
 ```javascript
-// WebSocket连接
-ws://localhost:8000/ws/agent-chat?token={jwt_token}
+// SSE连接
+GET /api/v1/chat/stream?token={jwt_token}
 
-// 消息格式
-// Client -> Server
+// 发起对话（HTTP POST）
+POST /api/v1/chat
 {
-  "type": "chat",
-  "payload": {
-    "message": "找美国的LED灯具买家",
-    "agent_type": "buyer",
-    "session_id": "xxx"
-  }
+  "message": "找美国的LED灯具买家",
+  "agent_type": "buyer",
+  "session_id": "xxx",
+  "stream": true
 }
 
-// Server -> Client (流式响应)
-{
-  "type": "stream",
-  "chunk": "根据您的需求，我为您找到了..."
-}
+// SSE 事件流格式
+// 流式内容
+event: stream
+data: {"chunk": "根据您的需求，我为您找到了..."}
 
-// Server -> Client (完成)
-{
-  "type": "complete",
-  "metadata": {
-    "recommendations": [...],
-    "tokens_used": 150
-  }
-}
+// 推荐结果
+event: recommendation
+data: {"type": "buyer", "company": "Bright Lighting Inc.", "score": 0.92}
+
+// 完成事件
+event: complete
+data: {"session_id": "xxx", "tokens_used": 150, "total_recommendations": 5}
+
+// 错误事件
+event: error
+data: {"error": "Agent processing failed", "code": "AGENT_ERROR"}
 ```
+
+#### 重要技术注意事项
+
+1. **浏览器连接限制**：同域名下最多6个并发SSE连接，超出需要排队
+2. **连接管理**：及时关闭不需要的连接，避免资源浪费
+3. **错误处理**：实现客户端自动重连机制
+4. **CORS配置**：确保跨域请求正确配置
+5. **代理兼容**：某些代理可能缓冲SSE响应，影响实时性
 
 ### API请求/响应示例
 
@@ -1114,24 +1151,199 @@ async def get_buyer_recommendations(product_info, markets):
 
 ### 3. Agent响应优化
 
+#### 后端SSE实现
+
 ```python
-# 流式响应处理
+# SSE流式响应处理
+from fastapi.responses import StreamingResponse
+import json
+
 async def stream_agent_response(
     agent: BaseTradeAgent,
     message: str,
     context: Dict
 ):
-    """流式返回Agent响应"""
-    async for chunk in agent.stream_process(message, context):
-        yield {
-            "type": "stream",
-            "content": chunk
-        }
+    """流式返回Agent响应（SSE格式）"""
+    async def generate():
+        try:
+            # 流式内容
+            async for chunk in agent.stream_process(message, context):
+                data = json.dumps({"chunk": chunk}, ensure_ascii=False)
+                yield f"event: stream\ndata: {data}\n\n"
+            
+            # 推荐结果（如果有）
+            recommendations = agent.get_recommendations()
+            for rec in recommendations:
+                data = json.dumps(rec, ensure_ascii=False)
+                yield f"event: recommendation\ndata: {data}\n\n"
+            
+            # 完成事件
+            metadata = agent.get_metadata()
+            data = json.dumps(metadata, ensure_ascii=False)
+            yield f"event: complete\ndata: {data}\n\n"
+            
+        except Exception as e:
+            # 错误事件
+            error_data = json.dumps({
+                "error": str(e),
+                "code": "AGENT_ERROR"
+            }, ensure_ascii=False)
+            yield f"event: error\ndata: {error_data}\n\n"
     
-    yield {
-        "type": "complete",
-        "metadata": agent.get_metadata()
-    }
+    return StreamingResponse(
+        generate(),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Headers": "*"
+        }
+    )
+
+# FastAPI路由
+@router.get("/chat/stream")
+async def chat_stream(
+    token: str,
+    session_id: str = None,
+    current_user: User = Depends(get_current_user)
+):
+    """SSE聊天流端点"""
+    return stream_agent_response(agent, message, context)
+```
+
+#### 前端EventSource实现
+
+```javascript
+// React Hook for SSE
+import { useState, useEffect, useCallback } from 'react';
+
+const useChatStream = () => {
+    const [messages, setMessages] = useState([]);
+    const [isStreaming, setIsStreaming] = useState(false);
+    const [eventSource, setEventSource] = useState(null);
+
+    const sendMessage = useCallback(async (message, agentType = 'buyer') => {
+        setIsStreaming(true);
+        
+        try {
+            // 1. 发起聊天请求
+            const response = await fetch('/api/v1/chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    message,
+                    agent_type: agentType,
+                    stream: true
+                })
+            });
+
+            const { session_id } = await response.json();
+
+            // 2. 建立SSE连接
+            const es = new EventSource(
+                `/api/v1/chat/stream?token=${token}&session_id=${session_id}`
+            );
+
+            setEventSource(es);
+
+            // 3. 处理流式内容
+            es.addEventListener('stream', (event) => {
+                const data = JSON.parse(event.data);
+                setMessages(prev => [
+                    ...prev.slice(0, -1),
+                    {
+                        ...prev[prev.length - 1],
+                        content: (prev[prev.length - 1]?.content || '') + data.chunk
+                    }
+                ]);
+            });
+
+            // 4. 处理推荐结果
+            es.addEventListener('recommendation', (event) => {
+                const recommendation = JSON.parse(event.data);
+                // 更新UI显示推荐
+                setRecommendations(prev => [...prev, recommendation]);
+            });
+
+            // 5. 处理完成事件
+            es.addEventListener('complete', (event) => {
+                const metadata = JSON.parse(event.data);
+                setIsStreaming(false);
+                es.close();
+                
+                // 更新token使用统计等
+                updateUsageStats(metadata);
+            });
+
+            // 6. 处理错误
+            es.addEventListener('error', (event) => {
+                const error = JSON.parse(event.data);
+                console.error('Stream error:', error);
+                setIsStreaming(false);
+                es.close();
+            });
+
+            // 7. 连接错误处理
+            es.onerror = (error) => {
+                console.error('EventSource error:', error);
+                setIsStreaming(false);
+                es.close();
+            };
+
+        } catch (error) {
+            console.error('Send message error:', error);
+            setIsStreaming(false);
+        }
+    }, [token]);
+
+    const stopStream = useCallback(() => {
+        if (eventSource) {
+            eventSource.close();
+            setEventSource(null);
+            setIsStreaming(false);
+        }
+    }, [eventSource]);
+
+    useEffect(() => {
+        return () => {
+            if (eventSource) {
+                eventSource.close();
+            }
+        };
+    }, [eventSource]);
+
+    return {
+        messages,
+        isStreaming,
+        sendMessage,
+        stopStream
+    };
+};
+
+// 在组件中使用
+const ChatComponent = () => {
+    const { messages, isStreaming, sendMessage, stopStream } = useChatStream();
+
+    return (
+        <div className="chat-container">
+            {messages.map((message, index) => (
+                <div key={index} className="message">
+                    {message.content}
+                </div>
+            ))}
+            
+            {isStreaming && (
+                <button onClick={stopStream}>
+                    停止生成
+                </button>
+            )}
+        </div>
+    );
+};
 ```
 
 ### 4. API限流
@@ -1308,9 +1520,9 @@ async def test_concurrent_requests():
 - [ ] Agent Gateway服务
 
 **第7-8周**
-- [ ] WebSocket实时对话
+- [ ] SSE流式对话响应
 - [ ] 对话历史存储（MongoDB）
-- [ ] 前端对话界面
+- [ ] 前端对话界面（EventSource API）
 - [ ] 基础多语言支持（UI）
 
 ### 第3个月：业务功能完善
