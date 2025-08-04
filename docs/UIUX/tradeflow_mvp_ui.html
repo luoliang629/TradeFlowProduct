@@ -472,7 +472,7 @@
             flex: 1;
             display: flex;
             flex-direction: column;
-            max-width: 800px;
+            max-width: 900px;
             margin: 0 auto;
             padding: 2rem;
         }
@@ -550,10 +550,12 @@
             min-height: 300px;
         }
 
+        /* Enhanced Message Styles */
         .message {
-            margin-bottom: 1.5rem;
+            margin-bottom: 2rem;
             display: flex;
             gap: 1rem;
+            animation: messageSlideIn 0.3s ease-out;
         }
 
         .message.user {
@@ -561,8 +563,8 @@
         }
 
         .message-avatar {
-            width: 40px;
-            height: 40px;
+            width: 44px;
+            height: 44px;
             border-radius: 50%;
             background: var(--primary-color);
             display: flex;
@@ -572,19 +574,72 @@
             font-weight: 600;
             font-size: 0.875rem;
             flex-shrink: 0;
+            box-shadow: var(--shadow-sm);
+            position: relative;
         }
 
         .message.assistant .message-avatar {
-            background: var(--accent-color);
+            background: linear-gradient(135deg, var(--accent-color), #ea580c);
+        }
+
+        .message.assistant .message-avatar::after {
+            content: '🤖';
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            font-size: 0.6rem;
+            background: var(--bg-primary);
+            border-radius: 50%;
+            width: 16px;
+            height: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .message-wrapper {
+            flex: 1;
+            max-width: 85%;
+        }
+
+        .message-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .message-sender {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .message.assistant .message-sender {
+            color: var(--accent-color);
+        }
+
+        .message-time {
+            font-size: 0.75rem;
+            color: var(--text-light);
+        }
+
+        .message-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            font-size: 0.75rem;
+            color: var(--success-color);
+            margin-left: auto;
         }
 
         .message-content {
-            flex: 1;
             background: var(--bg-primary);
             border: 1px solid var(--border-color);
             border-radius: var(--radius-lg);
-            padding: 1rem 1.25rem;
-            max-width: 80%;
+            padding: 1.25rem;
+            box-shadow: var(--shadow-sm);
+            position: relative;
         }
 
         .message.user .message-content {
@@ -593,14 +648,194 @@
             border-color: var(--primary-color);
         }
 
-        .message-time {
-            font-size: 0.75rem;
-            color: var(--text-light);
-            margin-top: 0.5rem;
+        .message.user .message-time,
+        .message.user .message-sender {
+            color: rgba(255, 255, 255, 0.8);
         }
 
-        .message.user .message-time {
-            color: rgba(255, 255, 255, 0.7);
+        /* Rich Content Styles for Agent Messages */
+        .message-content h1,
+        .message-content h2,
+        .message-content h3,
+        .message-content h4,
+        .message-content h5,
+        .message-content h6 {
+            margin: 0 0 1rem 0;
+            color: var(--text-primary);
+            line-height: 1.3;
+        }
+
+        .message-content h1 { font-size: 1.5rem; font-weight: 700; }
+        .message-content h2 { font-size: 1.25rem; font-weight: 600; }
+        .message-content h3 { font-size: 1.125rem; font-weight: 600; }
+
+        .message-content ul,
+        .message-content ol {
+            margin: 1rem 0;
+            padding-left: 1.5rem;
+        }
+
+        .message-content li {
+            margin-bottom: 0.5rem;
+            line-height: 1.6;
+        }
+
+        .message-content p {
+            margin-bottom: 1rem;
+            line-height: 1.6;
+        }
+
+        .message-content p:last-child {
+            margin-bottom: 0;
+        }
+
+        .message-content strong {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .message-content em {
+            font-style: italic;
+            color: var(--text-secondary);
+        }
+
+        /* Code blocks in messages */
+        .message-content code {
+            background: var(--bg-tertiary);
+            padding: 0.25rem 0.5rem;
+            border-radius: var(--radius-sm);
+            font-family: 'Monaco', 'Consolas', monospace;
+            font-size: 0.875rem;
+        }
+
+        .message-content pre {
+            background: var(--bg-tertiary);
+            padding: 1rem;
+            border-radius: var(--radius-md);
+            overflow-x: auto;
+            margin: 1rem 0;
+        }
+
+        .message-content pre code {
+            background: none;
+            padding: 0;
+        }
+
+        /* Tables in messages */
+        .message-content table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+        }
+
+        .message-content th,
+        .message-content td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .message-content th {
+            background: var(--bg-tertiary);
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .message-content tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Message Actions */
+        .message-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            padding-top: 0.75rem;
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .message:hover .message-actions {
+            opacity: 1;
+        }
+
+        .message.user .message-actions {
+            border-top-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .action-btn {
+            background: none;
+            border: none;
+            padding: 0.5rem;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            color: var(--text-light);
+            transition: all 0.2s ease;
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .action-btn:hover {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        .message.user .action-btn {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .message.user .action-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        /* Thinking indicator */
+        .thinking-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-secondary);
+            font-style: italic;
+            margin-bottom: 0.5rem;
+        }
+
+        .thinking-dots {
+            display: inline-flex;
+            gap: 0.25rem;
+        }
+
+        .thinking-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--accent-color);
+            animation: thinkingPulse 1.4s ease-in-out infinite both;
+        }
+
+        .thinking-dot:nth-child(2) { animation-delay: 0.2s; }
+        .thinking-dot:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes thinkingPulse {
+            0%, 80%, 100% { transform: scale(0.8); opacity: 0.5; }
+            40% { transform: scale(1); opacity: 1; }
+        }
+
+        @keyframes messageSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .chat-input-container {
@@ -673,6 +908,206 @@
         .send-btn:disabled {
             opacity: 0.5;
             cursor: not-allowed;
+        }
+
+        /* Collapsible Content */
+        .collapsible-content {
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            margin: 1rem 0;
+            overflow: hidden;
+        }
+
+        .collapsible-header {
+            background: var(--bg-tertiary);
+            padding: 0.875rem 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-weight: 500;
+            transition: background-color 0.2s;
+        }
+
+        .collapsible-header:hover {
+            background: var(--bg-secondary);
+        }
+
+        .collapsible-icon {
+            transition: transform 0.2s ease;
+        }
+
+        .collapsible-content.expanded .collapsible-icon {
+            transform: rotate(180deg);
+        }
+
+        .collapsible-body {
+            padding: 0;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease, padding 0.3s ease;
+        }
+
+        .collapsible-content.expanded .collapsible-body {
+            padding: 1rem;
+            max-height: 1000px;
+        }
+
+        /* Business Cards for B2B */
+        .business-card {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            margin: 1rem 0;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.2s ease;
+        }
+
+        .business-card:hover {
+            border-color: var(--primary-color);
+            box-shadow: var(--shadow-md);
+        }
+
+        .business-card-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .business-logo {
+            width: 50px;
+            height: 50px;
+            border-radius: var(--radius-md);
+            background: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-inverse);
+            font-weight: 600;
+            font-size: 1.25rem;
+        }
+
+        .business-info h4 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            color: var(--text-primary);
+        }
+
+        .business-location {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .business-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin: 1rem 0;
+        }
+
+        .business-tag {
+            background: var(--bg-tertiary);
+            color: var(--text-secondary);
+            padding: 0.25rem 0.75rem;
+            border-radius: var(--radius-lg);
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .business-tag.highlight {
+            background: var(--success-color);
+            color: var(--text-inverse);
+        }
+
+        .business-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+            padding: 1rem;
+            background: var(--bg-secondary);
+            border-radius: var(--radius-md);
+        }
+
+        .metric {
+            text-align: center;
+        }
+
+        .metric-value {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 0.25rem;
+        }
+
+        .metric-label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        /* Data Analysis Charts */
+        .chart-container {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            margin: 1rem 0;
+        }
+
+        .chart-title {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        .chart-placeholder {
+            height: 200px;
+            background: linear-gradient(45deg, var(--bg-tertiary) 25%, transparent 25%), 
+                        linear-gradient(-45deg, var(--bg-tertiary) 25%, transparent 25%), 
+                        linear-gradient(45deg, transparent 75%, var(--bg-tertiary) 75%), 
+                        linear-gradient(-45deg, transparent 75%, var(--bg-tertiary) 75%);
+            background-size: 20px 20px;
+            background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-light);
+            font-style: italic;
+        }
+
+        /* Progress Bars */
+        .progress-container {
+            margin: 0.5rem 0;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: var(--bg-tertiary);
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--success-color), var(--primary-color));
+            border-radius: var(--radius-sm);
+            transition: width 0.8s ease;
         }
 
         /* Results Section */
@@ -809,6 +1244,22 @@
             background: var(--accent-hover);
         }
 
+        /* Mobile Backdrop */
+        .mobile-backdrop {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+
+        .mobile-backdrop.show {
+            display: block;
+        }
+
         /* Mobile Responsiveness */
         @media (max-width: 768px) {
             .login-card {
@@ -823,6 +1274,7 @@
                 height: 100vh;
                 z-index: 1000;
                 transform: translateX(-100%);
+                transition: transform 0.3s ease;
             }
 
             .sidebar.show {
@@ -870,6 +1322,89 @@
                 padding: 0.75rem 1rem;
                 font-size: 0.9rem;
             }
+
+            /* Mobile Message Styles */
+            .message {
+                margin-bottom: 1.5rem;
+            }
+
+            .message-wrapper {
+                max-width: 90%;
+            }
+
+            .message-content {
+                padding: 1rem;
+            }
+
+            .message-header {
+                flex-wrap: wrap;
+                gap: 0.25rem;
+            }
+
+            .message-actions {
+                flex-wrap: wrap;
+                gap: 0.25rem;
+            }
+
+            .action-btn {
+                font-size: 0.75rem;
+                padding: 0.375rem;
+            }
+
+            /* Mobile Business Cards */
+            .business-card {
+                padding: 1rem;
+            }
+
+            .business-card-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.75rem;
+            }
+
+            .business-metrics {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.75rem;
+            }
+
+            .business-tags {
+                gap: 0.25rem;
+            }
+
+            .business-tag {
+                font-size: 0.7rem;
+                padding: 0.2rem 0.5rem;
+            }
+
+            /* Mobile Tables */
+            .message-content table {
+                font-size: 0.875rem;
+            }
+
+            .message-content th,
+            .message-content td {
+                padding: 0.5rem 0.25rem;
+            }
+
+            /* Mobile Chart Container */
+            .chart-container {
+                padding: 1rem;
+            }
+
+            .chart-placeholder {
+                height: 150px;
+                font-size: 0.875rem;
+            }
+
+            /* Mobile Collapsible */
+            .collapsible-header {
+                padding: 0.75rem;
+                font-size: 0.9rem;
+            }
+
+            .collapsible-body {
+                font-size: 0.9rem;
+            }
         }
 
         /* Dark mode support */
@@ -907,6 +1442,54 @@
             to {
                 transform: translateX(0);
             }
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* Toast Animation */
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* Hover Effects */
+        .message-content:hover {
+            box-shadow: var(--shadow-md);
+            transition: box-shadow 0.2s ease;
+        }
+
+        .business-card:hover {
+            transform: translateY(-2px);
+            transition: all 0.2s ease;
+        }
+
+        /* Focus Styles for Accessibility */
+        .action-btn:focus,
+        .collapsible-header:focus,
+        .oauth-btn:focus,
+        .btn-primary:focus,
+        .send-btn:focus {
+            outline: 2px solid var(--primary-color);
+            outline-offset: 2px;
+        }
+
+        .chat-input:focus {
+            box-shadow: 0 0 0 3px rgb(30 58 138 / 0.1);
         }
 
         /* Custom scrollbar */
@@ -1164,6 +1747,9 @@
 
     <!-- Mobile Backdrop -->
     <div id="mobileBackdrop" class="mobile-backdrop" onclick="toggleSidebar()"></div>
+
+    <!-- Toast Container -->
+    <div id="toastContainer" style="position: fixed; top: 20px; right: 20px; z-index: 1001;"></div>
 
     <script>
         // Current language
@@ -1452,19 +2038,61 @@
             }, 1000);
         }
 
-        function addMessage(content, sender) {
+        function addMessage(content, sender, isRichContent = false) {
             const messagesContainer = document.getElementById('chatMessages');
             const messageElement = document.createElement('div');
-            messageElement.className = `message ${sender} fade-in`;
+            messageElement.className = `message ${sender}`;
             
             const avatar = sender === 'user' ? currentUser?.avatar || 'U' : 'AI';
+            const senderName = sender === 'user' ? (currentUser?.name || 'You') : 'TradeFlow Assistant';
             const time = new Date().toLocaleTimeString();
+            const messageId = 'msg_' + Date.now();
+            
+            // Process content for rich formatting if it's from assistant
+            let processedContent = content;
+            if (sender === 'assistant' && isRichContent) {
+                processedContent = processRichContent(content);
+            } else {
+                processedContent = content.replace(/\n/g, '<br>');
+            }
             
             messageElement.innerHTML = `
                 <div class="message-avatar">${avatar}</div>
-                <div class="message-content">
-                    <div class="message-text">${content}</div>
-                    <div class="message-time">${time}</div>
+                <div class="message-wrapper">
+                    <div class="message-header">
+                        <span class="message-sender">${senderName}</span>
+                        <span class="message-time">${time}</span>
+                        <span class="message-status">
+                            <svg width="12" height="12" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+                            </svg>
+                            ${currentLang === 'zh' ? '已送达' : 'Delivered'}
+                        </span>
+                    </div>
+                    <div class="message-content" id="${messageId}">
+                        ${processedContent}
+                    </div>
+                    <div class="message-actions">
+                        <button class="action-btn" onclick="copyMessage('${messageId}')" title="${currentLang === 'zh' ? '复制' : 'Copy'}">
+                            <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+                            </svg>
+                            ${currentLang === 'zh' ? '复制' : 'Copy'}
+                        </button>
+                        ${sender === 'assistant' ? `
+                        <button class="action-btn" onclick="regenerateMessage('${messageId}')" title="${currentLang === 'zh' ? '重新生成' : 'Regenerate'}">
+                            <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
+                            </svg>
+                            ${currentLang === 'zh' ? '重新生成' : 'Regenerate'}
+                        </button>
+                        <button class="action-btn" onclick="provideFeedback('${messageId}')" title="${currentLang === 'zh' ? '反馈' : 'Feedback'}">
+                            <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                            </svg>
+                            ${currentLang === 'zh' ? '反馈' : 'Feedback'}
+                        </button>` : ''}
+                    </div>
                 </div>
             `;
             
@@ -1476,78 +2104,1007 @@
             if (welcomeSection && messagesContainer.children.length > 0) {
                 welcomeSection.style.display = 'none';
             }
+            
+            // Setup collapsible content
+            setupCollapsibleContent(messageElement);
+        }
+
+        function processRichContent(content) {
+            // Convert markdown-like syntax to HTML
+            let processed = content
+                // Headers
+                .replace(/^### (.*$)/gm, '<h3>$1</h3>')
+                .replace(/^## (.*$)/gm, '<h2>$1</h2>')
+                .replace(/^# (.*$)/gm, '<h1>$1</h1>')
+                // Bold and italic
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                // Lists
+                .replace(/^\* (.*$)/gm, '<li>$1</li>')
+                .replace(/^- (.*$)/gm, '<li>$1</li>')
+                // Line breaks
+                .replace(/\n/g, '<br>');
+            
+            // Wrap consecutive <li> elements in <ul>
+            processed = processed.replace(/(<li>.*?<\/li>)(<br>)*/g, (match, li) => {
+                return li;
+            });
+            
+            // Group list items
+            processed = processed.replace(/(<li>.*?<\/li>(<br>)*)+/g, (match) => {
+                return '<ul>' + match.replace(/<br>/g, '') + '</ul>';
+            });
+            
+            return processed;
+        }
+
+        function addThinkingMessage() {
+            const messagesContainer = document.getElementById('chatMessages');
+            const thinkingElement = document.createElement('div');
+            thinkingElement.className = 'message assistant thinking';
+            thinkingElement.id = 'thinking-message';
+            
+            thinkingElement.innerHTML = `
+                <div class="message-avatar">AI</div>
+                <div class="message-wrapper">
+                    <div class="message-header">
+                        <span class="message-sender">TradeFlow Assistant</span>
+                        <span class="message-time">${new Date().toLocaleTimeString()}</span>
+                    </div>
+                    <div class="message-content">
+                        <div class="thinking-indicator">
+                            <span>${currentLang === 'zh' ? '正在思考中' : 'Thinking'}...</span>
+                            <div class="thinking-dots">
+                                <div class="thinking-dot"></div>
+                                <div class="thinking-dot"></div>
+                                <div class="thinking-dot"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            messagesContainer.appendChild(thinkingElement);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            
+            return thinkingElement;
+        }
+
+        function removeThinkingMessage() {
+            const thinkingElement = document.getElementById('thinking-message');
+            if (thinkingElement) {
+                thinkingElement.remove();
+            }
+        }
+
+        function setupCollapsibleContent(messageElement) {
+            const collapsibles = messageElement.querySelectorAll('.collapsible-content');
+            collapsibles.forEach(collapsible => {
+                const header = collapsible.querySelector('.collapsible-header');
+                if (header) {
+                    header.addEventListener('click', () => {
+                        collapsible.classList.toggle('expanded');
+                    });
+                }
+            });
+        }
+
+        // Message action functions
+        function copyMessage(messageId) {
+            const messageContent = document.getElementById(messageId);
+            if (messageContent) {
+                const text = messageContent.textContent || messageContent.innerText;
+                navigator.clipboard.writeText(text).then(() => {
+                    showToast(currentLang === 'zh' ? '已复制到剪贴板' : 'Copied to clipboard');
+                }).catch(() => {
+                    // Fallback for older browsers
+                    const textarea = document.createElement('textarea');
+                    textarea.value = text;
+                    document.body.appendChild(textarea);
+                    textarea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textarea);
+                    showToast(currentLang === 'zh' ? '已复制到剪贴板' : 'Copied to clipboard');
+                });
+            }
+        }
+
+        function regenerateMessage(messageId) {
+            showToast(currentLang === 'zh' ? '正在重新生成回复...' : 'Regenerating response...');
+            // TODO: Implement message regeneration
+        }
+
+        function provideFeedback(messageId) {
+            const feedback = prompt(currentLang === 'zh' ? '请提供您的反馈：' : 'Please provide your feedback:');
+            if (feedback) {
+                showToast(currentLang === 'zh' ? '感谢您的反馈！' : 'Thank you for your feedback!');
+                // TODO: Send feedback to backend
+            }
+        }
+
+        function showToast(message) {
+            // Create toast notification
+            const toast = document.createElement('div');
+            toast.textContent = message;
+            toast.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: var(--primary-color);
+                color: white;
+                padding: 1rem 1.5rem;
+                border-radius: var(--radius-md);
+                box-shadow: var(--shadow-lg);
+                z-index: 1000;
+                animation: slideInRight 0.3s ease-out;
+            `;
+            
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.animation = 'slideInRight 0.3s ease-out reverse';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
         }
 
         function simulateAIResponse(userMessage) {
-            let response = '';
+            // Add thinking indicator
+            const thinkingElement = addThinkingMessage();
             
-            if (userMessage.toLowerCase().includes('buyer') || userMessage.includes('买家')) {
-                response = currentLang === 'zh' ? 
-                    '我会帮您寻找潜在买家。请告诉我您的产品详情：产品类型、目标市场、价格范围等。基于这些信息，我将为您推荐最匹配的买家。' :
-                    "I'll help you find potential buyers. Please tell me about your product: type, target markets, price range, etc. Based on this information, I'll recommend the most suitable buyers for you.";
-                    
-                // Show results after response
-                setTimeout(() => {
-                    showBuyerResults();
-                }, 2000);
-            } else if (userMessage.toLowerCase().includes('supplier') || userMessage.includes('供应商')) {
-                response = currentLang === 'zh' ? 
-                    '我来帮您寻找可靠的供应商。请描述您的采购需求：产品规格、数量、交货时间、预算等。我将为您匹配最适合的供应商。' :
-                    "I'll help you find reliable suppliers. Please describe your procurement needs: product specifications, quantity, delivery time, budget, etc. I'll match you with the most suitable suppliers.";
-                    
-                // Show results after response
-                setTimeout(() => {
-                    showSupplierResults();
-                }, 2000);
-            } else {
-                response = currentLang === 'zh' ? 
-                    '我是您的B2B贸易智能助手。我可以帮助您：\n• 寻找全球买家\n• 匹配可靠供应商\n• 提供市场分析\n• 生成商务沟通模板\n\n请告诉我您的具体需求！' :
-                    "I'm your B2B trade AI assistant. I can help you:\n• Find global buyers\n• Match reliable suppliers\n• Provide market analysis\n• Generate business communication templates\n\nPlease tell me your specific needs!";
-            }
-            
-            addMessage(response, 'assistant');
+            setTimeout(() => {
+                removeThinkingMessage();
+                
+                let response = '';
+                let isRichContent = false;
+                
+                if (userMessage.toLowerCase().includes('buyer') || userMessage.includes('买家')) {
+                    isRichContent = true;
+                    response = currentLang === 'zh' ? 
+                        generateBuyerAnalysisResponse() :
+                        generateBuyerAnalysisResponseEN();
+                        
+                    // Show results after response
+                    setTimeout(() => {
+                        showBuyerResults();
+                    }, 2000);
+                } else if (userMessage.toLowerCase().includes('supplier') || userMessage.includes('供应商')) {
+                    isRichContent = true;
+                    response = currentLang === 'zh' ? 
+                        generateSupplierAnalysisResponse() :
+                        generateSupplierAnalysisResponseEN();
+                        
+                    // Show results after response
+                    setTimeout(() => {
+                        showSupplierResults();
+                    }, 2000);
+                } else if (userMessage.toLowerCase().includes('market') || userMessage.includes('市场')) {
+                    isRichContent = true;
+                    response = currentLang === 'zh' ? 
+                        generateMarketAnalysisResponse() :
+                        generateMarketAnalysisResponseEN();
+                } else {
+                    response = currentLang === 'zh' ? 
+                        '我是您的B2B贸易智能助手。我可以帮助您：\n\n• **寻找全球买家** - 基于产品匹配和市场分析\n• **匹配可靠供应商** - 验证资质和历史记录\n• **提供市场分析** - 行业趋势和竞争分析\n• **生成商务沟通模板** - 专业的邮件和文档\n\n请告诉我您的具体需求，我会为您提供详细的分析和建议！' :
+                        "I'm your B2B trade AI assistant. I can help you:\n\n• **Find global buyers** - Based on product matching and market analysis\n• **Match reliable suppliers** - Verify credentials and track records\n• **Provide market analysis** - Industry trends and competitive analysis\n• **Generate business communication templates** - Professional emails and documents\n\nPlease tell me your specific needs, and I'll provide detailed analysis and recommendations!";
+                    isRichContent = true;
+                }
+                
+                addMessage(response, 'assistant', isRichContent);
+            }, 1500 + Math.random() * 1000); // Simulate thinking time
+        }
+
+        function generateBuyerAnalysisResponse() {
+            return `## 买家开发分析报告
+
+我将帮您进行全面的买家开发分析。为了提供最精准的推荐，请提供以下信息：
+
+### 📋 产品信息需求
+- **产品类型**：具体的产品名称和分类
+- **产品规格**：详细的技术规格和标准
+- **价格区间**：目标价格范围（FOB/CIF）
+- **最小起订量**：您能接受的最小订单量
+
+### 🎯 目标市场偏好
+- **地区偏好**：优先考虑的国家或地区
+- **客户类型**：批发商、零售商、制造商等
+- **订单规模**：期望的订单规模范围
+
+### 📊 分析维度
+
+<div class="collapsible-content">
+    <div class="collapsible-header">
+        市场潜力分析 
+        <span class="collapsible-icon">▼</span>
+    </div>
+    <div class="collapsible-body">
+        <div class="business-metrics">
+            <div class="metric">
+                <div class="metric-value">85%</div>
+                <div class="metric-label">市场增长率</div>
+            </div>
+            <div class="metric">
+                <div class="metric-value">12.5亿</div>
+                <div class="metric-label">市场规模(USD)</div>
+            </div>
+            <div class="metric">
+                <div class="metric-value">450+</div>
+                <div class="metric-label">潜在买家</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+基于以上信息，我将为您提供：
+
+1. **精准买家匹配** - AI算法筛选最合适的买家
+2. **市场进入策略** - 定制化的市场开发建议  
+3. **竞争对手分析** - 了解竞争格局和定价策略
+4. **沟通模板** - 专业的商务邮件模板
+
+请提供您的产品详情，我立即开始为您分析！`;
+        }
+
+        function generateBuyerAnalysisResponseEN() {
+            return `## Buyer Development Analysis Report
+
+I'll help you conduct a comprehensive buyer development analysis. To provide the most accurate recommendations, please provide the following information:
+
+### 📋 Product Information Required
+- **Product Type**: Specific product name and category
+- **Product Specifications**: Detailed technical specs and standards
+- **Price Range**: Target price range (FOB/CIF)
+- **Minimum Order Quantity**: Minimum order quantity you can accept
+
+### 🎯 Target Market Preferences
+- **Regional Preferences**: Priority countries or regions
+- **Customer Types**: Wholesalers, retailers, manufacturers, etc.
+- **Order Scale**: Expected order volume range
+
+### 📊 Analysis Dimensions
+
+<div class="collapsible-content">
+    <div class="collapsible-header">
+        Market Potential Analysis 
+        <span class="collapsible-icon">▼</span>
+    </div>
+    <div class="collapsible-body">
+        <div class="business-metrics">
+            <div class="metric">
+                <div class="metric-value">85%</div>
+                <div class="metric-label">Market Growth</div>
+            </div>
+            <div class="metric">
+                <div class="metric-value">$1.25B</div>
+                <div class="metric-label">Market Size</div>
+            </div>
+            <div class="metric">
+                <div class="metric-value">450+</div>
+                <div class="metric-label">Potential Buyers</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+Based on this information, I will provide:
+
+1. **Precise Buyer Matching** - AI-powered screening of most suitable buyers
+2. **Market Entry Strategy** - Customized market development recommendations
+3. **Competitor Analysis** - Understanding competitive landscape and pricing
+4. **Communication Templates** - Professional business email templates
+
+Please provide your product details, and I'll start the analysis immediately!`;
+        }
+
+        function generateSupplierAnalysisResponse() {
+            return `## 供应商匹配分析报告
+
+我将为您进行全面的供应商匹配分析，确保找到最可靠的合作伙伴。
+
+### 🏭 采购需求评估
+
+请提供以下关键信息：
+
+- **产品规格**：详细的产品要求和标准
+- **采购数量**：预期的订购数量和频率
+- **质量要求**：相关认证和质量标准
+- **交货时间**：期望的交货周期
+- **预算范围**：可接受的价格区间
+- **地理偏好**：优先考虑的供应商地区
+
+### 📊 供应商评估体系
+
+<div class="collapsible-content">
+    <div class="collapsible-header">
+        供应商筛选标准
+        <span class="collapsible-icon">▼</span>
+    </div>
+    <div class="collapsible-body">
+        <div class="progress-container">
+            <div class="progress-label">
+                <span>产品质量</span>
+                <span>权重: 30%</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: 90%"></div>
+            </div>
+        </div>
+        <div class="progress-container">
+            <div class="progress-label">
+                <span>交货能力</span>
+                <span>权重: 25%</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: 85%"></div>
+            </div>
+        </div>
+        <div class="progress-container">
+            <div class="progress-label">
+                <span>价格竞争力</span>
+                <span>权重: 20%</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: 75%"></div>
+            </div>
+        </div>
+        <div class="progress-container">
+            <div class="progress-label">
+                <span>服务质量</span>
+                <span>权重: 15%</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: 80%"></div>
+            </div>
+        </div>
+        <div class="progress-container">
+            <div class="progress-label">
+                <span>资质认证</span>
+                <span>权重: 10%</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: 95%"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+### 🔍 我的分析将包括：
+
+1. **供应商资质验证** - 工商注册、认证证书、历史记录
+2. **生产能力评估** - 产能、技术水平、设备状况
+3. **质量控制体系** - QC流程、检测能力、不良率统计
+4. **物流与交付** - 地理位置、运输方案、交期保障
+5. **财务状况分析** - 公司规模、资金实力、信用记录
+
+请详细描述您的采购需求，我会立即为您匹配最适合的供应商！`;
+        }
+
+        function generateSupplierAnalysisResponseEN() {
+            return `## Supplier Matching Analysis Report
+
+I'll conduct a comprehensive supplier matching analysis to ensure you find the most reliable partners.
+
+### 🏭 Procurement Requirements Assessment
+
+Please provide the following key information:
+
+- **Product Specifications**: Detailed product requirements and standards
+- **Purchase Quantity**: Expected order quantity and frequency
+- **Quality Requirements**: Relevant certifications and quality standards
+- **Delivery Timeline**: Expected delivery cycles
+- **Budget Range**: Acceptable price range
+- **Geographic Preferences**: Preferred supplier regions
+
+### 📊 Supplier Evaluation System
+
+<div class="collapsible-content">
+    <div class="collapsible-header">
+        Supplier Screening Criteria
+        <span class="collapsible-icon">▼</span>
+    </div>
+    <div class="collapsible-body">
+        <div class="progress-container">
+            <div class="progress-label">
+                <span>Product Quality</span>
+                <span>Weight: 30%</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: 90%"></div>
+            </div>
+        </div>
+        <div class="progress-container">
+            <div class="progress-label">
+                <span>Delivery Capability</span>
+                <span>Weight: 25%</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: 85%"></div>
+            </div>
+        </div>
+        <div class="progress-container">
+            <div class="progress-label">
+                <span>Price Competitiveness</span>
+                <span>Weight: 20%</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: 75%"></div>
+            </div>
+        </div>
+        <div class="progress-container">
+            <div class="progress-label">
+                <span>Service Quality</span>
+                <span>Weight: 15%</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: 80%"></div>
+            </div>
+        </div>
+        <div class="progress-container">
+            <div class="progress-label">
+                <span>Certifications</span>
+                <span>Weight: 10%</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: 95%"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+### 🔍 My Analysis Will Include:
+
+1. **Supplier Qualification Verification** - Business registration, certificates, track record
+2. **Production Capacity Assessment** - Capacity, technology level, equipment status
+3. **Quality Control System** - QC processes, testing capabilities, defect rates
+4. **Logistics & Delivery** - Location, transportation solutions, delivery guarantee
+5. **Financial Status Analysis** - Company size, financial strength, credit record
+
+Please describe your procurement needs in detail, and I'll immediately match the most suitable suppliers for you!`;
+        }
+
+        function generateMarketAnalysisResponse() {
+            return `## 市场分析报告
+
+### 📈 市场概况
+
+<div class="chart-container">
+    <div class="chart-title">全球B2B贸易市场趋势</div>
+    <div class="chart-placeholder">📊 图表数据加载中...</div>
+</div>
+
+### 🌍 主要市场分析
+
+<div class="collapsible-content expanded">
+    <div class="collapsible-header">
+        亚太市场 (占比: 45%)
+        <span class="collapsible-icon">▼</span>
+    </div>
+    <div class="collapsible-body">
+        <div class="business-metrics">
+            <div class="metric">
+                <div class="metric-value">$2.8T</div>
+                <div class="metric-label">市场规模</div>
+            </div>
+            <div class="metric">
+                <div class="metric-value">8.5%</div>
+                <div class="metric-label">年增长率</div>
+            </div>
+            <div class="metric">
+                <div class="metric-value">15.2M</div>
+                <div class="metric-label">活跃企业</div>
+            </div>
+        </div>
+        <p><strong>主要特点：</strong>制造业集中，供应链完整，价格竞争激烈</p>
+        <p><strong>机会领域：</strong>电子产品、纺织品、机械设备</p>
+    </div>
+</div>
+
+这是一个演示性的市场分析报告。请告诉我您关注的具体行业或产品，我将为您提供更详细的分析！`;
+        }
+
+        function generateMarketAnalysisResponseEN() {
+            return `## Market Analysis Report
+
+### 📈 Market Overview
+
+<div class="chart-container">
+    <div class="chart-title">Global B2B Trade Market Trends</div>
+    <div class="chart-placeholder">📊 Chart data loading...</div>
+</div>
+
+### 🌍 Major Market Analysis
+
+<div class="collapsible-content expanded">
+    <div class="collapsible-header">
+        Asia-Pacific Market (Share: 45%)
+        <span class="collapsible-icon">▼</span>
+    </div>
+    <div class="collapsible-body">
+        <div class="business-metrics">
+            <div class="metric">
+                <div class="metric-value">$2.8T</div>
+                <div class="metric-label">Market Size</div>
+            </div>
+            <div class="metric">
+                <div class="metric-value">8.5%</div>
+                <div class="metric-label">Annual Growth</div>
+            </div>
+            <div class="metric">
+                <div class="metric-value">15.2M</div>
+                <div class="metric-label">Active Companies</div>
+            </div>
+        </div>
+        <p><strong>Key Features:</strong> Manufacturing concentration, complete supply chain, intense price competition</p>
+        <p><strong>Opportunity Areas:</strong> Electronics, textiles, machinery equipment</p>
+    </div>
+</div>
+
+This is a demonstration market analysis report. Please tell me the specific industry or product you're interested in, and I'll provide more detailed analysis for you!`;
         }
 
         function showBuyerResults() {
-            const results = [
-                {
-                    company: 'Tech Import Solutions Ltd',
-                    location: 'London, UK',
-                    matchScore: '95%',
-                    tags: ['Electronics', 'B2B', 'Verified'],
-                    description: 'Leading UK importer of consumer electronics with 15+ years experience'
-                },
-                {
-                    company: 'European Trading Group',
-                    location: 'Hamburg, Germany',
-                    matchScore: '88%',
-                    tags: ['Manufacturing', 'OEM', 'Large Volume'],
-                    description: 'Specializes in OEM manufacturing partnerships across Europe'
-                }
-            ];
-            
-            displayResults(results, currentLang === 'zh' ? '买家推荐结果' : 'Buyer Recommendations');
+            // Add rich buyer results as a message
+            const richContent = currentLang === 'zh' ? generateBuyerResultsHTML() : generateBuyerResultsHTMLEN();
+            addMessage(richContent, 'assistant', true);
+        }
+        
+        function generateBuyerResultsHTML() {
+            return `## 🎯 买家匹配结果
+
+基于您的需求，我为您找到了以下高质量买家：
+
+<div class="business-card">
+    <div class="business-card-header">
+        <div class="business-logo">TE</div>
+        <div class="business-info">
+            <h4>Tech Import Solutions Ltd</h4>
+            <div class="business-location">📍 伦敦, 英国</div>
+        </div>
+    </div>
+    <div class="business-metrics">
+        <div class="metric">
+            <div class="metric-value">95%</div>
+            <div class="metric-label">匹配度</div>
+        </div>
+        <div class="metric">
+            <div class="metric-value">$2.5M</div>
+            <div class="metric-label">年采购额</div>
+        </div>
+        <div class="metric">
+            <div class="metric-value">15年</div>
+            <div class="metric-label">经营历史</div>
+        </div>
+        <div class="metric">
+            <div class="metric-value">A+</div>
+            <div class="metric-label">信用等级</div>
+        </div>
+    </div>
+    <p>英国领先的消费电子产品进口商，拥有15年以上的行业经验和完善的分销网络。</p>
+    <div class="business-tags">
+        <span class="business-tag highlight">已验证</span>
+        <span class="business-tag">电子产品</span>
+        <span class="business-tag">B2B批发</span>
+        <span class="business-tag">大批量订单</span>
+    </div>
+</div>
+
+<div class="business-card">
+    <div class="business-card-header">
+        <div class="business-logo">EG</div>
+        <div class="business-info">
+            <h4>European Trading Group</h4>
+            <div class="business-location">📍 汉堡, 德国</div>
+        </div>
+    </div>
+    <div class="business-metrics">
+        <div class="metric">
+            <div class="metric-value">88%</div>
+            <div class="metric-label">匹配度</div>
+        </div>
+        <div class="metric">
+            <div class="metric-value">$1.8M</div>
+            <div class="metric-label">年采购额</div>
+        </div>
+        <div class="metric">
+            <div class="metric-value">12年</div>
+            <div class="metric-label">经营历史</div>
+        </div>
+        <div class="metric">
+            <div class="metric-value">A</div>
+            <div class="metric-label">信用等级</div>
+        </div>
+    </div>
+    <p>专注于欧洲市场的OEM制造合作伙伴关系，在工业设备和电子产品领域具有丰富经验。</p>
+    <div class="business-tags">
+        <span class="business-tag highlight">已验证</span>
+        <span class="business-tag">制造业</span>
+        <span class="business-tag">OEM合作</span>
+        <span class="business-tag">欧洲市场</span>
+    </div>
+</div>
+
+### 📊 市场洞察
+
+<div class="collapsible-content">
+    <div class="collapsible-header">
+        详细市场分析
+        <span class="collapsible-icon">▼</span>
+    </div>
+    <div class="collapsible-body">
+        <p><strong>市场趋势：</strong>欧洲电子产品市场预计在未来2年内增长12%</p>
+        <p><strong>竞争分析：</strong>您的产品在价格和质量方面具有竞争优势</p>
+        <p><strong>建议策略：</strong>建议优先联系Tech Import Solutions，其采购规模和需求最匹配</p>
+    </div>
+</div>
+
+**下一步行动：**
+1. 我可以为您生成个性化的联系邮件模板
+2. 提供详细的产品展示建议
+3. 协助制定报价策略`;
+        }
+        
+        function generateBuyerResultsHTMLEN() {
+            return `## 🎯 Buyer Matching Results
+
+Based on your requirements, I found these high-quality buyers for you:
+
+<div class="business-card">
+    <div class="business-card-header">
+        <div class="business-logo">TE</div>
+        <div class="business-info">
+            <h4>Tech Import Solutions Ltd</h4>
+            <div class="business-location">📍 London, UK</div>
+        </div>
+    </div>
+    <div class="business-metrics">
+        <div class="metric">
+            <div class="metric-value">95%</div>
+            <div class="metric-label">Match Score</div>
+        </div>
+        <div class="metric">
+            <div class="metric-value">$2.5M</div>
+            <div class="metric-label">Annual Purchase</div>
+        </div>
+        <div class="metric">
+            <div class="metric-value">15 years</div>
+            <div class="metric-label">Experience</div>
+        </div>
+        <div class="metric">
+            <div class="metric-value">A+</div>
+            <div class="metric-label">Credit Rating</div>
+        </div>
+    </div>
+    <p>Leading UK importer of consumer electronics with 15+ years experience and comprehensive distribution network.</p>
+    <div class="business-tags">
+        <span class="business-tag highlight">Verified</span>
+        <span class="business-tag">Electronics</span>
+        <span class="business-tag">B2B Wholesale</span>
+        <span class="business-tag">Large Volume</span>
+    </div>
+</div>
+
+<div class="business-card">
+    <div class="business-card-header">
+        <div class="business-logo">EG</div>
+        <div class="business-info">
+            <h4>European Trading Group</h4>
+            <div class="business-location">📍 Hamburg, Germany</div>
+        </div>
+    </div>
+    <div class="business-metrics">
+        <div class="metric">
+            <div class="metric-value">88%</div>
+            <div class="metric-label">Match Score</div>
+        </div>
+        <div class="metric">
+            <div class="metric-value">$1.8M</div>
+            <div class="metric-label">Annual Purchase</div>
+        </div>
+        <div class="metric">
+            <div class="metric-value">12 years</div>
+            <div class="metric-label">Experience</div>
+        </div>
+        <div class="metric">
+            <div class="metric-value">A</div>
+            <div class="metric-label">Credit Rating</div>
+        </div>
+    </div>
+    <p>Specializes in OEM manufacturing partnerships across Europe with rich experience in industrial equipment and electronics.</p>
+    <div class="business-tags">
+        <span class="business-tag highlight">Verified</span>
+        <span class="business-tag">Manufacturing</span>
+        <span class="business-tag">OEM Partnership</span>
+        <span class="business-tag">European Market</span>
+    </div>
+</div>
+
+### 📊 Market Insights
+
+<div class="collapsible-content">
+    <div class="collapsible-header">
+        Detailed Market Analysis
+        <span class="collapsible-icon">▼</span>
+    </div>
+    <div class="collapsible-body">
+        <p><strong>Market Trends:</strong> European electronics market expected to grow 12% in the next 2 years</p>
+        <p><strong>Competitive Analysis:</strong> Your products have competitive advantages in price and quality</p>
+        <p><strong>Recommended Strategy:</strong> Suggest prioritizing contact with Tech Import Solutions due to best match in purchase scale and requirements</p>
+    </div>
+</div>
+
+**Next Steps:**
+1. I can generate personalized contact email templates for you
+2. Provide detailed product presentation suggestions
+3. Assist in developing pricing strategies`;
         }
 
         function showSupplierResults() {
-            const results = [
-                {
-                    company: '深圳优质制造有限公司',
-                    location: 'Shenzhen, China',
-                    matchScore: '92%',
-                    tags: ['ISO Certified', 'Electronics', 'Fast Delivery'],
-                    description: 'Professional electronics manufacturer with advanced production facilities'
-                },
-                {
-                    company: 'Vietnam Manufacturing Co.',
-                    location: 'Ho Chi Minh City, Vietnam',
-                    matchScore: '85%',
-                    tags: ['Textiles', 'Competitive Price', 'OEM/ODM'],
-                    description: 'Leading textile manufacturer with export experience to 50+ countries'
-                }
-            ];
-            
-            displayResults(results, currentLang === 'zh' ? '供应商推荐结果' : 'Supplier Recommendations');
+            // Add rich supplier results as a message
+            const richContent = currentLang === 'zh' ? generateSupplierResultsHTML() : generateSupplierResultsHTMLEN();
+            addMessage(richContent, 'assistant', true);
+        }
+        
+        function generateSupplierResultsHTML() {
+            return `## 🏭 供应商匹配结果
+
+根据您的采购需求，我推荐以下优质供应商：
+
+<div class="business-card">
+    <div class="business-card-header">
+        <div class="business-logo">深优</div>
+        <div class="business-info">
+            <h4>深圳优质制造有限公司</h4>
+            <div class="business-location">📍 深圳, 中国</div>
+        </div>
+    </div>
+    <div class="business-metrics">
+        <div class="metric">
+            <div class="metric-value">92%</div>
+            <div class="metric-label">匹配度</div>
+        </div>
+        <div class="metric">
+            <div class="metric-value">50K/月</div>
+            <div class="metric-label">产能</div>
+        </div>
+        <div class="metric">
+            <div class="metric-value">15天</div>
+            <div class="metric-label">交期</div>
+        </div>
+        <div class="metric">
+            <div class="metric-value">99.2%</div>
+            <div class="metric-label">合格率</div>
+        </div>
+    </div>
+    <p>专业的电子产品制造商，拥有先进的生产设施和完善的质量管理体系。已通过ISO9001、ISO14001等多项认证。</p>
+    <div class="business-tags">
+        <span class="business-tag highlight">ISO认证</span>
+        <span class="business-tag">电子产品</span>
+        <span class="business-tag">快速交付</span>
+        <span class="business-tag">OEM/ODM</span>
+    </div>
+</div>
+
+<div class="business-card">
+    <div class="business-card-header">
+        <div class="business-logo">VM</div>
+        <div class="business-info">
+            <h4>Vietnam Manufacturing Co.</h4>
+            <div class="business-location">📍 胡志明市, 越南</div>
+        </div>
+    </div>
+    <div class="business-metrics">
+        <div class="metric">
+            <div class="metric-value">85%</div>
+            <div class="metric-label">匹配度</div>
+        </div>
+        <div class="metric">
+            <div class="metric-value">30K/月</div>
+            <div class="metric-label">产能</div>
+        </div>
+        <div class="metric">
+            <div class="metric-value">20天</div>
+            <div class="metric-label">交期</div>
+        </div>
+        <div class="metric">
+            <div class="metric-value">97.8%</div>
+            <div class="metric-label">合格率</div>
+        </div>
+    </div>
+    <p>领先的纺织品制造商，拥有向50多个国家出口的丰富经验，在成本控制和品质保证方面表现优异。</p>
+    <div class="business-tags">
+        <span class="business-tag highlight">价格优势</span>
+        <span class="business-tag">纺织品</span>
+        <span class="business-tag">出口经验</span>
+        <span class="business-tag">OEM/ODM</span>
+    </div>
+</div>
+
+### 🔍 供应商对比分析
+
+<div class="collapsible-content">
+    <div class="collapsible-header">
+        详细对比表
+        <span class="collapsible-icon">▼</span>
+    </div>
+    <div class="collapsible-body">
+        <table>
+            <thead>
+                <tr>
+                    <th>评估项目</th>
+                    <th>深圳优质制造</th>
+                    <th>Vietnam Manufacturing</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>价格竞争力</td>
+                    <td>★★★★☆</td>
+                    <td>★★★★★</td>
+                </tr>
+                <tr>
+                    <td>质量稳定性</td>
+                    <td>★★★★★</td>
+                    <td>★★★★☆</td>
+                </tr>
+                <tr>
+                    <td>交付能力</td>
+                    <td>★★★★★</td>
+                    <td>★★★★☆</td>
+                </tr>
+                <tr>
+                    <td>技术实力</td>
+                    <td>★★★★★</td>
+                    <td>★★★☆☆</td>
+                </tr>
+                <tr>
+                    <td>沟通便利性</td>
+                    <td>★★★★★</td>
+                    <td>★★★☆☆</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+**推荐建议：**
+- **首选深圳优质制造**：技术实力强，质量稳定，适合对品质要求较高的项目
+- **备选Vietnam Manufacturing**：成本优势明显，适合价格敏感型采购
+
+**下一步：**
+1. 我可以帮您准备RFQ（询价单）
+2. 安排工厂实地考察
+3. 协助谈判和合同条款制定`;
+        }
+        
+        function generateSupplierResultsHTMLEN() {
+            return `## 🏭 Supplier Matching Results
+
+Based on your procurement requirements, I recommend these quality suppliers:
+
+<div class="business-card">
+    <div class="business-card-header">
+        <div class="business-logo">SZ</div>
+        <div class="business-info">
+            <h4>Shenzhen Quality Manufacturing Ltd</h4>
+            <div class="business-location">📍 Shenzhen, China</div>
+        </div>
+    </div>
+    <div class="business-metrics">
+        <div class="metric">
+            <div class="metric-value">92%</div>
+            <div class="metric-label">Match Score</div>
+        </div>
+        <div class="metric">
+            <div class="metric-value">50K/month</div>
+            <div class="metric-label">Capacity</div>
+        </div>
+        <div class="metric">
+            <div class="metric-value">15 days</div>
+            <div class="metric-label">Lead Time</div>
+        </div>
+        <div class="metric">
+            <div class="metric-value">99.2%</div>
+            <div class="metric-label">Pass Rate</div>
+        </div>
+    </div>
+    <p>Professional electronics manufacturer with advanced production facilities and comprehensive quality management system. Certified with ISO9001, ISO14001 and more.</p>
+    <div class="business-tags">
+        <span class="business-tag highlight">ISO Certified</span>
+        <span class="business-tag">Electronics</span>
+        <span class="business-tag">Fast Delivery</span>
+        <span class="business-tag">OEM/ODM</span>
+    </div>
+</div>
+
+<div class="business-card">
+    <div class="business-card-header">
+        <div class="business-logo">VM</div>
+        <div class="business-info">
+            <h4>Vietnam Manufacturing Co.</h4>
+            <div class="business-location">📍 Ho Chi Minh City, Vietnam</div>
+        </div>
+    </div>
+    <div class="business-metrics">
+        <div class="metric">
+            <div class="metric-value">85%</div>
+            <div class="metric-label">Match Score</div>
+        </div>
+        <div class="metric">
+            <div class="metric-value">30K/month</div>
+            <div class="metric-label">Capacity</div>
+        </div>
+        <div class="metric">
+            <div class="metric-value">20 days</div>
+            <div class="metric-label">Lead Time</div>
+        </div>
+        <div class="metric">
+            <div class="metric-value">97.8%</div>
+            <div class="metric-label">Pass Rate</div>
+        </div>
+    </div>
+    <p>Leading textile manufacturer with export experience to 50+ countries, excellent performance in cost control and quality assurance.</p>
+    <div class="business-tags">
+        <span class="business-tag highlight">Cost Advantage</span>
+        <span class="business-tag">Textiles</span>
+        <span class="business-tag">Export Experience</span>
+        <span class="business-tag">OEM/ODM</span>
+    </div>
+</div>
+
+### 🔍 Supplier Comparison Analysis
+
+<div class="collapsible-content">
+    <div class="collapsible-header">
+        Detailed Comparison Table
+        <span class="collapsible-icon">▼</span>
+    </div>
+    <div class="collapsible-body">
+        <table>
+            <thead>
+                <tr>
+                    <th>Evaluation Item</th>
+                    <th>Shenzhen Quality Mfg</th>
+                    <th>Vietnam Manufacturing</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Price Competitiveness</td>
+                    <td>★★★★☆</td>
+                    <td>★★★★★</td>
+                </tr>
+                <tr>
+                    <td>Quality Stability</td>
+                    <td>★★★★★</td>
+                    <td>★★★★☆</td>
+                </tr>
+                <tr>
+                    <td>Delivery Capability</td>
+                    <td>★★★★★</td>
+                    <td>★★★★☆</td>
+                </tr>
+                <tr>
+                    <td>Technical Strength</td>
+                    <td>★★★★★</td>
+                    <td>★★★☆☆</td>
+                </tr>
+                <tr>
+                    <td>Communication</td>
+                    <td>★★★★★</td>
+                    <td>★★★☆☆</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+**Recommendations:**
+- **Primary Choice: Shenzhen Quality Manufacturing** - Strong technical capabilities, stable quality, suitable for high-quality requirements
+- **Alternative: Vietnam Manufacturing** - Significant cost advantage, suitable for price-sensitive procurement
+
+**Next Steps:**
+1. I can help you prepare RFQ (Request for Quote)
+2. Arrange factory site visits
+3. Assist with negotiations and contract terms`;
         }
 
         function displayResults(results, title) {
@@ -1619,7 +3176,12 @@
         // Mobile functions
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
+            const backdrop = document.getElementById('mobileBackdrop');
+            
             sidebar.classList.toggle('show');
+            if (backdrop) {
+                backdrop.classList.toggle('show');
+            }
         }
 
         function setupEventListeners() {
