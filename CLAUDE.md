@@ -22,6 +22,7 @@ TradeFlowProduct/
 ├── docs/               # 项目文档
 ├── src/
 │   ├── backend/       # FastAPI后端服务
+│   ├── agent/       # Google ADK 开发的 Agent
 │   ├── frontend/      # React前端应用
 │   └── interface_docs/ # 前后端接口文档
 ```
@@ -40,6 +41,7 @@ TradeFlowProduct/
 - 与后端通过RESTful API通信
 
 ### AI Agent开发
+- Agent 位于 `src/agent/`
 - 使用Google ADK框架开发对话式AI功能
 - Agent需要处理贸易相关的自然语言查询
 - 支持买家开发和供应商采购场景
