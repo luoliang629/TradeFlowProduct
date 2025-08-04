@@ -14,6 +14,7 @@ TradeFlow是一款面向全球的，基于对话式AI Agent的全球B2B贸易智
 - **前端**: React
 - **支付**: Stripe
 - **AI框架**: Google ADK (Agent Development Kit)
+- **部署运维**: Render (https://render.com/)
 
 ## 项目结构
 
