@@ -1,0 +1,1089 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI智能助手 - TradeFlow</title>
+    <link rel="stylesheet" href="./assets/css/common.css">
+    <style>
+        /* AI对话界面专用样式 */
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            overflow: hidden;
+            background: var(--gray-50);
+        }
+        
+        .chat-layout {
+            display: flex;
+            height: 100vh;
+        }
+        
+        /* 侧边栏 */
+        .sidebar {
+            width: 280px;
+            background: white;
+            border-right: 1px solid var(--gray-200);
+            display: flex;
+            flex-direction: column;
+            transition: transform var(--transition-normal);
+        }
+        
+        .sidebar-header {
+            padding: var(--spacing-lg);
+            border-bottom: 1px solid var(--gray-200);
+            display: flex;
+            align-items: center;
+            justify-content: between;
+        }
+        
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--primary-blue);
+        }
+        
+        .new-chat-btn {
+            background: var(--primary-blue);
+            color: white;
+            border: none;
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-radius: var(--radius-md);
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            width: 100%;
+            margin-bottom: var(--spacing-md);
+            transition: all var(--transition-fast);
+        }
+        
+        .new-chat-btn:hover {
+            background: var(--primary-blue-hover);
+            transform: translateY(-1px);
+        }
+        
+        .chat-history {
+            flex: 1;
+            overflow-y: auto;
+            padding: var(--spacing-md);
+        }
+        
+        .chat-history-item {
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-radius: var(--radius-md);
+            margin-bottom: var(--spacing-xs);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            color: var(--gray-700);
+            font-size: 0.875rem;
+        }
+        
+        .chat-history-item:hover {
+            background: var(--gray-100);
+        }
+        
+        .chat-history-item.active {
+            background: var(--primary-blue-light);
+            color: var(--primary-blue);
+        }
+        
+        .sidebar-footer {
+            padding: var(--spacing-lg);
+            border-top: 1px solid var(--gray-200);
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary-blue);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+        
+        .user-details h4 {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin: 0;
+        }
+        
+        .user-details p {
+            font-size: 0.75rem;
+            color: var(--gray-500);
+            margin: 0;
+        }
+        
+        .usage-info {
+            background: var(--primary-blue-light);
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-radius: var(--radius-md);
+            margin-top: var(--spacing-md);
+        }
+        
+        .usage-info span {
+            font-size: 0.75rem;
+            color: var(--primary-blue);
+            font-weight: 500;
+        }
+        
+        /* 主聊天区域 */
+        .chat-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: white;
+        }
+        
+        .chat-header {
+            padding: var(--spacing-lg);
+            border-bottom: 1px solid var(--gray-200);
+            display: flex;
+            align-items: center;
+            justify-content: between;
+            background: white;
+        }
+        
+        .chat-title {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+        }
+        
+        .chat-title h1 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin: 0;
+        }
+        
+        .status-badge {
+            background: var(--success-color);
+            color: white;
+            padding: 2px 8px;
+            border-radius: var(--radius-sm);
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        
+        .chat-actions {
+            display: flex;
+            gap: var(--spacing-sm);
+        }
+        
+        .action-btn {
+            background: none;
+            border: 1px solid var(--gray-300);
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-radius: var(--radius-md);
+            color: var(--gray-600);
+            cursor: pointer;
+            font-size: 0.875rem;
+            transition: all var(--transition-fast);
+        }
+        
+        .action-btn:hover {
+            background: var(--gray-50);
+            border-color: var(--gray-400);
+        }
+        
+        /* 聊天消息区域 */
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: var(--spacing-lg);
+            background: var(--gray-50);
+        }
+        
+        .message {
+            margin-bottom: var(--spacing-xl);
+            display: flex;
+            gap: var(--spacing-md);
+            animation: messageSlideIn 0.3s ease-out;
+        }
+        
+        .message.user {
+            flex-direction: row-reverse;
+        }
+        
+        @keyframes messageSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .message-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--primary-blue);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 0.875rem;
+            flex-shrink: 0;
+        }
+        
+        .message.user .message-avatar {
+            background: var(--gray-400);
+        }
+        
+        .message-content {
+            max-width: 70%;
+            background: white;
+            padding: var(--spacing-lg);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-sm);
+            position: relative;
+        }
+        
+        .message.user .message-content {
+            background: var(--primary-blue);
+            color: white;
+        }
+        
+        .message-content::before {
+            content: '';
+            position: absolute;
+            top: 16px;
+            width: 0;
+            height: 0;
+            border: 8px solid transparent;
+        }
+        
+        .message:not(.user) .message-content::before {
+            left: -16px;
+            border-right-color: white;
+        }
+        
+        .message.user .message-content::before {
+            right: -16px;
+            border-left-color: var(--primary-blue);
+        }
+        
+        .message-text {
+            line-height: 1.6;
+            word-wrap: break-word;
+        }
+        
+        .message-time {
+            font-size: 0.75rem;
+            color: var(--gray-400);
+            margin-top: var(--spacing-sm);
+        }
+        
+        .message.user .message-time {
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .typing-indicator {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            color: var(--gray-500);
+            font-size: 0.875rem;
+            padding: var(--spacing-md);
+        }
+        
+        .typing-dots {
+            display: flex;
+            gap: 4px;
+        }
+        
+        .dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--gray-400);
+            animation: typingDot 1.4s infinite ease-in-out;
+        }
+        
+        .dot:nth-child(1) { animation-delay: -0.32s; }
+        .dot:nth-child(2) { animation-delay: -0.16s; }
+        
+        @keyframes typingDot {
+            0%, 80%, 100% {
+                transform: scale(1);
+                opacity: 0.5;
+            }
+            40% {
+                transform: scale(1.2);
+                opacity: 1;
+            }
+        }
+        
+        /* 快捷建议 */
+        .suggestions {
+            padding: 0 var(--spacing-lg) var(--spacing-lg);
+            display: flex;
+            gap: var(--spacing-sm);
+            flex-wrap: wrap;
+        }
+        
+        .suggestion-chip {
+            background: white;
+            border: 1px solid var(--gray-300);
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-radius: var(--radius-lg);
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+        
+        .suggestion-chip:hover {
+            background: var(--primary-blue-light);
+            border-color: var(--primary-blue);
+            color: var(--primary-blue);
+        }
+        
+        /* 输入区域 */
+        .chat-input-area {
+            padding: var(--spacing-lg);
+            background: white;
+            border-top: 1px solid var(--gray-200);
+        }
+        
+        .input-container {
+            position: relative;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .input-wrapper {
+            display: flex;
+            align-items: flex-end;
+            gap: var(--spacing-md);
+            padding: var(--spacing-md);
+            background: var(--gray-50);
+            border-radius: var(--radius-xl);
+            border: 2px solid transparent;
+            transition: all var(--transition-fast);
+        }
+        
+        .input-wrapper:focus-within {
+            border-color: var(--primary-blue);
+            background: white;
+            box-shadow: var(--shadow-md);
+        }
+        
+        .message-input {
+            flex: 1;
+            border: none;
+            background: transparent;
+            resize: none;
+            font-family: inherit;
+            font-size: 1rem;
+            line-height: 1.5;
+            padding: 8px 0;
+            max-height: 120px;
+            min-height: 44px;
+            outline: none;
+        }
+        
+        .message-input::placeholder {
+            color: var(--gray-400);
+        }
+        
+        .input-actions {
+            display: flex;
+            gap: var(--spacing-sm);
+            align-items: flex-end;
+        }
+        
+        .input-btn {
+            background: none;
+            border: none;
+            padding: var(--spacing-sm);
+            border-radius: var(--radius-md);
+            color: var(--gray-500);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+        
+        .input-btn:hover {
+            background: var(--gray-100);
+            color: var(--gray-700);
+        }
+        
+        .send-btn {
+            background: var(--primary-blue);
+            color: white;
+            border: none;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+        
+        .send-btn:hover:not(:disabled) {
+            background: var(--primary-blue-hover);
+            transform: scale(1.05);
+        }
+        
+        .send-btn:disabled {
+            background: var(--gray-300);
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .input-hint {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-top: var(--spacing-sm);
+            font-size: 0.75rem;
+            color: var(--gray-500);
+        }
+        
+        /* 欢迎界面 */
+        .welcome-screen {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: var(--spacing-3xl);
+            background: radial-gradient(circle at center, var(--primary-blue-light) 0%, var(--gray-50) 70%);
+        }
+        
+        .welcome-icon {
+            width: 120px;
+            height: 120px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            margin-bottom: var(--spacing-xl);
+            box-shadow: var(--shadow-lg);
+            animation: welcomePulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes welcomePulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        .welcome-title {
+            font-size: 2.25rem;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .welcome-subtitle {
+            font-size: 1.125rem;
+            color: var(--gray-600);
+            margin-bottom: var(--spacing-xl);
+            max-width: 500px;
+            line-height: 1.6;
+        }
+        
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: var(--spacing-lg);
+            max-width: 600px;
+            width: 100%;
+        }
+        
+        .quick-action {
+            background: white;
+            padding: var(--spacing-xl);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-sm);
+            cursor: pointer;
+            transition: all var(--transition-normal);
+            border: 2px solid transparent;
+        }
+        
+        .quick-action:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--primary-blue);
+        }
+        
+        .quick-action-icon {
+            font-size: 2rem;
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .quick-action-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: var(--spacing-sm);
+        }
+        
+        .quick-action-desc {
+            font-size: 0.875rem;
+            color: var(--gray-600);
+            line-height: 1.5;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .sidebar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                height: 100vh;
+                z-index: 100;
+                transform: translateX(-100%);
+            }
+            
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            
+            .chat-main {
+                width: 100%;
+            }
+            
+            .chat-header {
+                padding: var(--spacing-md);
+            }
+            
+            .mobile-menu-btn {
+                display: block;
+                background: none;
+                border: none;
+                font-size: 1.5rem;
+                cursor: pointer;
+                color: var(--gray-600);
+            }
+            
+            .message-content {
+                max-width: 85%;
+            }
+            
+            .welcome-screen {
+                padding: var(--spacing-xl);
+            }
+            
+            .welcome-title {
+                font-size: 1.75rem;
+            }
+            
+            .quick-actions {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .chat-messages {
+                padding: var(--spacing-md);
+            }
+            
+            .chat-input-area {
+                padding: var(--spacing-md);
+            }
+            
+            .message-content {
+                max-width: 95%;
+            }
+            
+            .welcome-icon {
+                width: 80px;
+                height: 80px;
+                font-size: 2.5rem;
+            }
+            
+            .welcome-title {
+                font-size: 1.5rem;
+            }
+        }
+        
+        /* 滚动条隐藏 */
+        .chat-messages::-webkit-scrollbar,
+        .chat-history::-webkit-scrollbar {
+            width: 4px;
+        }
+        
+        .chat-messages::-webkit-scrollbar-track,
+        .chat-history::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        
+        .chat-messages::-webkit-scrollbar-thumb,
+        .chat-history::-webkit-scrollbar-thumb {
+            background: var(--gray-300);
+            border-radius: 2px;
+        }
+        
+        .mobile-menu-btn {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-layout">
+        <!-- 侧边栏 -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    🌐 TradeFlow
+                </div>
+            </div>
+            
+            <div style="padding: var(--spacing-md);">
+                <button class="new-chat-btn" onclick="startNewChat()">
+                    ➕ 新对话
+                </button>
+            </div>
+            
+            <div class="chat-history">
+                <div class="chat-history-item active">💼 寻找LED灯供应商</div>
+                <div class="chat-history-item">🌍 欧洲买家开发</div>
+                <div class="chat-history-item">📦 电子产品出口询价</div>
+                <div class="chat-history-item">🏭 服装制造商推荐</div>
+                <div class="chat-history-item">💡 市场分析报告</div>
+            </div>
+            
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <div class="user-avatar">张</div>
+                    <div class="user-details">
+                        <h4>张经理</h4>
+                        <p>深圳科技有限公司</p>
+                    </div>
+                </div>
+                <div class="usage-info">
+                    <span>剩余次数: 7次</span>
+                </div>
+            </div>
+        </aside>
+        
+        <!-- 主聊天区域 -->
+        <main class="chat-main">
+            <!-- 聊天头部 -->
+            <header class="chat-header">
+                <button class="mobile-menu-btn" onclick="toggleSidebar()">☰</button>
+                <div class="chat-title">
+                    <h1>TradeFlow AI助手</h1>
+                    <span class="status-badge">在线</span>
+                </div>
+                <div class="chat-actions">
+                    <button class="action-btn">📋 导出对话</button>
+                    <button class="action-btn">⚙️ 设置</button>
+                </div>
+            </header>
+            
+            <!-- 欢迎界面 -->
+            <div class="welcome-screen" id="welcomeScreen">
+                <div class="welcome-icon">🤖</div>
+                <h1 class="welcome-title">欢迎使用 TradeFlow</h1>
+                <p class="welcome-subtitle">
+                    我是您的专属B2B贸易智能助手，可以帮助您进行买家开发、供应商匹配和市场分析
+                </p>
+                
+                <div class="quick-actions">
+                    <div class="quick-action" onclick="selectQuickAction('buyer')">
+                        <div class="quick-action-icon">🔍</div>
+                        <div class="quick-action-title">寻找海外买家</div>
+                        <div class="quick-action-desc">描述您的产品，我来帮您找到全球潜在买家</div>
+                    </div>
+                    
+                    <div class="quick-action" onclick="selectQuickAction('supplier')">
+                        <div class="quick-action-icon">🏭</div>
+                        <div class="quick-action-title">寻找优质供应商</div>
+                        <div class="quick-action-desc">告诉我您的采购需求，获得精准供应商推荐</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 聊天消息区域 -->
+            <div class="chat-messages hidden" id="chatMessages">
+                <!-- 消息将在这里动态生成 -->
+            </div>
+            
+            <!-- 快捷建议 -->
+            <div class="suggestions hidden" id="suggestions">
+                <div class="suggestion-chip" onclick="sendMessage('我想找LED灯具的海外买家')">LED灯具买家</div>
+                <div class="suggestion-chip" onclick="sendMessage('需要电子产品供应商推荐')">电子产品供应商</div>
+                <div class="suggestion-chip" onclick="sendMessage('分析欧洲市场机会')">市场分析</div>
+                <div class="suggestion-chip" onclick="sendMessage('如何提高出口报价竞争力？')">报价建议</div>
+            </div>
+            
+            <!-- 输入区域 -->
+            <div class="chat-input-area">
+                <div class="input-container">
+                    <div class="input-wrapper">
+                        <textarea 
+                            class="message-input" 
+                            id="messageInput"
+                            placeholder="描述您的贸易需求，比如：我想找LED灯的海外买家..."
+                            rows="1"
+                        ></textarea>
+                        <div class="input-actions">
+                            <button class="input-btn" title="上传文件">📎</button>
+                            <button class="input-btn" title="语音输入">🎤</button>
+                        </div>
+                        <button class="send-btn" id="sendBtn" onclick="handleSendMessage()" disabled>
+                            ➤
+                        </button>
+                    </div>
+                    <div class="input-hint">
+                        <span>按 Shift + Enter 换行，按 Enter 发送</span>
+                        <span>剩余 7 次使用机会</span>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <script>
+        // 全局状态
+        let currentChatId = null;
+        let messageHistory = [];
+        let isTyping = false;
+        
+        // DOM 元素
+        const messageInput = document.getElementById('messageInput');
+        const sendBtn = document.getElementById('sendBtn');
+        const chatMessages = document.getElementById('chatMessages');
+        const welcomeScreen = document.getElementById('welcomeScreen');
+        const suggestions = document.getElementById('suggestions');
+        
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            messageInput.addEventListener('input', handleInputChange);
+            messageInput.addEventListener('keydown', handleKeyPress);
+            
+            // 自动调整输入框高度
+            messageInput.addEventListener('input', function() {
+                this.style.height = 'auto';
+                this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+            });
+        });
+        
+        // 处理输入变化
+        function handleInputChange() {
+            const hasText = messageInput.value.trim().length > 0;
+            sendBtn.disabled = !hasText;
+            sendBtn.style.opacity = hasText ? '1' : '0.5';
+        }
+        
+        // 处理键盘事件
+        function handleKeyPress(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                handleSendMessage();
+            }
+        }
+        
+        // 选择快捷操作
+        function selectQuickAction(type) {
+            welcomeScreen.classList.add('hidden');
+            chatMessages.classList.remove('hidden');
+            suggestions.classList.remove('hidden');
+            
+            let message = '';
+            if (type === 'buyer') {
+                message = '我想寻找海外买家，请问需要提供哪些产品信息？';
+            } else if (type === 'supplier') {
+                message = '我需要寻找供应商，请问如何描述我的采购需求？';
+            }
+            
+            if (message) {
+                sendMessage(message);
+            }
+        }
+        
+        // 发送消息
+        function handleSendMessage() {
+            const message = messageInput.value.trim();
+            if (message && !isTyping) {
+                sendMessage(message);
+                messageInput.value = '';
+                messageInput.style.height = 'auto';
+                handleInputChange();
+            }
+        }
+        
+        function sendMessage(message) {
+            // 隐藏欢迎界面，显示聊天界面
+            if (!welcomeScreen.classList.contains('hidden')) {
+                welcomeScreen.classList.add('hidden');
+                chatMessages.classList.remove('hidden');
+                suggestions.classList.remove('hidden');
+            }
+            
+            // 添加用户消息
+            addMessage(message, 'user');
+            
+            // 滚动到底部
+            scrollToBottom();
+            
+            // 显示AI正在输入
+            showTypingIndicator();
+            
+            // 模拟AI回复
+            setTimeout(() => {
+                hideTypingIndicator();
+                
+                let aiResponse = generateAIResponse(message);
+                addMessage(aiResponse, 'ai');
+                scrollToBottom();
+            }, 1500 + Math.random() * 1000);
+        }
+        
+        // 添加消息到聊天界面
+        function addMessage(content, sender) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}`;
+            
+            const avatarDiv = document.createElement('div');
+            avatarDiv.className = 'message-avatar';
+            avatarDiv.textContent = sender === 'user' ? '张' : '🤖';
+            
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'message-content';
+            
+            const textDiv = document.createElement('div');
+            textDiv.className = 'message-text';
+            
+            if (sender === 'ai') {
+                // AI消息使用打字机效果
+                typeMessage(textDiv, content);
+            } else {
+                textDiv.textContent = content;
+            }
+            
+            const timeDiv = document.createElement('div');
+            timeDiv.className = 'message-time';
+            timeDiv.textContent = new Date().toLocaleTimeString('zh-CN', { 
+                hour: '2-digit', 
+                minute: '2-digit' 
+            });
+            
+            contentDiv.appendChild(textDiv);
+            contentDiv.appendChild(timeDiv);
+            messageDiv.appendChild(avatarDiv);
+            messageDiv.appendChild(contentDiv);
+            
+            chatMessages.appendChild(messageDiv);
+            
+            // 保存到历史记录
+            messageHistory.push({ content, sender, timestamp: Date.now() });
+        }
+        
+        // 打字机效果
+        function typeMessage(element, text) {
+            let index = 0;
+            element.textContent = '';
+            
+            function type() {
+                if (index < text.length) {
+                    element.textContent += text.charAt(index);
+                    index++;
+                    setTimeout(type, 30 + Math.random() * 20);
+                }
+            }
+            
+            type();
+        }
+        
+        // 显示输入指示器
+        function showTypingIndicator() {
+            isTyping = true;
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'typing-indicator';
+            typingDiv.id = 'typingIndicator';
+            
+            typingDiv.innerHTML = `
+                <div class="message-avatar">🤖</div>
+                <div class="message-content">
+                    <span>AI助手正在思考</span>
+                    <div class="typing-dots">
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                    </div>
+                </div>
+            `;
+            
+            chatMessages.appendChild(typingDiv);
+            scrollToBottom();
+        }
+        
+        // 隐藏输入指示器
+        function hideTypingIndicator() {
+            isTyping = false;
+            const typingIndicator = document.getElementById('typingIndicator');
+            if (typingIndicator) {
+                typingIndicator.remove();
+            }
+        }
+        
+        // 生成AI回复
+        function generateAIResponse(userMessage) {
+            const responses = {
+                '买家': `我理解您想寻找海外买家。为了给您最精准的推荐，请告诉我：
+                
+1. 您的产品类别是什么？（如：电子产品、服装、机械等）
+2. 产品的主要规格和特点
+3. 目标市场或地区偏好
+4. 价格区间和最小订购量
+
+有了这些信息，我就能为您匹配最合适的海外买家了！`,
+                
+                '供应商': `我来帮您寻找优质供应商！请提供以下信息：
+
+1. 需要采购的产品类型
+2. 质量要求和认证标准
+3. 预期采购量和交期
+4. 预算范围
+5. 供应商地区偏好
+
+基于这些信息，我会为您推荐最匹配的供应商，并提供详细的对比分析。`,
+
+                'LED': `LED灯具是热门出口产品！我为您推荐以下潜在买家：
+
+🌟 **重点推荐买家：**
+• **EuroLighting GmbH** (德国)
+  - 专业LED照明进口商
+  - 年采购量：50万套
+  - 匹配度：95%
+
+• **Pacific Electronics Ltd** (澳大利亚)  
+  - 消费电子产品分销商
+  - 寻找智能LED产品
+  - 匹配度：88%
+
+• **American Home Depot** (美国)
+  - 家居建材连锁
+  - 大批量LED灯具需求
+  - 匹配度：92%
+
+需要查看完整的买家列表和联系方式吗？`,
+
+                '电子': `电子产品供应商推荐来了！
+
+🏭 **优质供应商推荐：**
+• **深圳创新电子有限公司**
+  - 专业手机配件制造
+  - ISO9001认证
+  - 评分：4.8/5.0
+
+• **东莞精密科技股份**
+  - 消费电子ODM/OEM
+  - 15年出口经验  
+  - 评分：4.9/5.0
+
+• **苏州智能制造集团**
+  - 物联网设备专家
+  - 欧盟CE认证
+  - 评分：4.7/5.0
+
+我可以为您生成详细的供应商对比报告，包含价格、质量、交期等维度的分析。`,
+
+                'default': `感谢您的咨询！我是TradeFlow的AI助手，专门帮助您解决B2B贸易问题。
+
+我可以协助您：
+• 🔍 寻找全球买家和供应商
+• 📊 提供市场分析和价格趋势  
+• 💼 优化贸易流程和文档
+• 🌐 分析目标市场机会
+
+请告诉我您的具体需求，我会为您提供专业的建议和推荐！`
+            };
+            
+            // 简单的关键词匹配
+            for (let key in responses) {
+                if (userMessage.includes(key)) {
+                    return responses[key];
+                }
+            }
+            
+            return responses['default'];
+        }
+        
+        // 滚动到底部
+        function scrollToBottom() {
+            requestAnimationFrame(() => {
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            });
+        }
+        
+        // 切换侧边栏
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('open');
+        }
+        
+        // 开始新对话
+        function startNewChat() {
+            chatMessages.innerHTML = '';
+            messageHistory = [];
+            currentChatId = 'chat_' + Date.now();
+            
+            welcomeScreen.classList.remove('hidden');
+            chatMessages.classList.add('hidden');
+            suggestions.classList.add('hidden');
+            
+            // 更新历史记录
+            const historyItems = document.querySelectorAll('.chat-history-item');
+            historyItems.forEach(item => item.classList.remove('active'));
+        }
+        
+        // 点击建议芯片
+        function sendMessage(message) {
+            if (messageInput) {
+                messageInput.value = message;
+                handleSendMessage();
+            }
+        }
+        
+        // 监听点击外部关闭侧边栏
+        document.addEventListener('click', function(event) {
+            const sidebar = document.getElementById('sidebar');
+            const menuBtn = document.querySelector('.mobile-menu-btn');
+            
+            if (window.innerWidth <= 768 && 
+                !sidebar.contains(event.target) && 
+                !menuBtn.contains(event.target) &&
+                sidebar.classList.contains('open')) {
+                sidebar.classList.remove('open');
+            }
+        });
+        
+        // 响应式处理
+        window.addEventListener('resize', function() {
+            const sidebar = document.getElementById('sidebar');
+            if (window.innerWidth > 768) {
+                sidebar.classList.remove('open');
+            }
+        });
+    </script>
+</body>
+</html>

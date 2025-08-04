@@ -1,0 +1,1172 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>采购需求描述 - TradeFlow</title>
+    <link rel="stylesheet" href="./assets/css/common.css">
+    <style>
+        /* 采购需求页面专用样式 */
+        .page-layout {
+            min-height: 100vh;
+            background: var(--gray-50);
+        }
+        
+        .page-header {
+            background: white;
+            border-bottom: 1px solid var(--gray-200);
+            box-shadow: var(--shadow-sm);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: between;
+            padding: var(--spacing-lg) 0;
+        }
+        
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-lg);
+        }
+        
+        .back-btn {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            background: none;
+            border: 1px solid var(--gray-300);
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-radius: var(--radius-md);
+            color: var(--gray-600);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            text-decoration: none;
+        }
+        
+        .back-btn:hover {
+            background: var(--gray-50);
+            border-color: var(--gray-400);
+        }
+        
+        .page-title h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin: 0 0 var(--spacing-xs) 0;
+        }
+        
+        .page-subtitle {
+            font-size: 0.875rem;
+            color: var(--gray-500);
+            margin: 0;
+        }
+        
+        .ai-status {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            background: var(--success-color);
+            color: white;
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-radius: var(--radius-lg);
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+        
+        /* 主要内容区域 */
+        .main-content {
+            padding: var(--spacing-xl) 0;
+        }
+        
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: var(--spacing-xl);
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        /* 左侧主要表单 */
+        .main-form-container {
+            background: white;
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-sm);
+            overflow: hidden;
+        }
+        
+        .form-header {
+            background: linear-gradient(135deg, var(--accent-color) 0%, #0891b2 100%);
+            color: white;
+            padding: var(--spacing-xl);
+            text-align: center;
+        }
+        
+        .form-header h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin: 0 0 var(--spacing-sm) 0;
+            color: white;
+        }
+        
+        .form-header p {
+            opacity: 0.9;
+            margin: 0;
+            line-height: 1.6;
+        }
+        
+        .form-body {
+            padding: var(--spacing-3xl);
+        }
+        
+        /* 智能输入区域 */
+        .smart-input-section {
+            margin-bottom: var(--spacing-3xl);
+        }
+        
+        .section-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: var(--spacing-lg);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+        
+        .smart-textarea-container {
+            position: relative;
+            background: var(--gray-50);
+            border-radius: var(--radius-xl);
+            padding: var(--spacing-md);
+            border: 2px solid transparent;
+            transition: all var(--transition-fast);
+        }
+        
+        .smart-textarea-container:focus-within {
+            border-color: var(--primary-blue);
+            background: white;
+            box-shadow: var(--shadow-md);
+        }
+        
+        .smart-textarea {
+            width: 100%;
+            border: none;
+            background: transparent;
+            resize: none;
+            font-family: inherit;
+            font-size: 1rem;
+            line-height: 1.6;
+            padding: var(--spacing-lg);
+            min-height: 150px;
+            outline: none;
+        }
+        
+        .smart-textarea::placeholder {
+            color: var(--gray-400);
+        }
+        
+        .input-tools {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            padding: 0 var(--spacing-lg) var(--spacing-lg);
+        }
+        
+        .input-actions {
+            display: flex;
+            gap: var(--spacing-sm);
+        }
+        
+        .input-btn {
+            background: none;
+            border: 1px solid var(--gray-300);
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-radius: var(--radius-md);
+            color: var(--gray-600);
+            cursor: pointer;
+            font-size: 0.875rem;
+            transition: all var(--transition-fast);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+        }
+        
+        .input-btn:hover {
+            background: var(--gray-50);
+            border-color: var(--primary-blue);
+            color: var(--primary-blue);
+        }
+        
+        .char-count {
+            font-size: 0.75rem;
+            color: var(--gray-500);
+        }
+        
+        /* AI分析结果 */
+        .ai-analysis {
+            background: var(--primary-blue-light);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-xl);
+            margin-bottom: var(--spacing-xl);
+            border-left: 4px solid var(--primary-blue);
+        }
+        
+        .analysis-header {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        .analysis-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--primary-blue);
+            margin: 0;
+        }
+        
+        .analysis-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--spacing-lg);
+        }
+        
+        .analysis-item {
+            background: white;
+            padding: var(--spacing-md);
+            border-radius: var(--radius-md);
+            border: 1px solid rgba(26, 86, 219, 0.2);
+        }
+        
+        .analysis-item-title {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: var(--spacing-sm);
+        }
+        
+        .analysis-item-content {
+            font-size: 0.875rem;
+            color: var(--gray-700);
+            line-height: 1.4;
+        }
+        
+        .tag-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--spacing-xs);
+        }
+        
+        .tag {
+            background: var(--primary-blue);
+            color: white;
+            padding: 2px 8px;
+            border-radius: var(--radius-sm);
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        
+        /* 确认和编辑区域 */
+        .confirmation-section {
+            margin-bottom: var(--spacing-xl);
+        }
+        
+        .requirement-summary {
+            background: white;
+            border: 2px solid var(--gray-200);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-xl);
+        }
+        
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: var(--spacing-lg);
+        }
+        
+        .summary-item {
+            padding: var(--spacing-md);
+            background: var(--gray-50);
+            border-radius: var(--radius-md);
+            position: relative;
+        }
+        
+        .summary-item-label {
+            font-size: 0.75rem;
+            color: var(--gray-500);
+            font-weight: 500;
+            margin-bottom: var(--spacing-xs);
+            text-transform: uppercase;
+        }
+        
+        .summary-item-value {
+            font-size: 1rem;
+            color: var(--gray-900);
+            font-weight: 500;
+        }
+        
+        .edit-btn {
+            position: absolute;
+            top: var(--spacing-sm);
+            right: var(--spacing-sm);
+            background: none;
+            border: none;
+            color: var(--primary-blue);
+            cursor: pointer;
+            font-size: 0.875rem;
+            padding: 4px;
+            border-radius: var(--radius-sm);
+            transition: all var(--transition-fast);
+        }
+        
+        .edit-btn:hover {
+            background: var(--primary-blue-light);
+        }
+        
+        /* 右侧助手面板 */
+        .assistant-panel {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-lg);
+        }
+        
+        .panel-card {
+            background: white;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
+            overflow: hidden;
+        }
+        
+        .panel-header {
+            padding: var(--spacing-lg);
+            border-bottom: 1px solid var(--gray-200);
+            background: var(--gray-50);
+        }
+        
+        .panel-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+        
+        .panel-body {
+            padding: var(--spacing-lg);
+        }
+        
+        /* 快速模板 */
+        .template-list {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-sm);
+        }
+        
+        .template-item {
+            background: var(--gray-50);
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-md);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+        
+        .template-item:hover {
+            background: var(--primary-blue-light);
+            border-color: var(--primary-blue);
+        }
+        
+        .template-title {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--gray-900);
+            margin-bottom: var(--spacing-xs);
+        }
+        
+        .template-desc {
+            font-size: 0.75rem;
+            color: var(--gray-600);
+            line-height: 1.4;
+        }
+        
+        /* AI建议 */
+        .suggestions-list {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-sm);
+        }
+        
+        .suggestion-item {
+            background: var(--accent-color);
+            color: white;
+            padding: var(--spacing-md);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            font-size: 0.875rem;
+            line-height: 1.4;
+        }
+        
+        .suggestion-item:hover {
+            background: #0891b2;
+            transform: translateX(4px);
+        }
+        
+        /* 市场洞察 */
+        .insight-item {
+            padding: var(--spacing-md);
+            border-left: 3px solid var(--warning-color);
+            background: rgba(217, 119, 6, 0.1);
+            margin-bottom: var(--spacing-sm);
+        }
+        
+        .insight-title {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--warning-color);
+            margin-bottom: var(--spacing-xs);
+        }
+        
+        .insight-content {
+            font-size: 0.8rem;
+            color: var(--gray-700);
+            line-height: 1.4;
+        }
+        
+        /* 表单操作 */
+        .form-actions {
+            padding: var(--spacing-xl);
+            border-top: 1px solid var(--gray-200);
+            background: var(--gray-50);
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            gap: var(--spacing-md);
+        }
+        
+        .action-group {
+            display: flex;
+            gap: var(--spacing-md);
+        }
+        
+        .btn-analyze {
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 12px 32px;
+            border-radius: var(--radius-lg);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+        
+        .btn-analyze:hover:not(:disabled) {
+            background: #0891b2;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .btn-analyze:disabled {
+            background: var(--gray-300);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 1024px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+                gap: var(--spacing-lg);
+            }
+            
+            .assistant-panel {
+                order: -1;
+            }
+            
+            .panel-card {
+                display: none;
+            }
+            
+            .panel-card:first-child {
+                display: block;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: var(--spacing-md);
+                align-items: flex-start;
+            }
+            
+            .form-body {
+                padding: var(--spacing-xl);
+            }
+            
+            .analysis-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .summary-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-actions {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .action-group {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .main-content {
+                padding: var(--spacing-lg) 0;
+            }
+            
+            .form-body {
+                padding: var(--spacing-lg);
+            }
+            
+            .input-actions {
+                flex-wrap: wrap;
+            }
+            
+            .input-btn {
+                font-size: 0.75rem;
+                padding: 6px 12px;
+            }
+        }
+        
+        /* 动画效果 */
+        .ai-analysis {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: slideIn 0.5s ease-out forwards;
+        }
+        
+        @keyframes slideIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .suggestion-item:nth-child(1) { animation-delay: 0.1s; }
+        .suggestion-item:nth-child(2) { animation-delay: 0.2s; }
+        .suggestion-item:nth-child(3) { animation-delay: 0.3s; }
+        
+        /* 语音输入动画 */
+        .recording {
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+    </style>
+</head>
+<body>
+    <div class="page-layout">
+        <!-- 页面头部 -->
+        <header class="page-header">
+            <div class="container">
+                <div class="header-content">
+                    <div class="header-left">
+                        <a href="chat.html" class="back-btn">
+                            ← 返回对话
+                        </a>
+                        <div class="page-title">
+                            <h1>采购需求描述</h1>
+                            <p class="page-subtitle">详细描述您的采购需求，AI将为您智能匹配最合适的供应商</p>
+                        </div>
+                    </div>
+                    <div class="ai-status">
+                        🤖 AI助手在线
+                    </div>
+                </div>
+            </div>
+        </header>
+        
+        <!-- 主要内容 -->
+        <main class="main-content">
+            <div class="container">
+                <div class="content-grid">
+                    <!-- 左侧主要表单 -->
+                    <div class="main-form-container">
+                        <!-- 表单头部 -->
+                        <div class="form-header">
+                            <h2>🎯 描述您的采购需求</h2>
+                            <p>用自然语言描述您想要采购的产品，AI会智能理解并提取关键信息</p>
+                        </div>
+                        
+                        <div class="form-body">
+                            <!-- 智能输入区域 -->
+                            <div class="smart-input-section">
+                                <h3 class="section-title">
+                                    <span>💬</span>
+                                    需求描述
+                                </h3>
+                                
+                                <div class="smart-textarea-container">
+                                    <textarea 
+                                        class="smart-textarea" 
+                                        id="requirementText"
+                                        placeholder="请详细描述您的采购需求，比如：
+
+我需要采购LED灯具，主要用于办公室照明。要求：
+- 功率在20-40W之间
+- 色温4000K-5000K，白光
+- 需要有CE和RoHS认证
+- 预计采购数量5000-10000套
+- 希望单价控制在10-15美元
+- 交期要求60天内
+- 供应商最好在广东或江浙地区
+
+请根据这些要求为我推荐合适的供应商..."
+                                        oninput="handleTextInput()"
+                                    >我需要采购高品质的蓝牙耳机，主要面向年轻消费群体。具体要求如下：
+
+产品规格：
+- 蓝牙5.0或以上版本，连接稳定
+- 续航时间：单次使用4-6小时，配合充电盒总续航20小时以上
+- 音质要求：支持高清音频编解码，低音效果好
+- 外观设计：时尚简约，多种颜色可选
+- 防水等级：IPX4或以上
+
+商业要求：
+- 目标单价：15-25美元（FOB价格）
+- 预计订购量：首批10000套，后续每月5000套
+- 包装要求：零售包装，可定制品牌LOGO
+- 认证要求：CE、FCC、BQB认证
+- 交期：样品15天，大货45天
+- 付款方式：30%预付，70%见提单副本
+
+希望供应商有出口经验，质量管控严格，能够提供完整的售后服务支持。</textarea>
+                                    
+                                    <div class="input-tools">
+                                        <div class="input-actions">
+                                            <button class="input-btn" onclick="clearText()">
+                                                🗑️ 清空
+                                            </button>
+                                            <button class="input-btn" onclick="useTemplate()">
+                                                📋 使用模板
+                                            </button>
+                                            <button class="input-btn" onclick="startVoiceInput()">
+                                                🎤 语音输入
+                                            </button>
+                                            <button class="input-btn" onclick="analyzeRequirement()">
+                                                🤖 AI分析
+                                            </button>
+                                        </div>
+                                        <div class="char-count">
+                                            <span id="charCount">362</span>/2000 字符
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- AI分析结果 -->
+                            <div class="ai-analysis" id="aiAnalysis">
+                                <div class="analysis-header">
+                                    <span>🤖</span>
+                                    <h4 class="analysis-title">AI智能分析结果</h4>
+                                </div>
+                                
+                                <div class="analysis-content">
+                                    <div class="analysis-item">
+                                        <div class="analysis-item-title">产品类别</div>
+                                        <div class="analysis-item-content">
+                                            <div class="tag-list">
+                                                <span class="tag">消费电子</span>
+                                                <span class="tag">蓝牙耳机</span>
+                                                <span class="tag">音频设备</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="analysis-item">
+                                        <div class="analysis-item-title">价格区间</div>
+                                        <div class="analysis-item-content">$15 - $25 FOB</div>
+                                    </div>
+                                    
+                                    <div class="analysis-item">
+                                        <div class="analysis-item-title">采购量</div>
+                                        <div class="analysis-item-content">首批10,000套<br>月需求5,000套</div>
+                                    </div>
+                                    
+                                    <div class="analysis-item">
+                                        <div class="analysis-item-title">技术要求</div>
+                                        <div class="analysis-item-content">
+                                            <div class="tag-list">
+                                                <span class="tag">蓝牙5.0+</span>
+                                                <span class="tag">20h续航</span>
+                                                <span class="tag">IPX4防水</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="analysis-item">
+                                        <div class="analysis-item-title">认证要求</div>
+                                        <div class="analysis-item-content">
+                                            <div class="tag-list">
+                                                <span class="tag">CE</span>
+                                                <span class="tag">FCC</span>
+                                                <span class="tag">BQB</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="analysis-item">
+                                        <div class="analysis-item-title">交期要求</div>
+                                        <div class="analysis-item-content">样品15天<br>大货45天</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 确认和编辑区域 -->
+                            <div class="confirmation-section">
+                                <h3 class="section-title">
+                                    <span>✅</span>
+                                    确认需求信息
+                                </h3>
+                                
+                                <div class="requirement-summary">
+                                    <div class="summary-grid">
+                                        <div class="summary-item">
+                                            <button class="edit-btn">✏️</button>
+                                            <div class="summary-item-label">产品名称</div>
+                                            <div class="summary-item-value">蓝牙耳机</div>
+                                        </div>
+                                        
+                                        <div class="summary-item">
+                                            <button class="edit-btn">✏️</button>
+                                            <div class="summary-item-label">目标价格</div>
+                                            <div class="summary-item-value">$15-25 FOB</div>
+                                        </div>
+                                        
+                                        <div class="summary-item">
+                                            <button class="edit-btn">✏️</button>
+                                            <div class="summary-item-label">采购量</div>
+                                            <div class="summary-item-value">10,000套起订</div>
+                                        </div>
+                                        
+                                        <div class="summary-item">
+                                            <button class="edit-btn">✏️</button>
+                                            <div class="summary-item-label">交期要求</div>
+                                            <div class="summary-item-value">45天大货</div>
+                                        </div>
+                                        
+                                        <div class="summary-item">
+                                            <button class="edit-btn">✏️</button>
+                                            <div class="summary-item-label">认证要求</div>
+                                            <div class="summary-item-value">CE, FCC, BQB</div>
+                                        </div>
+                                        
+                                        <div class="summary-item">
+                                            <button class="edit-btn">✏️</button>
+                                            <div class="summary-item-label">特殊要求</div>
+                                            <div class="summary-item-value">支持定制LOGO</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 表单操作 -->
+                        <div class="form-actions">
+                            <div class="action-group">
+                                <button type="button" class="btn btn-secondary">
+                                    💾 保存草稿
+                                </button>
+                            </div>
+                            <div class="action-group">
+                                <button type="button" class="btn btn-secondary" onclick="goBack()">
+                                    ← 重新描述
+                                </button>
+                                <button type="button" class="btn-analyze" onclick="findSuppliers()">
+                                    🔍 寻找供应商
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 右侧助手面板 -->
+                    <div class="assistant-panel">
+                        <!-- 快速模板 -->
+                        <div class="panel-card">
+                            <div class="panel-header">
+                                <h3 class="panel-title">
+                                    <span>📋</span>
+                                    快速模板
+                                </h3>
+                            </div>
+                            <div class="panel-body">
+                                <div class="template-list">
+                                    <div class="template-item" onclick="applyTemplate('electronics')">
+                                        <div class="template-title">电子产品采购</div>
+                                        <div class="template-desc">适用于手机配件、小家电等电子产品</div>
+                                    </div>
+                                    
+                                    <div class="template-item" onclick="applyTemplate('clothing')">
+                                        <div class="template-title">服装纺织采购</div>
+                                        <div class="template-desc">适用于服装、鞋帽、纺织品等</div>
+                                    </div>
+                                    
+                                    <div class="template-item" onclick="applyTemplate('machinery')">
+                                        <div class="template-title">机械设备采购</div>
+                                        <div class="template-desc">适用于机械、工具、设备等</div>
+                                    </div>
+                                    
+                                    <div class="template-item" onclick="applyTemplate('home')">
+                                        <div class="template-title">家居用品采购</div>
+                                        <div class="template-desc">适用于家具、装饰、日用品等</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- AI建议 -->
+                        <div class="panel-card">
+                            <div class="panel-header">
+                                <h3 class="panel-title">
+                                    <span>💡</span>
+                                    AI优化建议
+                                </h3>
+                            </div>
+                            <div class="panel-body">
+                                <div class="suggestions-list">
+                                    <div class="suggestion-item" onclick="applySuggestion(this)">
+                                        建议补充包装规格要求，便于供应商准确报价
+                                    </div>
+                                    
+                                    <div class="suggestion-item" onclick="applySuggestion(this)">
+                                        推荐说明目标市场，有助于匹配有相关经验的供应商
+                                    </div>
+                                    
+                                    <div class="suggestion-item" onclick="applySuggestion(this)">
+                                        建议明确质量标准和检测要求，确保产品质量
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 市场洞察 -->
+                        <div class="panel-card">
+                            <div class="panel-header">
+                                <h3 class="panel-title">
+                                    <span>📈</span>
+                                    市场洞察
+                                </h3>
+                            </div>
+                            <div class="panel-body">
+                                <div class="insight-item">
+                                    <div class="insight-title">价格趋势</div>
+                                    <div class="insight-content">蓝牙耳机市场价格相对稳定，您的预算区间合理</div>
+                                </div>
+                                
+                                <div class="insight-item">
+                                    <div class="insight-title">供应商分布</div>
+                                    <div class="insight-content">广东深圳有80%的蓝牙耳机制造商，建议优先考虑</div>
+                                </div>
+                                
+                                <div class="insight-item">
+                                    <div class="insight-title">认证提醒</div>
+                                    <div class="insight-content">BQB认证周期较长，建议提前与供应商确认</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <script>
+        // 文本输入处理
+        function handleTextInput() {
+            const textarea = document.getElementById('requirementText');
+            const charCount = document.getElementById('charCount');
+            const currentLength = textarea.value.length;
+            
+            charCount.textContent = currentLength;
+            
+            if (currentLength > 2000) {
+                charCount.style.color = 'var(--error-color)';
+            } else if (currentLength > 1500) {
+                charCount.style.color = 'var(--warning-color)';
+            } else {
+                charCount.style.color = 'var(--gray-500)';
+            }
+            
+            // 自动调整高度
+            textarea.style.height = 'auto';
+            textarea.style.height = Math.max(textarea.scrollHeight, 150) + 'px';
+        }
+        
+        // 清空文本
+        function clearText() {
+            if (confirm('确定要清空所有内容吗？')) {
+                document.getElementById('requirementText').value = '';
+                handleTextInput();
+            }
+        }
+        
+        // AI分析需求
+        function analyzeRequirement() {
+            const textarea = document.getElementById('requirementText');
+            const text = textarea.value.trim();
+            
+            if (!text) {
+                alert('请先输入采购需求描述');
+                return;
+            }
+            
+            const button = event.target;
+            const originalText = button.innerHTML;
+            button.innerHTML = '<span class="loading"></span> 分析中...';
+            button.disabled = true;
+            
+            // 模拟AI分析过程
+            setTimeout(() => {
+                // 显示分析结果
+                const analysis = document.getElementById('aiAnalysis');
+                analysis.style.display = 'block';
+                analysis.scrollIntoView({ behavior: 'smooth' });
+                
+                button.innerHTML = originalText;
+                button.disabled = false;
+            }, 2000);
+        }
+        
+        // 语音输入
+        function startVoiceInput() {
+            const button = event.target;
+            
+            if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                const recognition = new SpeechRecognition();
+                
+                recognition.lang = 'zh-CN';
+                recognition.continuous = true;
+                recognition.interimResults = false;
+                
+                button.classList.add('recording');
+                button.innerHTML = '🎤 录音中...';
+                
+                recognition.onresult = function(event) {
+                    const transcript = event.results[event.results.length - 1][0].transcript;
+                    const textarea = document.getElementById('requirementText');
+                    textarea.value += transcript;
+                    handleTextInput();
+                };
+                
+                recognition.onerror = function(event) {
+                    console.error('语音识别错误:', event.error);
+                    alert('语音识别失败，请重试');
+                };
+                
+                recognition.onend = function() {
+                    button.classList.remove('recording');
+                    button.innerHTML = '🎤 语音输入';
+                };
+                
+                recognition.start();
+                
+                // 10秒后自动停止
+                setTimeout(() => {
+                    recognition.stop();
+                }, 10000);
+            } else {
+                alert('您的浏览器不支持语音输入功能');
+            }
+        }
+        
+        // 应用模板
+        function applyTemplate(type) {
+            const templates = {
+                'electronics': `我需要采购${type}产品，具体要求如下：
+
+产品规格：
+- 产品类型：[请填写具体产品]
+- 主要功能：[请描述产品功能]
+- 技术标准：[请填写技术要求]
+- 外观设计：[请描述外观要求]
+
+商业要求：
+- 目标单价：[请填写价格区间]
+- 预计订购量：[请填写数量]
+- 包装要求：[请描述包装需求]
+- 认证要求：CE、FCC等
+- 交期：[请填写时间要求]
+- 付款方式：[请填写付款条件]
+
+其他要求：[请补充特殊要求]`,
+
+                'clothing': `我需要采购服装纺织产品，具体要求如下：
+
+产品规格：
+- 产品类型：[请填写具体产品]
+- 材质要求：[请描述面料材质]
+- 尺码规格：[请填写尺码范围]
+- 颜色要求：[请描述颜色需求]
+- 设计风格：[请描述设计要求]
+
+商业要求：
+- 目标单价：[请填写价格区间]
+- 预计订购量：[请填写数量]
+- 包装要求：[请描述包装需求]
+- 质量标准：[请填写质量要求]
+- 交期：[请填写时间要求]
+- 付款方式：[请填写付款条件]
+
+其他要求：[请补充特殊要求]`,
+
+                'machinery': `我需要采购机械设备，具体要求如下：
+
+产品规格：
+- 设备类型：[请填写具体设备]
+- 技术参数：[请描述技术指标]
+- 功率要求：[请填写功率规格]
+- 精度要求：[请描述精度标准]
+- 安全标准：[请填写安全要求]
+
+商业要求：
+- 目标单价：[请填写价格区间]
+- 预计订购量：[请填写数量]
+- 安装要求：[请描述安装需求]
+- 售后服务：[请填写服务要求]
+- 交期：[请填写时间要求]
+- 付款方式：[请填写付款条件]
+
+其他要求：[请补充特殊要求]`,
+
+                'home': `我需要采购家居用品，具体要求如下：
+
+产品规格：
+- 产品类型：[请填写具体产品]
+- 材质要求：[请描述材质标准]
+- 尺寸规格：[请填写尺寸要求]
+- 颜色风格：[请描述外观要求]
+- 功能特点：[请描述功能需求]
+
+商业要求：
+- 目标单价：[请填写价格区间]
+- 预计订购量：[请填写数量]
+- 包装要求：[请描述包装需求]
+- 质量标准：[请填写质量要求]
+- 交期：[请填写时间要求]
+- 付款方式：[请填写付款条件]
+
+其他要求：[请补充特殊要求]`
+            };
+            
+            const textarea = document.getElementById('requirementText');
+            if (textarea.value.trim() && !confirm('应用模板将清空当前内容，确定继续吗？')) {
+                return;
+            }
+            
+            textarea.value = templates[type] || templates['electronics'];
+            handleTextInput();
+            textarea.focus();
+        }
+        
+        // 应用AI建议
+        function applySuggestion(element) {
+            element.style.opacity = '0.6';
+            element.style.textDecoration = 'line-through';
+            
+            setTimeout(() => {
+                element.style.display = 'none';
+            }, 1000);
+            
+            // 这里可以实际应用建议到文本中
+        }
+        
+        // 寻找供应商
+        function findSuppliers() {
+            const text = document.getElementById('requirementText').value.trim();
+            
+            if (!text) {
+                alert('请先输入采购需求描述');
+                return;
+            }
+            
+            const button = event.target;
+            const originalText = button.innerHTML;
+            button.innerHTML = '<span class="loading"></span> 分析匹配中...';
+            button.disabled = true;
+            
+            setTimeout(() => {
+                alert('AI分析完成！正在为您匹配最合适的供应商...');
+                // window.location.href = 'recommendations.html?type=supplier';
+            }, 2500);
+        }
+        
+        // 返回上一步
+        function goBack() {
+            if (confirm('返回上一步将丢失当前填写的内容，确定继续吗？')) {
+                window.history.back();
+            }
+        }
+        
+        // 使用模板
+        function useTemplate() {
+            // 显示模板选择对话框或面板
+            const templates = document.querySelector('.template-list');
+            if (templates) {
+                templates.scrollIntoView({ behavior: 'smooth' });
+                templates.style.background = 'var(--primary-blue-light)';
+                setTimeout(() => {
+                    templates.style.background = '';
+                }, 2000);
+            }
+        }
+        
+        // 编辑需求项
+        document.querySelectorAll('.edit-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const summaryItem = this.closest('.summary-item');
+                const valueElement = summaryItem.querySelector('.summary-item-value');
+                const currentValue = valueElement.textContent;
+                
+                const newValue = prompt('请修改内容:', currentValue);
+                if (newValue && newValue !== currentValue) {
+                    valueElement.textContent = newValue;
+                    valueElement.style.background = 'var(--primary-blue-light)';
+                    setTimeout(() => {
+                        valueElement.style.background = '';
+                    }, 2000);
+                }
+            });
+        });
+        
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            handleTextInput();
+            
+            // 自动聚焦到文本框
+            const textarea = document.getElementById('requirementText');
+            textarea.focus();
+            
+            // 设置光标到文本末尾
+            textarea.setSelectionRange(textarea.value.length, textarea.value.length);
+        });
+    </script>
+</body>
+</html>

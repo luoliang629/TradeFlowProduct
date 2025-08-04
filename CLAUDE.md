@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## 项目概述
 
-TradeFlow是一款基于对话式AI Agent的全球B2B贸易智能助手，通过自然语言交互帮助用户完成买家开发、供应商采购等贸易业务。
+TradeFlow是一款面向全球的，基于对话式AI Agent的全球B2B贸易智能助手，通过自然语言交互帮助用户完成买家开发、供应商采购等贸易业务。
 
 ## 技术栈
 

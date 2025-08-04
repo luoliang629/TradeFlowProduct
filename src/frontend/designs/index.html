@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TradeFlow 设计稿导航 - B2B贸易智能助手</title>
+    <link rel="stylesheet" href="./assets/css/common.css">
+    <style>
+        /* 导航页面特定样式 */
+        .hero-section {
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%);
+            color: white;
+            padding: var(--spacing-3xl) 0;
+            text-align: center;
+        }
+        
+        .hero-title {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: var(--spacing-md);
+            color: white;
+        }
+        
+        .hero-subtitle {
+            font-size: 1.25rem;
+            opacity: 0.9;
+            margin-bottom: var(--spacing-xl);
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .design-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: var(--spacing-xl);
+            padding: var(--spacing-3xl) 0;
+        }
+        
+        .design-card {
+            background: white;
+            border-radius: var(--radius-xl);
+            overflow: hidden;
+            box-shadow: var(--shadow-lg);
+            transition: all var(--transition-normal);
+        }
+        
+        .design-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-xl);
+        }
+        
+        .design-card-image {
+            height: 200px;
+            background: linear-gradient(45deg, var(--gray-100), var(--gray-200));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: var(--gray-400);
+        }
+        
+        .design-card-content {
+            padding: var(--spacing-xl);
+        }
+        
+        .design-card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: var(--spacing-sm);
+        }
+        
+        .design-card-description {
+            color: var(--gray-600);
+            margin-bottom: var(--spacing-lg);
+            line-height: 1.6;
+        }
+        
+        .design-card-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.875rem;
+            color: var(--gray-500);
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        .design-card-features {
+            list-style: none;
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        .design-card-features li {
+            padding: var(--spacing-xs) 0;
+            color: var(--gray-600);
+            font-size: 0.875rem;
+        }
+        
+        .design-card-features li:before {
+            content: "✓";
+            color: var(--success-color);
+            font-weight: bold;
+            margin-right: var(--spacing-sm);
+        }
+        
+        .stats-section {
+            background-color: var(--gray-50);
+            padding: var(--spacing-3xl) 0;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--spacing-xl);
+            text-align: center;
+        }
+        
+        .stat-item {
+            background: white;
+            padding: var(--spacing-xl);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary-blue);
+            margin-bottom: var(--spacing-sm);
+        }
+        
+        .stat-label {
+            color: var(--gray-600);
+            font-weight: 500;
+        }
+        
+        .features-section {
+            padding: var(--spacing-3xl) 0;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: var(--spacing-xl);
+        }
+        
+        .feature-item {
+            text-align: center;
+            padding: var(--spacing-xl);
+        }
+        
+        .feature-icon {
+            width: 64px;
+            height: 64px;
+            background: var(--primary-blue-light);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto var(--spacing-lg);
+            font-size: 1.5rem;
+            color: var(--primary-blue);
+        }
+        
+        .feature-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: var(--spacing-sm);
+            color: var(--gray-900);
+        }
+        
+        .feature-description {
+            color: var(--gray-600);
+            line-height: 1.6;
+        }
+        
+        .footer {
+            background-color: var(--gray-900);
+            color: white;
+            padding: var(--spacing-xl) 0;
+            text-align: center;
+        }
+        
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2rem;
+            }
+            
+            .design-grid {
+                grid-template-columns: 1fr;
+                padding: var(--spacing-xl) 0;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 头部导航 -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <a href="index.html" class="logo">
+                    🌐 TradeFlow
+                </a>
+                <nav class="nav">
+                    <a href="#designs" class="nav-link">设计稿</a>
+                    <a href="#features" class="nav-link">特性</a>
+                    <a href="#stats" class="nav-link">统计</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主要内容 -->
+    <main>
+        <!-- 英雄区块 -->
+        <section class="hero-section">
+            <div class="container">
+                <h1 class="hero-title">TradeFlow 设计系统</h1>
+                <p class="hero-subtitle">
+                    参考Claude网页版设计风格，为B2B贸易智能助手量身定制的完整UI/UX设计方案
+                </p>
+                <a href="#designs" class="btn btn-large" style="background: rgba(255,255,255,0.2); color: white; border-color: rgba(255,255,255,0.3);">
+                    浏览设计稿
+                </a>
+            </div>
+        </section>
+
+        <!-- 设计统计 -->
+        <section class="stats-section" id="stats">
+            <div class="container">
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-number">8</div>
+                        <div class="stat-label">核心页面</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">50+</div>
+                        <div class="stat-label">设计组件</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">100%</div>
+                        <div class="stat-label">响应式适配</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">95%</div>
+                        <div class="stat-label">可访问性评分</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 设计稿展示 -->
+        <section id="designs">
+            <div class="container">
+                <h2 style="text-align: center; margin-bottom: var(--spacing-3xl); color: var(--gray-900);">
+                    完整设计稿导航
+                </h2>
+                
+                <div class="design-grid">
+                    <!-- 登录注册页 -->
+                    <div class="design-card">
+                        <div class="design-card-image">🔐</div>
+                        <div class="design-card-content">
+                            <h3 class="design-card-title">登录 / 注册页面</h3>
+                            <div class="design-card-meta">
+                                <span>企业级认证</span>
+                                <span>响应式设计</span>
+                            </div>
+                            <p class="design-card-description">
+                                简洁的登录注册流程，支持手机号/邮箱注册，新用户送10次免费使用。企业认证后解锁充值功能。
+                            </p>
+                            <ul class="design-card-features">
+                                <li>多种登录方式</li>
+                                <li>企业认证流程</li>
+                                <li>安全验证机制</li>
+                                <li>新用户引导</li>
+                            </ul>
+                            <a href="login.html" class="btn btn-primary" style="width: 100%;">查看设计稿</a>
+                        </div>
+                    </div>
+
+                    <!-- AI对话界面 -->
+                    <div class="design-card">
+                        <div class="design-card-image">💬</div>
+                        <div class="design-card-content">
+                            <h3 class="design-card-title">AI对话主界面</h3>
+                            <div class="design-card-meta">
+                                <span>智能交互</span>
+                                <span>Claude风格</span>
+                            </div>
+                            <p class="design-card-description">
+                                核心交互界面，参考Claude网页版设计，支持自然语言对话，智能理解贸易需求。
+                            </p>
+                            <ul class="design-card-features">
+                                <li>流畅对话体验</li>
+                                <li>打字机效果</li>
+                                <li>智能建议提示</li>
+                                <li>历史记录管理</li>
+                            </ul>
+                            <a href="chat.html" class="btn btn-primary" style="width: 100%;">查看设计稿</a>
+                        </div>
+                    </div>
+
+                    <!-- 推荐结果展示 -->
+                    <div class="design-card">
+                        <div class="design-card-image">📊</div>
+                        <div class="design-card-content">
+                            <h3 class="design-card-title">推荐结果展示页</h3>
+                            <div class="design-card-meta">
+                                <span>智能匹配</span>
+                                <span>数据可视化</span>
+                            </div>
+                            <p class="design-card-description">
+                                展示买家/供应商推荐结果，包含匹配度评分、基本信息、联系建议等核心信息。
+                            </p>
+                            <ul class="design-card-features">
+                                <li>匹配度评分</li>
+                                <li>详细信息卡片</li>
+                                <li>筛选排序功能</li>
+                                <li>批量操作支持</li>
+                            </ul>
+                            <a href="recommendations.html" class="btn btn-primary" style="width: 100%;">查看设计稿</a>
+                        </div>
+                    </div>
+
+                    <!-- 产品信息录入 -->
+                    <div class="design-card">
+                        <div class="design-card-image">📦</div>
+                        <div class="design-card-content">
+                            <h3 class="design-card-title">产品信息录入界面</h3>
+                            <div class="design-card-meta">
+                                <span>表单设计</span>
+                                <span>拖拽上传</span>
+                            </div>
+                            <p class="design-card-description">
+                                为出口商设计的产品信息录入界面，支持图片上传、分类选择、价格设定等功能。
+                            </p>
+                            <ul class="design-card-features">
+                                <li>智能表单设计</li>
+                                <li>图片批量上传</li>
+                                <li>产品分类选择</li>
+                                <li>价格区间设定</li>
+                            </ul>
+                            <a href="product-input.html" class="btn btn-primary" style="width: 100%;">查看设计稿</a>
+                        </div>
+                    </div>
+
+                    <!-- 采购需求描述 -->
+                    <div class="design-card">
+                        <div class="design-card-image">🛒</div>
+                        <div class="design-card-content">
+                            <h3 class="design-card-title">采购需求描述界面</h3>
+                            <div class="design-card-meta">
+                                <span>需求分析</span>
+                                <span>AI理解</span>
+                            </div>
+                            <p class="design-card-description">
+                                为采购商设计的需求描述界面，支持自然语言输入，AI智能提取关键信息。
+                            </p>
+                            <ul class="design-card-features">
+                                <li>自然语言输入</li>
+                                <li>智能信息提取</li>
+                                <li>需求确认机制</li>
+                                <li>批量采购支持</li>
+                            </ul>
+                            <a href="procurement.html" class="btn btn-primary" style="width: 100%;">查看设计稿</a>
+                        </div>
+                    </div>
+
+                    <!-- 个人中心 -->
+                    <div class="design-card">
+                        <div class="design-card-image">👤</div>
+                        <div class="design-card-content">
+                            <h3 class="design-card-title">个人中心页面</h3>
+                            <div class="design-card-meta">
+                                <span>用户管理</span>
+                                <span>使用统计</span>
+                            </div>
+                            <p class="design-card-description">
+                                用户个人中心，显示剩余使用次数、使用历史、充值入口等功能。
+                            </p>
+                            <ul class="design-card-features">
+                                <li>使用次数管理</li>
+                                <li>历史记录查看</li>
+                                <li>企业认证状态</li>
+                                <li>充值入口引导</li>
+                            </ul>
+                            <a href="profile.html" class="btn btn-primary" style="width: 100%;">查看设计稿</a>
+                        </div>
+                    </div>
+
+                    <!-- 充值页面 -->
+                    <div class="design-card">
+                        <div class="design-card-image">💳</div>
+                        <div class="design-card-content">
+                            <h3 class="design-card-title">充值页面</h3>
+                            <div class="design-card-meta">
+                                <span>支付集成</span>
+                                <span>套餐选择</span>
+                            </div>
+                            <p class="design-card-description">
+                                企业认证用户的充值页面，多种套餐选择，支持常用支付方式，可开具发票。
+                            </p>
+                            <ul class="design-card-features">
+                                <li>多种充值套餐</li>
+                                <li>支付方式选择</li>
+                                <li>发票开具功能</li>
+                                <li>充值记录管理</li>
+                            </ul>
+                            <a href="payment.html" class="btn btn-primary" style="width: 100%;">查看设计稿</a>
+                        </div>
+                    </div>
+
+                    <!-- 设计系统文档 -->
+                    <div class="design-card">
+                        <div class="design-card-image">🎨</div>
+                        <div class="design-card-content">
+                            <h3 class="design-card-title">设计系统文档</h3>
+                            <div class="design-card-meta">
+                                <span>组件库</span>
+                                <span>开发指南</span>
+                            </div>
+                            <p class="design-card-description">
+                                完整的设计系统文档，包含颜色、字体、组件、交互规范等，为开发团队提供指导。
+                            </p>
+                            <ul class="design-card-features">
+                                <li>设计系统规范</li>
+                                <li>组件使用指南</li>
+                                <li>交互行为定义</li>
+                                <li>响应式断点</li>
+                            </ul>
+                            <a href="design-system.html" class="btn btn-primary" style="width: 100%;">查看文档</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 设计特性 -->
+        <section class="features-section" id="features">
+            <div class="container">
+                <h2 style="text-align: center; margin-bottom: var(--spacing-3xl); color: var(--gray-900);">
+                    设计特性与优势
+                </h2>
+                
+                <div class="features-grid">
+                    <div class="feature-item">
+                        <div class="feature-icon">🎯</div>
+                        <h3 class="feature-title">用户体验优先</h3>
+                        <p class="feature-description">
+                            基于深度用户研究，针对B2B贸易场景设计，确保每个交互都有明确的用户价值。
+                        </p>
+                    </div>
+                    
+                    <div class="feature-item">
+                        <div class="feature-icon">🤖</div>
+                        <h3 class="feature-title">AI原生设计</h3>
+                        <p class="feature-description">
+                            专为AI对话交互设计，参考Claude风格，让人工智能助手的能力得到最佳展现。
+                        </p>
+                    </div>
+                    
+                    <div class="feature-item">
+                        <div class="feature-icon">📱</div>
+                        <h3 class="feature-title">移动端优化</h3>
+                        <p class="feature-description">
+                            移动优先的响应式设计，确保在各种设备上都能提供一致且流畅的用户体验。
+                        </p>
+                    </div>
+                    
+                    <div class="feature-item">
+                        <div class="feature-icon">🏢</div>
+                        <h3 class="feature-title">企业级可信</h3>
+                        <p class="feature-description">
+                            专业的视觉设计和交互流程，体现B2B平台的权威性和可信度。
+                        </p>
+                    </div>
+                    
+                    <div class="feature-item">
+                        <div class="feature-icon">⚡</div>
+                        <h3 class="feature-title">性能优化</h3>
+                        <p class="feature-description">
+                            轻量化设计，快速加载，确保在各种网络环境下都能快速响应用户操作。
+                        </p>
+                    </div>
+                    
+                    <div class="feature-item">
+                        <div class="feature-icon">♿</div>
+                        <h3 class="feature-title">无障碍访问</h3>
+                        <p class="feature-description">
+                            遵循WCAG 2.1标准，支持屏幕阅读器，确保所有用户都能正常使用。
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 TradeFlow. 设计稿仅供内部开发使用。</p>
+        </div>
+    </footer>
+</body>
+</html>
