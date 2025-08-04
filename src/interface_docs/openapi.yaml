@@ -1,0 +1,1986 @@
+openapi: 3.0.3
+info:
+  title: TradeFlow API
+  description: |
+    TradeFlow B2B贸易智能助手API接口规范
+    
+    ## 特性
+    - 基于AI的买家开发和供应商匹配
+    - 实时流式对话（SSE）
+    - OAuth第三方登录
+    - 多语言支持
+    - 企业级安全保障
+    
+    ## 认证
+    使用JWT Bearer Token进行认证：
+    ```
+    Authorization: Bearer {your_jwt_token}
+    ```
+  version: 1.0.0
+  contact:
+    name: TradeFlow API Support
+    email: api-support@tradeflow.com
+    url: https://docs.tradeflow.com
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: https://api.tradeflow.com/api/v1
+    description: Production server
+  - url: https://staging-api.tradeflow.com/api/v1
+    description: Staging server
+  - url: http://localhost:8000/api/v1
+    description: Development server
+
+security:
+  - BearerAuth: []
+
+paths:
+  # 认证相关
+  /auth/oauth/{provider}:
+    get:
+      tags:
+        - Authentication
+      summary: 发起OAuth登录
+      description: 重定向到OAuth提供商进行身份验证
+      parameters:
+        - name: provider
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [google, github]
+          description: OAuth提供商
+        - name: redirect_uri
+          in: query
+          schema:
+            type: string
+            format: uri
+          description: 登录成功后的回调地址
+        - name: state
+          in: query
+          schema:
+            type: string
+          description: 防CSRF状态参数
+      responses:
+        '302':
+          description: 重定向到OAuth提供商
+      security: []
+
+  /auth/oauth/{provider}/callback:
+    get:
+      tags:
+        - Authentication
+      summary: OAuth回调处理
+      parameters:
+        - name: provider
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [google, github]
+        - name: code
+          in: query
+          required: true
+          schema:
+            type: string
+          description: 授权码
+        - name: state
+          in: query
+          schema:
+            type: string
+          description: 状态参数
+      responses:
+        '200':
+          description: 登录成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    $ref: '#/components/schemas/AuthResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+      security: []
+
+  /auth/refresh:
+    post:
+      tags:
+        - Authentication
+      summary: 刷新Token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                refresh_token:
+                  type: string
+                  description: 刷新令牌
+              required:
+                - refresh_token
+      responses:
+        '200':
+          description: Token刷新成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      access_token:
+                        type: string
+                      expires_in:
+                        type: integer
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+      security: []
+
+  /auth/logout:
+    post:
+      tags:
+        - Authentication
+      summary: 退出登录
+      responses:
+        '200':
+          description: 退出成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+
+  /auth/me:
+    get:
+      tags:
+        - Authentication
+      summary: 获取当前用户信息
+      responses:
+        '200':
+          description: 用户信息
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      user:
+                        $ref: '#/components/schemas/User'
+
+  # 对话相关
+  /chat:
+    post:
+      tags:
+        - Chat
+      summary: 发起对话
+      description: |
+        向AI Agent发送消息，支持流式和非流式响应
+        
+        ## 流式响应
+        设置 `stream: true` 后，需要同时监听SSE连接获取实时响应
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChatRequest'
+      responses:
+        '200':
+          description: 对话响应
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/ChatResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '429':
+          $ref: '#/components/responses/RateLimit'
+
+  /chat/stream:
+    get:
+      tags:
+        - Chat
+      summary: 建立SSE连接
+      description: |
+        建立Server-Sent Events连接以接收实时流式响应
+        
+        ## 事件类型
+        - `connected`: 连接建立
+        - `stream`: 流式内容
+        - `agent_status`: Agent状态更新
+        - `recommendation`: 推荐结果
+        - `complete`: 处理完成
+        - `error`: 错误事件
+      parameters:
+        - name: token
+          in: query
+          required: true
+          schema:
+            type: string
+          description: JWT访问令牌
+        - name: session_id
+          in: query
+          schema:
+            type: string
+          description: 会话ID（可选）
+      responses:
+        '200':
+          description: SSE连接建立成功
+          content:
+            text/event-stream:
+              schema:
+                type: string
+                description: Server-Sent Events流
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+      security: []
+
+  /chat/history:
+    get:
+      tags:
+        - Chat
+      summary: 获取对话历史
+      parameters:
+        - name: session_id
+          in: query
+          schema:
+            type: string
+          description: 会话ID
+        - name: agent_type
+          in: query
+          schema:
+            type: string
+            enum: [buyer, supplier, market]
+          description: Agent类型
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/Limit'
+        - name: start_date
+          in: query
+          schema:
+            type: string
+            format: date
+          description: 开始日期
+        - name: end_date
+          in: query
+          schema:
+            type: string
+            format: date
+          description: 结束日期
+      responses:
+        '200':
+          description: 对话历史
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      items:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/ChatHistory'
+                      pagination:
+                        $ref: '#/components/schemas/Pagination'
+
+  /chat/session/{session_id}:
+    delete:
+      tags:
+        - Chat
+      summary: 删除会话
+      parameters:
+        - name: session_id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: 会话ID
+      responses:
+        '200':
+          description: 删除成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # 买家开发
+  /buyers/recommend:
+    post:
+      tags:
+        - Buyers
+      summary: 获取买家推荐
+      description: 基于产品信息和偏好设置，AI推荐匹配的买家
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BuyerRecommendRequest'
+      responses:
+        '200':
+          description: 买家推荐结果
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      recommendations:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/BuyerRecommendation'
+                      total:
+                        type: integer
+                        description: 推荐总数
+                      query_metadata:
+                        $ref: '#/components/schemas/QueryMetadata'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+
+  /buyers/{buyer_id}:
+    get:
+      tags:
+        - Buyers
+      summary: 获取买家详情
+      parameters:
+        - name: buyer_id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: 买家ID
+      responses:
+        '200':
+          description: 买家详细信息
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      buyer:
+                        $ref: '#/components/schemas/BuyerDetail'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /buyers/{buyer_id}/contact:
+    post:
+      tags:
+        - Buyers
+      summary: 生成联系模板
+      description: 基于买家信息和产品特点，AI生成个性化的联系邮件模板
+      parameters:
+        - name: buyer_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContactTemplateRequest'
+      responses:
+        '200':
+          description: 联系模板
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      template:
+                        $ref: '#/components/schemas/ContactTemplate'
+
+  # 供应商匹配
+  /suppliers/search:
+    post:
+      tags:
+        - Suppliers
+      summary: 搜索供应商
+      description: 根据产品需求和偏好筛选合适的供应商
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SupplierSearchRequest'
+      responses:
+        '200':
+          description: 供应商搜索结果
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      suppliers:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/SupplierResult'
+                      total:
+                        type: integer
+                      search_metadata:
+                        $ref: '#/components/schemas/SearchMetadata'
+
+  /suppliers/compare:
+    post:
+      tags:
+        - Suppliers
+      summary: 供应商对比
+      description: 多维度对比分析选定的供应商
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                supplier_ids:
+                  type: array
+                  items:
+                    type: string
+                  minItems: 2
+                  maxItems: 5
+                  description: 供应商ID列表（2-5个）
+                comparison_criteria:
+                  type: array
+                  items:
+                    type: string
+                    enum: [pricing, quality, delivery_time, certifications, export_experience]
+                  description: 对比维度
+              required:
+                - supplier_ids
+                - comparison_criteria
+      responses:
+        '200':
+          description: 对比结果
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      comparison:
+                        $ref: '#/components/schemas/SupplierComparison'
+
+  # 产品管理
+  /products:
+    get:
+      tags:
+        - Products
+      summary: 获取产品列表
+      parameters:
+        - name: category
+          in: query
+          schema:
+            type: string
+          description: 产品类别
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [active, inactive, draft]
+          description: 产品状态
+        - name: search
+          in: query
+          schema:
+            type: string
+          description: 搜索关键词
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/Limit'
+        - name: sort
+          in: query
+          schema:
+            type: string
+            enum: [created_at, updated_at, name, price]
+            default: created_at
+          description: 排序字段
+        - name: order
+          in: query
+          schema:
+            type: string
+            enum: [asc, desc]
+            default: desc
+          description: 排序方向
+      responses:
+        '200':
+          description: 产品列表
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      items:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/ProductSummary'
+                      pagination:
+                        $ref: '#/components/schemas/Pagination'
+
+    post:
+      tags:
+        - Products
+      summary: 创建产品
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductCreateRequest'
+      responses:
+        '201':
+          description: 产品创建成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      product:
+                        $ref: '#/components/schemas/ProductSummary'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+
+  /products/{product_id}:
+    get:
+      tags:
+        - Products
+      summary: 获取产品详情
+      parameters:
+        - name: product_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 产品详情
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      product:
+                        $ref: '#/components/schemas/ProductDetail'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    put:
+      tags:
+        - Products
+      summary: 更新产品
+      parameters:
+        - name: product_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductUpdateRequest'
+      responses:
+        '200':
+          description: 更新成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      product:
+                        $ref: '#/components/schemas/ProductDetail'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+
+    delete:
+      tags:
+        - Products
+      summary: 删除产品
+      parameters:
+        - name: product_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: 删除成功
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # 订阅和支付
+  /subscription/plans:
+    get:
+      tags:
+        - Subscription
+      summary: 获取订阅计划
+      responses:
+        '200':
+          description: 订阅计划列表
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      plans:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/SubscriptionPlan'
+      security: []
+
+  /subscription/create:
+    post:
+      tags:
+        - Subscription
+      summary: 创建订阅
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubscriptionCreateRequest'
+      responses:
+        '201':
+          description: 订阅创建成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      subscription:
+                        $ref: '#/components/schemas/Subscription'
+                      invoice:
+                        $ref: '#/components/schemas/Invoice'
+
+  /subscription/cancel:
+    post:
+      tags:
+        - Subscription
+      summary: 取消订阅
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                reason:
+                  type: string
+                  description: 取消原因
+      responses:
+        '200':
+          description: 取消成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+
+  /usage/summary:
+    get:
+      tags:
+        - Usage
+      summary: 使用统计
+      parameters:
+        - name: period
+          in: query
+          schema:
+            type: string
+            enum: [current_month, last_month, current_year]
+            default: current_month
+          description: 统计周期
+        - name: breakdown
+          in: query
+          schema:
+            type: boolean
+            default: false
+          description: 是否显示详细分解
+      responses:
+        '200':
+          description: 使用统计数据
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/UsageSummary'
+
+  # 系统接口
+  /health:
+    get:
+      tags:
+        - System
+      summary: 健康检查
+      responses:
+        '200':
+          description: 系统健康状态
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthStatus'
+      security: []
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT访问令牌
+
+  parameters:
+    Page:
+      name: page
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+      description: 页码
+    
+    Limit:
+      name: limit
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 20
+      description: 每页数量
+
+  responses:
+    BadRequest:
+      description: 请求参数错误
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    
+    Unauthorized:
+      description: 未授权访问
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    
+    NotFound:
+      description: 资源不存在
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    
+    ValidationError:
+      description: 参数验证失败
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ValidationErrorResponse'
+    
+    RateLimit:
+      description: 请求频率超限
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+      headers:
+        X-RateLimit-Limit:
+          schema:
+            type: integer
+          description: 请求限制
+        X-RateLimit-Remaining:
+          schema:
+            type: integer
+          description: 剩余请求次数
+        X-RateLimit-Reset:
+          schema:
+            type: integer
+          description: 重置时间（Unix时间戳）
+
+  schemas:
+    # 通用响应
+    SuccessResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: "操作成功"
+        timestamp:
+          type: string
+          format: date-time
+        request_id:
+          type: string
+          example: "req_123456"
+
+    ErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+              example: "UNAUTHORIZED"
+            message:
+              type: string
+              example: "访问令牌已过期"
+        timestamp:
+          type: string
+          format: date-time
+        request_id:
+          type: string
+
+    ValidationErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+              example: "VALIDATION_ERROR"
+            message:
+              type: string
+              example: "参数验证失败"
+            details:
+              type: array
+              items:
+                type: object
+                properties:
+                  field:
+                    type: string
+                  code:
+                    type: string
+                  message:
+                    type: string
+        timestamp:
+          type: string
+          format: date-time
+        request_id:
+          type: string
+
+    Pagination:
+      type: object
+      properties:
+        page:
+          type: integer
+          example: 1
+        limit:
+          type: integer
+          example: 20
+        total:
+          type: integer
+          example: 100
+        total_pages:
+          type: integer
+          example: 5
+        has_next:
+          type: boolean
+          example: true
+        has_prev:
+          type: boolean
+          example: false
+
+    # 认证相关
+    AuthResponse:
+      type: object
+      properties:
+        access_token:
+          type: string
+          description: JWT访问令牌
+        refresh_token:
+          type: string
+          description: 刷新令牌
+        expires_in:
+          type: integer
+          description: 过期时间（秒）
+        user:
+          $ref: '#/components/schemas/User'
+
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "usr_123456"
+        email:
+          type: string
+          format: email
+          example: "user@example.com"
+        name:
+          type: string
+          example: "张三"
+        avatar_url:
+          type: string
+          format: uri
+          nullable: true
+        auth_provider:
+          type: string
+          enum: [google, github, email]
+        language_preference:
+          type: string
+          example: "zh-CN"
+        created_at:
+          type: string
+          format: date-time
+        company:
+          type: object
+          nullable: true
+          properties:
+            id:
+              type: string
+            name:
+              type: string
+            verification_status:
+              type: string
+              enum: [pending, verified, rejected]
+            trust_score:
+              type: integer
+              minimum: 0
+              maximum: 100
+        subscription:
+          type: object
+          nullable: true
+          properties:
+            plan:
+              type: string
+            credits_remaining:
+              type: integer
+            expires_at:
+              type: string
+              format: date-time
+
+    # 对话相关
+    ChatRequest:
+      type: object
+      properties:
+        message:
+          type: string
+          description: 用户消息
+          example: "我需要找美国的LED灯具买家"
+        agent_type:
+          type: string
+          enum: [buyer, supplier, market]
+          description: Agent类型
+        session_id:
+          type: string
+          description: 会话ID（可选）
+        context:
+          type: object
+          description: 上下文信息
+          properties:
+            product_info:
+              type: object
+            user_preferences:
+              type: object
+        stream:
+          type: boolean
+          default: false
+          description: 是否使用流式响应
+      required:
+        - message
+        - agent_type
+
+    ChatResponse:
+      type: object
+      properties:
+        response:
+          type: object
+          properties:
+            content:
+              type: string
+              description: AI回复内容
+            agent_type:
+              type: string
+            session_id:
+              type: string
+            recommendations:
+              type: array
+              items:
+                type: object
+            metadata:
+              type: object
+              properties:
+                tokens_used:
+                  type: integer
+                processing_time:
+                  type: number
+                confidence_score:
+                  type: number
+                  minimum: 0
+                  maximum: 1
+                data_sources:
+                  type: array
+                  items:
+                    type: string
+
+    ChatHistory:
+      type: object
+      properties:
+        id:
+          type: string
+        session_id:
+          type: string
+        agent_type:
+          type: string
+        user_message:
+          type: string
+        agent_response:
+          type: string
+        tokens_used:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+
+    # 买家相关
+    BuyerRecommendRequest:
+      type: object
+      properties:
+        product_info:
+          type: object
+          properties:
+            name:
+              type: string
+              example: "LED Panel Light"
+            category:
+              type: string
+              example: "lighting"
+            subcategory:
+              type: string
+              example: "commercial_lighting"
+            description:
+              type: string
+            hs_code:
+              type: string
+              example: "940540"
+            specifications:
+              type: object
+            price_range:
+              type: object
+              properties:
+                min:
+                  type: number
+                max:
+                  type: number
+                currency:
+                  type: string
+                  example: "USD"
+                unit:
+                  type: string
+                  example: "piece"
+            moq:
+              type: integer
+              minimum: 1
+            lead_time:
+              type: string
+          required:
+            - name
+            - category
+            - price_range
+            - moq
+        target_markets:
+          type: array
+          items:
+            type: string
+          description: 目标市场国家代码
+          example: ["US", "DE", "UK"]
+        preferences:
+          type: object
+          properties:
+            company_size:
+              type: array
+              items:
+                type: string
+                enum: [small, medium, large]
+            trade_terms:
+              type: array
+              items:
+                type: string
+                enum: [FOB, CIF, EXW, DDP]
+            payment_terms:
+              type: array
+              items:
+                type: string
+            order_frequency:
+              type: string
+            relationship_type:
+              type: string
+        filters:
+          type: object
+          properties:
+            exclude_countries:
+              type: array
+              items:
+                type: string
+            min_annual_purchase:
+              type: number
+            verification_required:
+              type: boolean
+      required:
+        - product_info
+        - target_markets
+
+    BuyerRecommendation:
+      type: object
+      properties:
+        id:
+          type: string
+        company_name:
+          type: string
+        country:
+          type: string
+        state:
+          type: string
+          nullable: true
+        city:
+          type: string
+        match_score:
+          type: number
+          minimum: 0
+          maximum: 1
+        buyer_profile:
+          type: object
+          properties:
+            company_type:
+              type: string
+            annual_purchase:
+              type: string
+            main_products:
+              type: array
+              items:
+                type: string
+            company_size:
+              type: string
+            established_year:
+              type: integer
+            certifications:
+              type: array
+              items:
+                type: string
+            market_focus:
+              type: array
+              items:
+                type: string
+        trade_info:
+          type: object
+          properties:
+            preferred_terms:
+              type: string
+            payment_terms:
+              type: string
+            typical_order_size:
+              type: string
+            order_frequency:
+              type: string
+        contact_info:
+          type: object
+          properties:
+            website:
+              type: string
+              format: uri
+            contact_person:
+              type: string
+            position:
+              type: string
+            email:
+              type: string
+              format: email
+            phone:
+              type: string
+        match_reasons:
+          type: array
+          items:
+            type: string
+        risk_assessment:
+          type: object
+          properties:
+            credit_rating:
+              type: string
+            payment_history:
+              type: string
+            business_stability:
+              type: string
+            verification_status:
+              type: string
+
+    BuyerDetail:
+      allOf:
+        - $ref: '#/components/schemas/BuyerRecommendation'
+        - type: object
+          properties:
+            basic_info:
+              type: object
+              properties:
+                registration_number:
+                  type: string
+                tax_id:
+                  type: string
+                address:
+                  type: object
+                  properties:
+                    street:
+                      type: string
+                    city:
+                      type: string
+                    state:
+                      type: string
+                    postal_code:
+                      type: string
+                    country:
+                      type: string
+                founded_year:
+                  type: integer
+                employee_count:
+                  type: string
+                annual_revenue:
+                  type: string
+            business_details:
+              type: object
+              properties:
+                business_type:
+                  type: array
+                  items:
+                    type: string
+                main_markets:
+                  type: array
+                  items:
+                    type: string
+                product_categories:
+                  type: array
+                  items:
+                    type: string
+                certifications:
+                  type: array
+                  items:
+                    type: string
+                warehouse_locations:
+                  type: array
+                  items:
+                    type: string
+            trade_history:
+              type: object
+              properties:
+                total_import_value:
+                  type: number
+                main_suppliers:
+                  type: array
+                  items:
+                    type: string
+                recent_orders:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      date:
+                        type: string
+                        format: date
+                      product:
+                        type: string
+                      value:
+                        type: number
+                      supplier_country:
+                        type: string
+            verification:
+              type: object
+              properties:
+                status:
+                  type: string
+                  enum: [pending, verified, rejected]
+                verified_date:
+                  type: string
+                  format: date
+                verification_documents:
+                  type: array
+                  items:
+                    type: string
+                trust_score:
+                  type: integer
+                  minimum: 0
+                  maximum: 100
+
+    ContactTemplateRequest:
+      type: object
+      properties:
+        product_info:
+          type: object
+          properties:
+            name:
+              type: string
+            key_features:
+              type: array
+              items:
+                type: string
+        template_type:
+          type: string
+          enum: [introduction, follow_up, quote]
+          default: introduction
+        language:
+          type: string
+          default: en
+        tone:
+          type: string
+          enum: [professional, friendly, formal]
+          default: professional
+        include_company_intro:
+          type: boolean
+          default: true
+        include_samples:
+          type: boolean
+          default: true
+      required:
+        - product_info
+
+    ContactTemplate:
+      type: object
+      properties:
+        subject:
+          type: string
+        content:
+          type: string
+        follow_up_suggestions:
+          type: array
+          items:
+            type: string
+        best_contact_time:
+          type: string
+        cultural_notes:
+          type: array
+          items:
+            type: string
+
+    # 供应商相关
+    SupplierSearchRequest:
+      type: object
+      properties:
+        product_requirements:
+          type: object
+          properties:
+            category:
+              type: string
+            subcategory:
+              type: string
+            specifications:
+              type: object
+            quality_standards:
+              type: array
+              items:
+                type: string
+            quantity:
+              type: object
+              properties:
+                moq:
+                  type: integer
+                annual_demand:
+                  type: integer
+                unit:
+                  type: string
+        supplier_preferences:
+          type: object
+          properties:
+            countries:
+              type: array
+              items:
+                type: string
+            company_size:
+              type: array
+              items:
+                type: string
+            certifications_required:
+              type: array
+              items:
+                type: string
+            production_capacity:
+              type: string
+            export_experience:
+              type: string
+        trade_terms:
+          type: object
+          properties:
+            payment_terms:
+              type: array
+              items:
+                type: string
+            delivery_terms:
+              type: array
+              items:
+                type: string
+            lead_time:
+              type: string
+      required:
+        - product_requirements
+
+    SupplierResult:
+      type: object
+      properties:
+        id:
+          type: string
+        company_name:
+          type: string
+        country:
+          type: string
+        city:
+          type: string
+        match_score:
+          type: number
+          minimum: 0
+          maximum: 1
+        capabilities:
+          type: object
+          properties:
+            main_products:
+              type: array
+              items:
+                type: string
+            production_capacity:
+              type: string
+            moq:
+              type: integer
+            lead_time:
+              type: string
+            export_markets:
+              type: array
+              items:
+                type: string
+        certifications:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              number:
+                type: string
+              valid_until:
+                type: string
+                format: date
+        pricing:
+          type: object
+          properties:
+            price_range:
+              type: string
+            currency:
+              type: string
+            unit:
+              type: string
+            price_terms:
+              type: string
+            payment_terms:
+              type: string
+        quality_assurance:
+          type: object
+          properties:
+            quality_control:
+              type: string
+            sample_policy:
+              type: string
+            warranty:
+              type: string
+
+    SupplierComparison:
+      type: object
+      properties:
+        suppliers:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              name:
+                type: string
+              country:
+                type: string
+              scores:
+                type: object
+                properties:
+                  pricing:
+                    type: number
+                  quality:
+                    type: number
+                  delivery:
+                    type: number
+                  certifications:
+                    type: number
+                  experience:
+                    type: number
+              overall_score:
+                type: number
+        summary:
+          type: object
+          properties:
+            best_for_price:
+              type: string
+            best_for_quality:
+              type: string
+            best_overall:
+              type: string
+            recommendations:
+              type: array
+              items:
+                type: string
+
+    # 产品相关
+    ProductSummary:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        category:
+          type: string
+        price:
+          type: number
+        currency:
+          type: string
+        moq:
+          type: integer
+        status:
+          type: string
+          enum: [active, inactive, draft]
+        created_at:
+          type: string
+          format: date-time
+
+    ProductDetail:
+      allOf:
+        - $ref: '#/components/schemas/ProductSummary'
+        - type: object
+          properties:
+            subcategory:
+              type: string
+            description:
+              type: string
+            specifications:
+              type: object
+            pricing:
+              type: object
+              properties:
+                price:
+                  type: number
+                currency:
+                  type: string
+                unit:
+                  type: string
+                moq:
+                  type: integer
+                price_breaks:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      quantity:
+                        type: integer
+                      price:
+                        type: number
+            certifications:
+              type: array
+              items:
+                type: string
+            images:
+              type: array
+              items:
+                type: string
+                format: uri
+            hs_code:
+              type: string
+            lead_time:
+              type: string
+            packaging:
+              type: object
+              properties:
+                unit_size:
+                  type: string
+                weight:
+                  type: string
+                carton_qty:
+                  type: integer
+            updated_at:
+              type: string
+              format: date-time
+
+    ProductCreateRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 255
+        category:
+          type: string
+          minLength: 1
+        subcategory:
+          type: string
+        description:
+          type: string
+        specifications:
+          type: object
+        pricing:
+          type: object
+          properties:
+            price:
+              type: number
+              minimum: 0
+            currency:
+              type: string
+              minLength: 3
+              maxLength: 3
+            unit:
+              type: string
+            moq:
+              type: integer
+              minimum: 1
+            price_breaks:
+              type: array
+              items:
+                type: object
+          required:
+            - price
+            - currency
+            - moq
+        certifications:
+          type: array
+          items:
+            type: string
+        images:
+          type: array
+          items:
+            type: string
+            format: uri
+        hs_code:
+          type: string
+        lead_time:
+          type: string
+        packaging:
+          type: object
+      required:
+        - name
+        - category
+        - pricing
+
+    ProductUpdateRequest:
+      allOf:
+        - $ref: '#/components/schemas/ProductCreateRequest'
+        - type: object
+          properties:
+            status:
+              type: string
+              enum: [active, inactive, draft]
+
+    # 订阅相关
+    SubscriptionPlan:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        price:
+          type: object
+          properties:
+            monthly:
+              type: number
+            yearly:
+              type: number
+            currency:
+              type: string
+        features:
+          type: object
+          properties:
+            conversations_per_month:
+              type: integer
+            buyer_recommendations:
+              type: integer
+            supplier_searches:
+              type: integer
+            export_formats:
+              type: array
+              items:
+                type: string
+            support:
+              type: string
+            custom_branding:
+              type: boolean
+        limits:
+          type: object
+          properties:
+            api_calls_per_day:
+              type: integer
+            concurrent_sessions:
+              type: integer
+
+    SubscriptionCreateRequest:
+      type: object
+      properties:
+        plan_id:
+          type: string
+        billing_cycle:
+          type: string
+          enum: [monthly, yearly]
+        payment_method:
+          type: string
+          enum: [stripe]
+        stripe_payment_method_id:
+          type: string
+      required:
+        - plan_id
+        - billing_cycle
+        - payment_method
+
+    Subscription:
+      type: object
+      properties:
+        id:
+          type: string
+        plan_id:
+          type: string
+        status:
+          type: string
+          enum: [active, canceled, past_due, unpaid]
+        current_period_start:
+          type: string
+          format: date-time
+        current_period_end:
+          type: string
+          format: date-time
+        credits_remaining:
+          type: integer
+        auto_renew:
+          type: boolean
+
+    Invoice:
+      type: object
+      properties:
+        id:
+          type: string
+        amount:
+          type: number
+        currency:
+          type: string
+        status:
+          type: string
+          enum: [paid, pending, failed]
+        paid_at:
+          type: string
+          format: date-time
+          nullable: true
+
+    # 使用统计
+    UsageSummary:
+      type: object
+      properties:
+        period:
+          type: string
+        period_start:
+          type: string
+          format: date-time
+        period_end:
+          type: string
+          format: date-time
+        usage:
+          type: object
+          properties:
+            conversations:
+              $ref: '#/components/schemas/UsageMetric'
+            buyer_recommendations:
+              $ref: '#/components/schemas/UsageMetric'
+            supplier_searches:
+              $ref: '#/components/schemas/UsageMetric'
+            api_calls:
+              $ref: '#/components/schemas/UsageMetric'
+        breakdown:
+          type: array
+          items:
+            type: object
+            properties:
+              date:
+                type: string
+                format: date
+              conversations:
+                type: integer
+              api_calls:
+                type: integer
+        cost_breakdown:
+          type: object
+          properties:
+            base_subscription:
+              type: number
+            overage_charges:
+              type: number
+            total:
+              type: number
+            currency:
+              type: string
+
+    UsageMetric:
+      type: object
+      properties:
+        used:
+          type: integer
+        limit:
+          type: integer
+        remaining:
+          type: integer
+
+    # 系统相关
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [healthy, degraded, unhealthy]
+        timestamp:
+          type: string
+          format: date-time
+        version:
+          type: string
+        services:
+          type: object
+          properties:
+            database:
+              type: string
+              enum: [healthy, unhealthy]
+            redis:
+              type: string
+              enum: [healthy, unhealthy]
+            ai_agent:
+              type: string
+              enum: [healthy, unhealthy]
+
+    # 元数据
+    QueryMetadata:
+      type: object
+      properties:
+        query_id:
+          type: string
+        search_criteria:
+          type: string
+        data_sources:
+          type: array
+          items:
+            type: string
+        last_updated:
+          type: string
+          format: date-time
+
+    SearchMetadata:
+      type: object
+      properties:
+        search_id:
+          type: string
+        filters_applied:
+          type: integer
+        data_sources:
+          type: array
+          items:
+            type: string
+
+tags:
+  - name: Authentication
+    description: 用户认证和授权管理
+  - name: Chat
+    description: AI对话和流式通信
+  - name: Buyers
+    description: 买家开发和推荐
+  - name: Suppliers
+    description: 供应商匹配和对比
+  - name: Products
+    description: 产品信息管理
+  - name: Subscription
+    description: 订阅和支付管理
+  - name: Usage
+    description: 使用统计和配额
+  - name: System
+    description: 系统状态和健康检查
