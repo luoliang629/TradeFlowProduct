@@ -1,0 +1,2342 @@
+<!DOCTYPE html>
+<html lang="en" id="root-html">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TradeFlow - AI-Powered Global B2B Trade Assistant</title>
+    <style>
+        /* CSS Variables for Design System */
+        :root {
+            --primary-color: #1e3a8a;
+            --primary-dark: #1e40af;
+            --accent-color: #f97316;
+            --accent-hover: #ea580c;
+            --success-color: #059669;
+            --warning-color: #d97706;
+            --error-color: #dc2626;
+            --info-color: #0284c7;
+            
+            --text-primary: #111827;
+            --text-secondary: #6b7280;
+            --text-light: #9ca3af;
+            --text-inverse: #ffffff;
+            
+            --bg-primary: #ffffff;
+            --bg-secondary: #f9fafb;
+            --bg-tertiary: #f3f4f6;
+            --bg-dark: #1f2937;
+            
+            --border-color: #e5e7eb;
+            --border-hover: #d1d5db;
+            
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            
+            --radius-sm: 0.375rem;
+            --radius-md: 0.5rem;
+            --radius-lg: 0.75rem;
+            --radius-xl: 1rem;
+            
+            --font-family: 'Inter', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+        }
+
+        /* Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background-color: var(--bg-secondary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--text-light);
+            border-radius: 50%;
+            border-top-color: var(--primary-color);
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Animations */
+        @keyframes messageSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* Login Styles */
+        .login-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+        }
+
+        .login-card {
+            background: var(--bg-primary);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-lg);
+            padding: 3rem;
+            max-width: 480px;
+            width: 100%;
+            position: relative;
+        }
+
+        .logo-section {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .logo {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .tagline {
+            color: var(--text-secondary);
+            font-size: 1.125rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .value-proposition {
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        .login-section h2 {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            color: var(--text-primary);
+            font-size: 1.5rem;
+        }
+
+        .oauth-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .oauth-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            padding: 0.875rem 1.5rem;
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            text-decoration: none;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .oauth-btn:hover {
+            border-color: var(--primary-color);
+            background: var(--bg-secondary);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .oauth-icon {
+            width: 20px;
+            height: 20px;
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 1.5rem 0;
+            color: var(--text-light);
+            font-size: 0.875rem;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border-color);
+        }
+
+        .divider span {
+            padding: 0 1rem;
+        }
+
+        .free-trial-notice {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 1rem;
+            margin-top: 1.5rem;
+            text-align: center;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .highlight {
+            color: var(--accent-color);
+            font-weight: 600;
+        }
+
+        .language-selector {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 0.5rem;
+            cursor: pointer;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+        }
+
+        .language-selector:hover {
+            background: var(--bg-secondary);
+            border-color: var(--border-hover);
+        }
+
+        .language-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 0.5rem;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-md);
+            overflow: hidden;
+            z-index: 10;
+            display: none;
+        }
+
+        .language-dropdown.show {
+            display: block;
+        }
+
+        .language-option {
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            white-space: nowrap;
+        }
+
+        .language-option:hover {
+            background: var(--bg-secondary);
+        }
+
+        .language-option.active {
+            background: var(--primary-color);
+            color: var(--text-inverse);
+        }
+
+        .traditional-login input {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            font-size: 1rem;
+            margin-bottom: 1rem;
+            transition: all 0.2s;
+        }
+
+        .traditional-login input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgb(30 58 138 / 0.1);
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 0.875rem;
+            background: var(--primary-color);
+            color: var(--text-inverse);
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Three Column Layout */
+        .app-container {
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Left Sidebar - Navigation */
+        .sidebar {
+            width: 280px;
+            background: var(--bg-dark);
+            color: var(--text-inverse);
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.3s ease;
+            z-index: 30;
+        }
+
+        .sidebar-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-inverse);
+            margin-bottom: 0.5rem;
+        }
+
+        .sidebar-tagline {
+            font-size: 0.875rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            padding: 1.5rem;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.875rem 1rem;
+            margin-bottom: 0.5rem;
+            border-radius: var(--radius-md);
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .nav-item:hover,
+        .nav-item.active {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-inverse);
+        }
+
+        .nav-icon {
+            width: 20px;
+            height: 20px;
+        }
+
+        .sidebar-footer {
+            padding: 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+
+        .user-details h4 {
+            font-size: 0.9rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .user-details p {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .usage-info {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: var(--radius-md);
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .usage-info h5 {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 0.5rem;
+        }
+
+        .usage-count {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--accent-color);
+        }
+
+        /* Middle Column - Chat Interface */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-width: 0; /* Important for flex shrinking */
+        }
+
+        .header {
+            background: var(--bg-primary);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0.5rem;
+        }
+
+        .header-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .language-btn {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+        }
+
+        .language-btn:hover {
+            background: var(--bg-secondary);
+            border-color: var(--border-hover);
+        }
+
+        /* Chat Interface */
+        .chat-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            max-width: none;
+            padding: 2rem;
+            overflow: hidden;
+        }
+
+        .welcome-section {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .welcome-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+        }
+
+        .welcome-subtitle {
+            font-size: 1.125rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .quick-action-card {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: left;
+        }
+
+        .quick-action-card:hover {
+            border-color: var(--primary-color);
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+
+        .quick-action-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--primary-color);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+            color: var(--text-inverse);
+            font-size: 1.5rem;
+        }
+
+        .quick-action-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .quick-action-desc {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            margin-bottom: 2rem;
+            min-height: 300px;
+        }
+
+        /* Enhanced Message Styles */
+        .message {
+            margin-bottom: 2rem;
+            display: flex;
+            gap: 1rem;
+            animation: messageSlideIn 0.3s ease-out;
+        }
+
+        .message.user {
+            flex-direction: row-reverse;
+        }
+
+        .message-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-inverse);
+            font-weight: 600;
+            font-size: 0.875rem;
+            flex-shrink: 0;
+            box-shadow: var(--shadow-sm);
+            position: relative;
+        }
+
+        .message.assistant .message-avatar {
+            background: linear-gradient(135deg, var(--accent-color), #ea580c);
+        }
+
+        .message.assistant .message-avatar::after {
+            content: '🤖';
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            font-size: 0.6rem;
+            background: var(--bg-primary);
+            border-radius: 50%;
+            width: 16px;
+            height: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .message-content {
+            flex: 1;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .message.user .message-content {
+            background: var(--primary-color);
+            color: var(--text-inverse);
+            border-color: var(--primary-color);
+        }
+
+        .message-text {
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .message-time {
+            font-size: 0.8rem;
+            color: var(--text-light);
+            margin-top: 0.5rem;
+        }
+
+        .message.user .message-time {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        /* Chat Input */
+        .chat-input-container {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 1rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .chat-input {
+            width: 100%;
+            min-height: 80px;
+            max-height: 200px;
+            border: none;
+            outline: none;
+            resize: none;
+            font-family: var(--font-family);
+            font-size: 0.95rem;
+            line-height: 1.5;
+            background: transparent;
+            color: var(--text-primary);
+        }
+
+        .chat-input::placeholder {
+            color: var(--text-light);
+        }
+
+        .chat-input-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .input-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .input-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: var(--radius-md);
+            color: var(--text-secondary);
+            transition: all 0.2s;
+        }
+
+        .input-btn:hover {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+        }
+
+        .send-btn {
+            background: var(--primary-color);
+            color: var(--text-inverse);
+            border: none;
+            border-radius: var(--radius-md);
+            padding: 0.75rem 1.5rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .send-btn:hover:not(:disabled) {
+            background: var(--primary-dark);
+        }
+
+        .send-btn:disabled {
+            background: var(--text-light);
+            cursor: not-allowed;
+        }
+
+        /* Right Column - Agent Progress Panel */
+        .agent-panel {
+            width: 320px;
+            background: var(--bg-primary);
+            border-left: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .agent-panel-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-secondary);
+        }
+
+        .agent-panel-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .agent-status-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--success-color);
+            animation: pulse 2s infinite;
+        }
+
+        .agent-status-indicator.thinking {
+            background: var(--warning-color);
+        }
+
+        .agent-status-indicator.reasoning {
+            background: #3b82f6; /* Blue for reasoning */
+        }
+
+        .agent-status-indicator.acting {
+            background: #f97316; /* Orange for acting */
+        }
+
+        .agent-status-indicator.observing {
+            background: #10b981; /* Green for observing */
+        }
+
+        .agent-status-indicator.idle {
+            background: var(--text-light);
+            animation: none;
+        }
+
+        .agent-panel-subtitle {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .agent-panel-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem;
+        }
+
+        /* Current Operation */
+        .current-operation {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .operation-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .operation-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: var(--radius-md);
+            background: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-inverse);
+            font-size: 1rem;
+        }
+
+        .operation-text {
+            flex: 1;
+        }
+
+        .operation-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .operation-description {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .progress-bar {
+            background: var(--bg-tertiary);
+            border-radius: var(--radius-sm);
+            height: 6px;
+            overflow: hidden;
+            margin-bottom: 0.75rem;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+            height: 100%;
+            border-radius: var(--radius-sm);
+            transition: width 0.3s ease;
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -468px 0; }
+            100% { background-position: 468px 0; }
+        }
+
+        /* ReAct Animation for active sections */
+        @keyframes reactPulse {
+            0% {
+                box-shadow: 0 0 0 0 currentColor;
+            }
+            70% {
+                box-shadow: 0 0 0 6px rgba(0, 0, 0, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
+            }
+        }
+
+        .react-section.active {
+            animation: reactPulse 2s infinite;
+        }
+
+        /* Smooth fade-in animation */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in-up {
+            animation: fadeInUp 0.5s ease-out;
+        }
+
+        .progress-text {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            text-align: center;
+        }
+
+        /* ReAct Process Sections */
+        .react-section {
+            margin-bottom: 1.5rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .react-section.active {
+            border-width: 2px;
+        }
+
+        .react-section.reasoning.active {
+            border-color: #3b82f6;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+        }
+
+        .react-section.acting.active {
+            border-color: #f97316;
+            box-shadow: 0 4px 12px rgba(249, 115, 22, 0.15);
+        }
+
+        .react-section.observing.active {
+            border-color: #10b981;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.15);
+        }
+
+        .react-section-header {
+            padding: 1rem 1.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .react-section-header:hover {
+            background: var(--bg-tertiary);
+        }
+
+        .react-section-title {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-weight: 600;
+        }
+
+        .react-section-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.875rem;
+            font-weight: 700;
+            color: white;
+        }
+
+        .react-section.reasoning .react-section-icon {
+            background: #3b82f6;
+        }
+
+        .react-section.acting .react-section-icon {
+            background: #f97316;
+        }
+
+        .react-section.observing .react-section-icon {
+            background: #10b981;
+        }
+
+        .react-section-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .react-section.expanded .react-section-content {
+            max-height: 500px;
+        }
+
+        .react-section-header .chevron {
+            transition: transform 0.3s ease;
+        }
+
+        .react-section.expanded .chevron {
+            transform: rotate(180deg);
+        }
+
+        .react-section-body {
+            padding: 0 1.25rem 1.25rem;
+        }
+
+        /* Credibility Score */
+        .credibility-score {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .star-rating {
+            display: flex;
+            gap: 0.125rem;
+        }
+
+        .star {
+            width: 16px;
+            height: 16px;
+            color: #fbbf24;
+        }
+
+        .star.empty {
+            opacity: 0.3;
+        }
+
+        /* Data Sources */
+        .data-sources {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.75rem;
+        }
+
+        .data-source-badge {
+            padding: 0.25rem 0.75rem;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-full);
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        .data-source-badge.verified {
+            border-color: var(--success-color);
+            color: var(--success-color);
+        }
+
+        /* Activity Log */
+        .activity-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .activity-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .activity-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .activity-toggle {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: var(--radius-sm);
+            transition: all 0.2s;
+        }
+
+        .activity-toggle:hover {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        .activity-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .activity-item {
+            display: flex;
+            gap: 0.75rem;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--border-color);
+            animation: slideInRight 0.3s ease-out;
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-top: 0.375rem;
+            flex-shrink: 0;
+        }
+
+        .activity-dot.completed {
+            background: var(--success-color);
+        }
+
+        .activity-dot.in-progress {
+            background: var(--warning-color);
+            animation: pulse 1.5s infinite;
+        }
+
+        .activity-dot.pending {
+            background: var(--text-light);
+        }
+
+        .activity-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .activity-text {
+            font-size: 0.85rem;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+            line-height: 1.4;
+        }
+
+        .activity-time {
+            font-size: 0.75rem;
+            color: var(--text-light);
+        }
+
+        .activity-details {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-top: 0.25rem;
+            padding: 0.5rem;
+            background: var(--bg-secondary);
+            border-radius: var(--radius-sm);
+            border-left: 3px solid var(--info-color);
+        }
+
+        /* Thinking Process */
+        .thinking-section {
+            background: var(--bg-tertiary);
+            border-radius: var(--radius-lg);
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .thinking-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .thinking-icon {
+            width: 20px;
+            height: 20px;
+            color: var(--warning-color);
+            animation: spin 2s linear infinite;
+        }
+
+        .thinking-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .thinking-content {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+
+        /* Results Preview */
+        .results-section {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 1rem;
+        }
+
+        .results-header {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .results-count {
+            background: var(--primary-color);
+            color: var(--text-inverse);
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: var(--radius-sm);
+        }
+
+        .results-list {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .result-item {
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            margin-bottom: 0.5rem;
+            font-size: 0.8rem;
+            line-height: 1.4;
+        }
+
+        .result-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .result-title {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .result-desc {
+            color: var(--text-secondary);
+        }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 1024px) {
+            .agent-panel {
+                display: none;
+            }
+            
+            .main-content {
+                flex: 1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                position: fixed;
+                left: 0;
+                top: 0;
+                height: 100vh;
+                transform: translateX(-100%);
+                z-index: 50;
+            }
+
+            .sidebar.show {
+                transform: translateX(0);
+            }
+
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            .chat-container {
+                padding: 1rem;
+            }
+
+            .quick-actions {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Utility Classes */
+        .btn-primary {
+            background: var(--primary-color);
+            color: var(--text-inverse);
+            border: none;
+            border-radius: var(--radius-md);
+            padding: 0.75rem 1.5rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            width: 100%;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .show {
+            display: block !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Page -->
+    <div id="loginPage" class="login-container" style="display: none;">
+        <div class="login-card fade-in">
+            <!-- Language Selector -->
+            <div class="language-selector" onclick="toggleLanguageDropdown()">
+                <span id="currentLanguage">🌐 English</span>
+                <div id="languageDropdown" class="language-dropdown">
+                    <div class="language-option active" data-lang="en" onclick="changeLanguage('en')">
+                        🇺🇸 English
+                    </div>
+                    <div class="language-option" data-lang="zh" onclick="changeLanguage('zh')">
+                        🇨🇳 中文
+                    </div>
+                </div>
+            </div>
+
+            <!-- Logo Section -->
+            <div class="logo-section">
+                <div class="logo">TradeFlow</div>
+                <p class="tagline" data-i18n="tagline">AI-Powered Global B2B Trade Assistant</p>
+                <p class="value-proposition" data-i18n="value-proposition">
+                    Connect with buyers & suppliers worldwide through intelligent conversations
+                </p>
+            </div>
+
+            <!-- Login Section -->
+            <div class="login-section">
+                <h2 data-i18n="login-title">Welcome to TradeFlow</h2>
+                
+                <!-- OAuth Buttons -->
+                <div class="oauth-buttons">
+                    <button class="oauth-btn" onclick="loginWithGoogle()">
+                        <svg class="oauth-icon" viewBox="0 0 24 24">
+                            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                        </svg>
+                        <span data-i18n="continue-with-google">Continue with Google</span>
+                    </button>
+                    
+                    <button class="oauth-btn" onclick="loginWithGitHub()">
+                        <svg class="oauth-icon" viewBox="0 0 24 24" fill="#333">
+                            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                        </svg>
+                        <span data-i18n="continue-with-github">Continue with GitHub</span>
+                    </button>
+                </div>
+
+                <!-- Divider -->
+                <div class="divider">
+                    <span data-i18n="or">or</span>
+                </div>
+
+                <!-- Traditional Login -->
+                <div class="traditional-login">
+                    <input type="email" placeholder="Email address" data-i18n-placeholder="email-placeholder" id="emailInput">
+                    <input type="password" placeholder="Password" data-i18n-placeholder="password-placeholder" id="passwordInput">
+                    <button class="btn-primary" onclick="loginWithEmail()" data-i18n="sign-in">Sign In</button>
+                </div>
+
+                <!-- Free Trial Notice -->
+                <div class="free-trial-notice">
+                    <p data-i18n="free-trial-notice">
+                        🎉 <span class="highlight">10 free conversations</span> included with every new account
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main App -->
+    <div id="mainApp" class="app-container">
+        <!-- Left Sidebar - Navigation -->
+        <div id="sidebar" class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">TradeFlow</div>
+                <div class="sidebar-tagline" data-i18n="sidebar-tagline">AI Trade Assistant</div>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-item active" onclick="showChat()">
+                    <svg class="nav-icon" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M20 2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h4v3c0 .6.4 1 1 1h.5c.2 0 .5-.1.7-.3L14.6 18H20c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-7 12H5v-2h8v2zm3-3H5V9h11v2zm0-3H5V6h11v2z"/>
+                    </svg>
+                    <span data-i18n="chat">AI Assistant</span>
+                </a>
+                
+                <a href="#" class="nav-item" onclick="showBuyerDevelopment()">
+                    <svg class="nav-icon" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                    </svg>
+                    <span data-i18n="buyer-development">Buyer Development</span>
+                </a>
+                
+                <a href="#" class="nav-item" onclick="showSupplierMatching()">
+                    <svg class="nav-icon" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
+                    </svg>
+                    <span data-i18n="supplier-matching">Supplier Matching</span>
+                </a>
+                
+                <a href="#" class="nav-item" onclick="showHistory()">
+                    <svg class="nav-icon" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M13 3c-4.97 0-9 4.03-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42C8.27 19.99 10.51 21 13 21c4.97 0 9-4.03 9-9s-4.03-9-9-9zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z"/>
+                    </svg>
+                    <span data-i18n="history">Usage History</span>
+                </a>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <div class="user-avatar" id="userAvatar">M</div>
+                    <div class="user-details">
+                        <h4 id="userName">Michael Chen</h4>
+                        <p id="userEmail">michael@example.com</p>
+                    </div>
+                </div>
+                
+                <div class="usage-info">
+                    <h5 data-i18n="remaining-conversations">Remaining Conversations</h5>
+                    <div class="usage-count" id="usageCount">7 / 10</div>
+                </div>
+                
+                <button class="btn-primary" onclick="showBilling()" data-i18n="upgrade">
+                    Upgrade Plan
+                </button>
+            </div>
+        </div>
+
+        <!-- Middle Column - Chat Interface -->
+        <div class="main-content">
+            <!-- Header -->
+            <div class="header">
+                <div class="header-left">
+                    <button class="mobile-menu-btn" onclick="toggleSidebar()">
+                        <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
+                        </svg>
+                    </button>
+                    <h1 class="header-title" id="headerTitle" data-i18n="ai-assistant">AI Assistant</h1>
+                </div>
+                
+                <div class="header-right">
+                    <button class="language-btn" onclick="toggleLanguageDropdown()">
+                        <span id="headerLanguage">🌐 English</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Chat Container -->
+            <div id="chatContainer" class="chat-container">
+                <!-- Welcome Section -->
+                <div class="welcome-section">
+                    <h2 class="welcome-title" data-i18n="welcome-title">
+                        How can I help you with international trade today?
+                    </h2>
+                    <p class="welcome-subtitle" data-i18n="welcome-subtitle">
+                        I'm your AI assistant for buyer development, supplier matching, and trade intelligence.
+                    </p>
+                    
+                    <!-- Quick Actions -->
+                    <div class="quick-actions">
+                        <div class="quick-action-card" onclick="startBuyerDevelopment()">
+                            <div class="quick-action-icon">🔍</div>
+                            <h3 class="quick-action-title" data-i18n="find-buyers">Find Buyers</h3>
+                            <p class="quick-action-desc" data-i18n="find-buyers-desc">
+                                Discover potential buyers for your products in global markets
+                            </p>
+                        </div>
+                        
+                        <div class="quick-action-card" onclick="startSupplierMatching()">
+                            <div class="quick-action-icon">🏭</div>
+                            <h3 class="quick-action-title" data-i18n="find-suppliers">Find Suppliers</h3>
+                            <p class="quick-action-desc" data-i18n="find-suppliers-desc">
+                                Connect with reliable suppliers for your procurement needs
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chat Messages -->
+                <div id="chatMessages" class="chat-messages"></div>
+
+                <!-- Chat Input -->
+                <div class="chat-input-container">
+                    <textarea 
+                        id="chatInput" 
+                        class="chat-input" 
+                        placeholder="Type your message here..." 
+                        data-i18n-placeholder="chat-placeholder"
+                        onkeydown="handleInputKeydown(event)"
+                        oninput="adjustTextareaHeight()"
+                    ></textarea>
+                    
+                    <div class="chat-input-footer">
+                        <div class="input-actions">
+                            <button class="input-btn" onclick="attachFile()" title="Attach file">
+                                <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M16.5 6v11.5c0 2.21-1.79 4-4 4s-4-1.79-4-4V5c0-1.38 1.12-2.5 2.5-2.5s2.5 1.12 2.5 2.5v10.5c0 .55-.45 1-1 1s-1-.45-1-1V6H10v9.5c0 1.38 1.12 2.5 2.5 2.5s2.5-1.12 2.5-2.5V5c0-2.21-1.79-4-4-4S7 2.79 7 5v12.5c0 3.04 2.46 5.5 5.5 5.5s5.5-2.46 5.5-5.5V6h-1.5z"/>
+                                </svg>
+                            </button>
+                        </div>
+                        
+                        <button 
+                            id="sendButton" 
+                            class="send-btn" 
+                            onclick="sendMessage()" 
+                            disabled
+                            data-i18n="send"
+                        >
+                            Send
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column - Agent Progress Panel -->
+        <div class="agent-panel">
+            <div class="agent-panel-header">
+                <div class="agent-panel-title">
+                    <span class="agent-status-indicator" id="agentStatusIndicator"></span>
+                    <span data-i18n="agent-status">AI Agent Status</span>
+                </div>
+                <div class="agent-panel-subtitle" id="agentStatusText">Ready to assist you</div>
+            </div>
+            
+            <div class="agent-panel-content">
+                <!-- Reasoning Section -->
+                <div class="react-section reasoning expanded" id="reasoningSection">
+                    <div class="react-section-header" onclick="toggleReactSection('reasoning')">
+                        <div class="react-section-title">
+                            <div class="react-section-icon">R</div>
+                            <span data-i18n="reasoning">Reasoning</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 1rem;">
+                            <div class="credibility-score">
+                                <div class="star-rating" id="reasoningStars">
+                                    <span class="star">★</span>
+                                    <span class="star">★</span>
+                                    <span class="star">★</span>
+                                    <span class="star">★</span>
+                                    <span class="star empty">★</span>
+                                </div>
+                                <span>4.0/5.0</span>
+                            </div>
+                            <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M7 10l5 5 5-5z"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="react-section-content">
+                        <div class="react-section-body">
+                            <div id="reasoningContent">
+                                <p>分析用户需求：寻找美国LED灯具买家</p>
+                                <p>基于历史数据和市场趋势进行匹配</p>
+                                <p>考虑产品类别、价格范围和MOQ要求</p>
+                            </div>
+                            <div class="data-sources">
+                                <span class="data-source-badge verified">贸易数据库</span>
+                                <span class="data-source-badge">海关记录</span>
+                                <span class="data-source-badge">B2B平台</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Acting Section -->
+                <div class="react-section acting" id="actingSection">
+                    <div class="react-section-header" onclick="toggleReactSection('acting')">
+                        <div class="react-section-title">
+                            <div class="react-section-icon">A</div>
+                            <span data-i18n="acting">Acting</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 1rem;">
+                            <div class="credibility-score">
+                                <div class="star-rating" id="actingStars">
+                                    <span class="star">★</span>
+                                    <span class="star">★</span>
+                                    <span class="star">★</span>
+                                    <span class="star">★</span>
+                                    <span class="star">★</span>
+                                </div>
+                                <span>5.0/5.0</span>
+                            </div>
+                            <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M7 10l5 5 5-5z"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="react-section-content">
+                        <div class="react-section-body">
+                            <div id="actingContent">
+                                <p>正在搜索相关买家数据...</p>
+                                <p>筛选符合条件的公司...</p>
+                                <p>验证联系方式和采购历史...</p>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="actingProgress" style="width: 60%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Observation Section -->
+                <div class="react-section observing" id="observationSection">
+                    <div class="react-section-header" onclick="toggleReactSection('observation')">
+                        <div class="react-section-title">
+                            <div class="react-section-icon">O</div>
+                            <span data-i18n="observation">Observation</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 1rem;">
+                            <div class="credibility-score">
+                                <div class="star-rating" id="observationStars">
+                                    <span class="star">★</span>
+                                    <span class="star">★</span>
+                                    <span class="star">★</span>
+                                    <span class="star">★</span>
+                                    <span class="star empty">★</span>
+                                </div>
+                                <span>4.5/5.0</span>
+                            </div>
+                            <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M7 10l5 5 5-5z"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="react-section-content">
+                        <div class="react-section-body">
+                            <div id="observationContent">
+                                <p>找到5家符合条件的美国LED买家</p>
+                                <p>平均匹配度：92%</p>
+                                <p>年采购总额：$2M-$10M</p>
+                            </div>
+                            <div class="data-sources">
+                                <span class="data-source-badge verified">已验证</span>
+                                <span class="data-source-badge">最新数据</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Activity Log -->
+                <div class="activity-section">
+                    <div class="activity-header">
+                        <div class="activity-title">Recent Activity</div>
+                        <button class="activity-toggle" onclick="toggleActivityLog()">Show All</button>
+                    </div>
+                    <div class="activity-list" id="activityList">
+                        <div class="activity-item">
+                            <div class="activity-dot completed"></div>
+                            <div class="activity-content">
+                                <div class="activity-text">Session started</div>
+                                <div class="activity-time">Just now</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Results Preview -->
+                <div class="results-section" id="resultsSection" style="display: none;">
+                    <div class="results-header">
+                        Preliminary Results
+                        <span class="results-count" id="resultsCount">0</span>
+                    </div>
+                    <div class="results-list" id="resultsList">
+                        <!-- Results will be populated here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Check authentication on page load
+        let isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
+        let currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
+
+        // Show login page or main app based on authentication
+        function initializeApp() {
+            if (isAuthenticated && currentUser) {
+                showMainApp();
+            } else {
+                showLoginPage();
+            }
+        }
+
+        // Show login page
+        function showLoginPage() {
+            document.getElementById('loginPage').style.display = 'flex';
+            document.getElementById('mainApp').style.display = 'none';
+        }
+
+        // Show main app
+        function showMainApp() {
+            document.getElementById('loginPage').style.display = 'none';
+            document.getElementById('mainApp').style.display = 'flex';
+            
+            // Update user info in header if needed
+            if (currentUser) {
+                const userNameElement = document.querySelector('.user-name');
+                if (userNameElement) {
+                    userNameElement.textContent = currentUser.name || currentUser.email;
+                }
+            }
+        }
+
+        // OAuth login functions
+        function loginWithGoogle() {
+            // Simulate OAuth login
+            simulateOAuthLogin('Google');
+        }
+
+        function loginWithGitHub() {
+            // Simulate OAuth login
+            simulateOAuthLogin('GitHub');
+        }
+
+        function loginWithEmail() {
+            const email = document.getElementById('emailInput').value;
+            const password = document.getElementById('passwordInput').value;
+            
+            if (email && password) {
+                // Simulate email login
+                simulateLogin(email);
+            }
+        }
+
+        // Simulate OAuth login process
+        function simulateOAuthLogin(provider) {
+            // In production, this would redirect to OAuth provider
+            const mockUser = {
+                id: 'user_' + Date.now(),
+                email: `user@${provider.toLowerCase()}.com`,
+                name: `${provider} User`,
+                avatar: null,
+                provider: provider
+            };
+            
+            localStorage.setItem('isAuthenticated', 'true');
+            localStorage.setItem('currentUser', JSON.stringify(mockUser));
+            
+            showMainApp();
+        }
+
+        // Simulate email login
+        function simulateLogin(email) {
+            const mockUser = {
+                id: 'user_' + Date.now(),
+                email: email,
+                name: email.split('@')[0],
+                avatar: null,
+                provider: 'email'
+            };
+            
+            localStorage.setItem('isAuthenticated', 'true');
+            localStorage.setItem('currentUser', JSON.stringify(mockUser));
+            
+            showMainApp();
+        }
+
+        // Logout function
+        function logout() {
+            localStorage.removeItem('isAuthenticated');
+            localStorage.removeItem('currentUser');
+            showLoginPage();
+        }
+
+        // Translation dictionary
+        const translations = {
+            'en': {
+                'tagline': 'AI-Powered Global B2B Trade Assistant',
+                'value-proposition': 'Connect with buyers & suppliers worldwide through intelligent conversations',
+                'login-title': 'Welcome to TradeFlow',
+                'continue-with-google': 'Continue with Google',
+                'continue-with-github': 'Continue with GitHub',
+                'or': 'or',
+                'sign-in': 'Sign In',
+                'email-placeholder': 'Email address',
+                'password-placeholder': 'Password',
+                'free-trial-notice': '🎉 <span class="highlight">10 free conversations</span> included with every new account',
+                'sidebar-tagline': 'AI Trade Assistant',
+                'chat': 'AI Assistant',
+                'buyer-development': 'Buyer Development',
+                'supplier-matching': 'Supplier Matching',
+                'history': 'Usage History',
+                'remaining-conversations': 'Remaining Conversations',
+                'upgrade': 'Upgrade Plan',
+                'ai-assistant': 'AI Assistant',
+                'welcome-title': 'How can I help you with international trade today?',
+                'welcome-subtitle': 'I\'m your AI assistant for buyer development, supplier matching, and trade intelligence.',
+                'find-buyers': 'Find Buyers',
+                'find-buyers-desc': 'Discover potential buyers for your products in global markets',
+                'find-suppliers': 'Find Suppliers',
+                'find-suppliers-desc': 'Connect with reliable suppliers for your procurement needs',
+                'chat-placeholder': 'Type your message here...',
+                'send': 'Send',
+                'agent-status': 'AI Agent Status',
+                'reasoning': 'Reasoning',
+                'acting': 'Acting',
+                'observation': 'Observation'
+            },
+            'zh': {
+                'tagline': 'AI驱动的全球B2B贸易助手',
+                'value-proposition': '通过智能对话连接全球买家和供应商',
+                'login-title': '欢迎使用TradeFlow',
+                'continue-with-google': '使用Google账号继续',
+                'continue-with-github': '使用GitHub账号继续',
+                'or': '或',
+                'sign-in': '登录',
+                'email-placeholder': '邮箱地址',
+                'password-placeholder': '密码',
+                'free-trial-notice': '🎉 每个新账户包含<span class="highlight">10次免费对话</span>',
+                'sidebar-tagline': 'AI贸易助手',
+                'chat': 'AI助手',
+                'buyer-development': '买家开发',
+                'supplier-matching': '供应商匹配',
+                'history': '使用历史',
+                'remaining-conversations': '剩余对话次数',
+                'upgrade': '升级套餐',
+                'ai-assistant': 'AI助手',
+                'welcome-title': '今天我如何帮助您处理国际贸易事务？',
+                'welcome-subtitle': '我是您的AI助手，专门协助买家开发、供应商匹配和贸易情报分析。',
+                'find-buyers': '寻找买家',
+                'find-buyers-desc': '在全球市场中发现您产品的潜在买家',
+                'find-suppliers': '寻找供应商',
+                'find-suppliers-desc': '为您的采购需求连接可靠的供应商',
+                'chat-placeholder': '在此输入您的消息...',
+                'send': '发送',
+                'agent-status': 'AI代理状态',
+                'reasoning': '推理',
+                'acting': '执行',
+                'observation': '观察'
+            }
+        };
+
+        // Current language
+        let currentLanguage = 'en';
+        let isThinking = false;
+        let activityCount = 1;
+
+        // Initialize the application
+        function initializeApp() {
+            updateLanguage();
+            enableChatInput();
+            simulateAgentActivity();
+        }
+
+        // Language functions
+        function toggleLanguageDropdown() {
+            // Simple language toggle for demo
+            currentLanguage = currentLanguage === 'en' ? 'zh' : 'en';
+            updateLanguage();
+        }
+
+        function updateLanguage() {
+            const elements = document.querySelectorAll('[data-i18n]');
+            elements.forEach(element => {
+                const key = element.getAttribute('data-i18n');
+                if (translations[currentLanguage][key]) {
+                    element.textContent = translations[currentLanguage][key];
+                }
+            });
+
+            const placeholderElements = document.querySelectorAll('[data-i18n-placeholder]');
+            placeholderElements.forEach(element => {
+                const key = element.getAttribute('data-i18n-placeholder');
+                if (translations[currentLanguage][key]) {
+                    element.placeholder = translations[currentLanguage][key];
+                }
+            });
+
+            document.getElementById('headerLanguage').textContent = 
+                currentLanguage === 'en' ? '🌐 English' : '🌐 中文';
+        }
+
+        // Navigation functions
+        function showChat() {
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            event.target.closest('.nav-item').classList.add('active');
+            document.getElementById('headerTitle').textContent = 
+                currentLanguage === 'en' ? 'AI Assistant' : 'AI助手';
+        }
+
+        function showBuyerDevelopment() {
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            event.target.closest('.nav-item').classList.add('active');
+            document.getElementById('headerTitle').textContent = 
+                currentLanguage === 'en' ? 'Buyer Development' : '买家开发';
+        }
+
+        function showSupplierMatching() {
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            event.target.closest('.nav-item').classList.add('active');
+            document.getElementById('headerTitle').textContent = 
+                currentLanguage === 'en' ? 'Supplier Matching' : '供应商匹配';
+        }
+
+        function showHistory() {
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            event.target.closest('.nav-item').classList.add('active');
+            document.getElementById('headerTitle').textContent = 
+                currentLanguage === 'en' ? 'Usage History' : '使用历史';
+        }
+
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('show');
+        }
+
+        // Chat functions
+        function startBuyerDevelopment() {
+            const chatInput = document.getElementById('chatInput');
+            chatInput.value = currentLanguage === 'en' ? 
+                "I need help finding buyers for my electronics products in European markets." :
+                "我需要帮助在欧洲市场为我的电子产品寻找买家。";
+            sendMessage();
+        }
+
+        function startSupplierMatching() {
+            const chatInput = document.getElementById('chatInput');
+            chatInput.value = currentLanguage === 'en' ? 
+                "I'm looking for reliable suppliers for textile manufacturing in Asia." :
+                "我正在寻找亚洲可靠的纺织品制造供应商。";
+            sendMessage();
+        }
+
+        function enableChatInput() {
+            const chatInput = document.getElementById('chatInput');
+            const sendButton = document.getElementById('sendButton');
+
+            chatInput.addEventListener('input', function() {
+                sendButton.disabled = this.value.trim() === '';
+            });
+        }
+
+        function handleInputKeydown(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                if (!document.getElementById('sendButton').disabled) {
+                    sendMessage();
+                }
+            }
+        }
+
+        function adjustTextareaHeight() {
+            const textarea = document.getElementById('chatInput');
+            textarea.style.height = 'auto';
+            textarea.style.height = Math.min(textarea.scrollHeight, 200) + 'px';
+        }
+
+        function sendMessage() {
+            const chatInput = document.getElementById('chatInput');
+            const message = chatInput.value.trim();
+            
+            if (message === '') return;
+
+            // Add user message
+            addMessage(message, 'user');
+            
+            // Clear input
+            chatInput.value = '';
+            document.getElementById('sendButton').disabled = true;
+            adjustTextareaHeight();
+
+            // Hide welcome section
+            document.querySelector('.welcome-section').style.display = 'none';
+
+            // Start agent processing
+            startAgentProcessing(message);
+
+            // Simulate AI response
+            setTimeout(() => {
+                simulateAIResponse(message);
+            }, 3000);
+        }
+
+        function addMessage(text, sender) {
+            const chatMessages = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}`;
+            
+            const avatar = document.createElement('div');
+            avatar.className = 'message-avatar';
+            avatar.textContent = sender === 'user' ? 'M' : 'AI';
+            
+            const content = document.createElement('div');
+            content.className = 'message-content';
+            
+            const messageText = document.createElement('div');
+            messageText.className = 'message-text';
+            messageText.textContent = text;
+            
+            const messageTime = document.createElement('div');
+            messageTime.className = 'message-time';
+            messageTime.textContent = new Date().toLocaleTimeString();
+            
+            content.appendChild(messageText);
+            content.appendChild(messageTime);
+            messageDiv.appendChild(avatar);
+            messageDiv.appendChild(content);
+            
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        // Toggle ReAct section expansion
+        function toggleReactSection(sectionName) {
+            const section = document.getElementById(sectionName + 'Section');
+            if (section) {
+                section.classList.toggle('expanded');
+            }
+        }
+
+        // Update ReAct status
+        function updateReactStatus(phase, content, credibility) {
+            const phaseMap = {
+                'reasoning': { indicator: 'reasoning', icon: 'R', color: '#3b82f6' },
+                'acting': { indicator: 'acting', icon: 'A', color: '#f97316' },
+                'observing': { indicator: 'observing', icon: 'O', color: '#10b981' }
+            };
+            
+            // Update status indicator
+            const statusIndicator = document.getElementById('agentStatusIndicator');
+            statusIndicator.className = 'agent-status-indicator ' + phaseMap[phase].indicator;
+            
+            // Update status text
+            const statusText = document.getElementById('agentStatusText');
+            statusText.textContent = `${phase.charAt(0).toUpperCase() + phase.slice(1)}...`;
+            
+            // Update section content
+            const contentElement = document.getElementById(phase + 'Content');
+            if (contentElement) {
+                contentElement.innerHTML = content;
+            }
+            
+            // Update credibility if provided
+            if (credibility) {
+                updateCredibilityScore(phase + 'Stars', credibility);
+            }
+            
+            // Make section active
+            document.querySelectorAll('.react-section').forEach(s => s.classList.remove('active'));
+            const activeSection = document.getElementById(phase + 'Section');
+            if (activeSection) {
+                activeSection.classList.add('active');
+                activeSection.classList.add('expanded');
+            }
+        }
+
+        // Update credibility score stars
+        function updateCredibilityScore(starsId, score) {
+            const starsContainer = document.getElementById(starsId);
+            if (!starsContainer) return;
+            
+            const stars = starsContainer.querySelectorAll('.star');
+            const fullStars = Math.floor(score);
+            
+            stars.forEach((star, index) => {
+                if (index < fullStars) {
+                    star.classList.remove('empty');
+                } else {
+                    star.classList.add('empty');
+                }
+            });
+        }
+
+        // Agent Panel Functions
+        function startAgentProcessing(message) {
+            // Phase 1: Reasoning
+            updateReactStatus('reasoning', 
+                currentLanguage === 'en' 
+                    ? `<p>Analyzing query: "${message}"</p>
+                       <p>Identifying intent: Trade partner search</p>
+                       <p>Determining search parameters</p>`
+                    : `<p>分析查询: "${message}"</p>
+                       <p>识别意图: 寻找贸易伙伴</p>
+                       <p>确定搜索参数和数据源</p>`, 
+                4);
+            
+            // Add activity
+            addActivity(currentLanguage === 'en' ? 'New query received' : '收到新查询', 'completed');
+            addActivity(currentLanguage === 'en' ? 'Analyzing request...' : '正在分析请求...', 'in-progress');
+            
+            // Phase 2: Acting (after 1.5s)
+            setTimeout(() => {
+                updateReactStatus('acting', 
+                    currentLanguage === 'en'
+                        ? `<p>Searching global trade database...</p>
+                           <p>Matching relevant companies...</p>
+                           <p>Verifying data accuracy...</p>`
+                        : `<p>搜索全球贸易数据库...</p>
+                           <p>匹配相关公司资料...</p>
+                           <p>验证数据准确性...</p>`, 
+                    5);
+                
+                addActivity(currentLanguage === 'en' ? 'Database search completed' : '数据库搜索完成', 'completed');
+            }, 1500);
+            
+            // Phase 3: Observation (after 3s)
+            setTimeout(() => {
+                const resultCount = Math.floor(Math.random() * 10 + 5);
+                const matchRate = Math.floor(Math.random() * 20 + 80);
+                
+                updateReactStatus('observing', 
+                    currentLanguage === 'en'
+                        ? `<p>Found ${resultCount} matching results</p>
+                           <p>Average match rate: ${matchRate}%</p>
+                           <p>Data updated: ${new Date().toLocaleDateString()}</p>`
+                        : `<p>找到 ${resultCount} 个匹配结果</p>
+                           <p>平均匹配度: ${matchRate}%</p>
+                           <p>数据更新时间: ${new Date().toLocaleDateString()}</p>`, 
+                    4.5);
+                
+                addActivity(currentLanguage === 'en' ? 'Results prepared' : '结果已准备完成', 'completed');
+            }, 3000);
+        }
+
+        function updateAgentStatus(status, text) {
+            const indicator = document.getElementById('agentStatusIndicator');
+            const statusText = document.getElementById('agentStatusText');
+            
+            indicator.className = `agent-status-indicator ${status}`;
+            statusText.textContent = text;
+        }
+
+        function showCurrentOperation() {
+            const operation = document.getElementById('currentOperation');
+            const operationIcon = document.getElementById('operationIcon');
+            const operationTitle = document.getElementById('operationTitle');
+            const operationDescription = document.getElementById('operationDescription');
+            
+            operation.style.display = 'block';
+            operationIcon.textContent = '🔍';
+            operationTitle.textContent = currentLanguage === 'en' ? 'Searching global database...' : '正在搜索全球数据库...';
+            operationDescription.textContent = currentLanguage === 'en' ? 
+                'Analyzing trade data and supplier networks' : '分析贸易数据和供应商网络';
+        }
+
+        function showThinkingSection() {
+            const thinkingSection = document.getElementById('thinkingSection');
+            const thinkingContent = document.getElementById('thinkingContent');
+            
+            thinkingSection.style.display = 'block';
+            
+            const thinkingTexts = currentLanguage === 'en' ? [
+                'Analyzing your requirements and searching through multiple data sources...',
+                'Cross-referencing supplier capabilities with your needs...',
+                'Evaluating market trends and competitive landscape...',
+                'Preparing personalized recommendations...'
+            ] : [
+                '正在分析您的需求并搜索多个数据源...',
+                '将供应商能力与您的需求进行交叉引用...',
+                '评估市场趋势和竞争格局...',
+                '准备个性化推荐...'
+            ];
+            
+            let textIndex = 0;
+            const thinkingInterval = setInterval(() => {
+                thinkingContent.textContent = thinkingTexts[textIndex];
+                textIndex = (textIndex + 1) % thinkingTexts.length;
+            }, 2000);
+            
+            // Stop thinking after response
+            setTimeout(() => {
+                clearInterval(thinkingInterval);
+                thinkingSection.style.display = 'none';
+            }, 8000);
+        }
+
+        function simulateProgress() {
+            const progressFill = document.getElementById('progressFill');
+            const progressText = document.getElementById('progressText');
+            
+            let progress = 0;
+            const progressInterval = setInterval(() => {
+                progress += Math.random() * 15;
+                if (progress > 100) progress = 100;
+                
+                progressFill.style.width = progress + '%';
+                progressText.textContent = `${Math.round(progress)}% ${currentLanguage === 'en' ? 'complete' : '完成'}`;
+                
+                if (progress >= 100) {
+                    clearInterval(progressInterval);
+                    setTimeout(() => {
+                        document.getElementById('currentOperation').style.display = 'none';
+                    }, 1000);
+                }
+            }, 300);
+        }
+
+        function addActivity(text, status) {
+            const activityList = document.getElementById('activityList');
+            const activityItem = document.createElement('div');
+            activityItem.className = 'activity-item';
+            
+            activityItem.innerHTML = `
+                <div class="activity-dot ${status}"></div>
+                <div class="activity-content">
+                    <div class="activity-text">${text}</div>
+                    <div class="activity-time">Just now</div>
+                </div>
+            `;
+            
+            activityList.insertBefore(activityItem, activityList.firstChild);
+            activityCount++;
+            
+            // Keep only last 10 activities
+            if (activityCount > 10) {
+                activityList.removeChild(activityList.lastChild);
+            }
+        }
+
+        function showResults(results) {
+            const resultsSection = document.getElementById('resultsSection');
+            const resultsCount = document.getElementById('resultsCount');
+            const resultsList = document.getElementById('resultsList');
+            
+            resultsSection.style.display = 'block';
+            resultsCount.textContent = results.length;
+            
+            resultsList.innerHTML = '';
+            results.forEach(result => {
+                const resultItem = document.createElement('div');
+                resultItem.className = 'result-item';
+                resultItem.innerHTML = `
+                    <div class="result-title">${result.title}</div>
+                    <div class="result-desc">${result.description}</div>
+                `;
+                resultsList.appendChild(resultItem);
+            });
+        }
+
+        function simulateAIResponse(userMessage) {
+            // Simulate different responses based on message content
+            let response = '';
+            let results = [];
+            
+            if (userMessage.toLowerCase().includes('buyer') || userMessage.includes('买家')) {
+                response = currentLanguage === 'en' ? 
+                    "I've found several potential buyers for your electronics products in European markets. Here are some key opportunities I've identified based on current market trends and buyer activity." :
+                    "我已经在欧洲市场为您的电子产品找到了几个潜在买家。以下是我基于当前市场趋势和买家活动识别出的一些关键机会。";
+                
+                results = [
+                    {
+                        title: currentLanguage === 'en' ? 'TechDistrib Europe GmbH' : '欧洲科技分销有限公司',
+                        description: currentLanguage === 'en' ? 'German distributor seeking consumer electronics' : '寻求消费电子产品的德国分销商'
+                    },
+                    {
+                        title: currentLanguage === 'en' ? 'Nordic Electronics Solutions' : '北欧电子解决方案公司',
+                        description: currentLanguage === 'en' ? 'Scandinavian retailer expanding product range' : '正在扩大产品范围的斯堪的纳维亚零售商'
+                    }
+                ];
+            } else {
+                response = currentLanguage === 'en' ? 
+                    "I've identified several reliable textile suppliers in Asia that match your requirements. These suppliers have been vetted for quality, compliance, and production capacity." :
+                    "我已经识别出亚洲几家符合您要求的可靠纺织品供应商。这些供应商在质量、合规性和生产能力方面都经过了审查。";
+                
+                results = [
+                    {
+                        title: currentLanguage === 'en' ? 'Asian Textile Manufacturing Co.' : '亚洲纺织制造公司',
+                        description: currentLanguage === 'en' ? 'ISO certified facility with 10+ years experience' : 'ISO认证工厂，拥有10+年经验'
+                    },
+                    {
+                        title: currentLanguage === 'en' ? 'Premium Fabrics Ltd.' : '优质面料有限公司',
+                        description: currentLanguage === 'en' ? 'Specialized in sustainable textile production' : '专业从事可持续纺织品生产'
+                    }
+                ];
+            }
+            
+            // Add completion activities
+            addActivity(currentLanguage === 'en' ? 'Database search completed' : '数据库搜索完成', 'completed');
+            addActivity(currentLanguage === 'en' ? 'Results analyzed and ranked' : '结果已分析并排序', 'completed');
+            addActivity(currentLanguage === 'en' ? 'Response generated' : '响应已生成', 'completed');
+            
+            // Show results
+            showResults(results);
+            
+            // Update agent status
+            updateAgentStatus('idle', currentLanguage === 'en' ? 'Ready for next request' : '准备处理下一个请求');
+            
+            // Add AI response
+            addMessage(response, 'assistant');
+            
+            // Reset ReAct sections after a delay
+            setTimeout(() => {
+                document.querySelectorAll('.react-section').forEach(s => s.classList.remove('active'));
+            }, 2000);
+        }
+
+        function simulateAgentActivity() {
+            // Simulate periodic agent activity for demo
+            setInterval(() => {
+                if (!isThinking && Math.random() > 0.7) {
+                    const activities = currentLanguage === 'en' ? [
+                        'Updated market intelligence database',
+                        'Refreshed supplier credentials',
+                        'Analyzed global trade patterns',
+                        'Updated buyer preferences data'
+                    ] : [
+                        '更新了市场情报数据库',
+                        '刷新了供应商资质',
+                        '分析了全球贸易模式',
+                        '更新了买家偏好数据'
+                    ];
+                    
+                    const randomActivity = activities[Math.floor(Math.random() * activities.length)];
+                    addActivity(randomActivity, 'completed');
+                }
+            }, 30000); // Every 30 seconds
+        }
+
+        function toggleActivityLog() {
+            const button = document.querySelector('.activity-toggle');
+            const activityList = document.getElementById('activityList');
+            
+            if (activityList.style.maxHeight === 'none') {
+                activityList.style.maxHeight = '300px';
+                button.textContent = currentLanguage === 'en' ? 'Show All' : '显示全部';
+            } else {
+                activityList.style.maxHeight = 'none';
+                button.textContent = currentLanguage === 'en' ? 'Show Less' : '收起';
+            }
+        }
+
+        function attachFile() {
+            // Placeholder for file attachment functionality
+            alert(currentLanguage === 'en' ? 'File attachment feature coming soon!' : '文件附件功能即将推出！');
+        }
+
+        function showBilling() {
+            // Placeholder for billing functionality
+            alert(currentLanguage === 'en' ? 'Billing management coming soon!' : '账单管理功能即将推出！');
+        }
+
+        // Initialize the application when the page loads
+        document.addEventListener('DOMContentLoaded', initializeApp);
+    </script>
+</body>
+</html>
