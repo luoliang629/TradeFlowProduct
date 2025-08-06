@@ -1263,6 +1263,259 @@
             }
         }
 
+        /* User Panel Overlay and Animation */
+        .user-panel-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 100;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease-out;
+        }
+
+        .user-panel-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .user-panel-popup {
+            position: fixed;
+            bottom: 20px;
+            left: 300px;
+            width: 320px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            box-shadow: var(--shadow-lg);
+            z-index: 101;
+            transform: translateY(20px) scale(0.95);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease-out;
+        }
+
+        .user-panel-popup.active {
+            transform: translateY(0) scale(1);
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .user-panel-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-panel-info {
+            flex: 1;
+        }
+
+        .user-panel-name {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .user-panel-email {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .user-panel-close {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: var(--radius-md);
+            color: var(--text-secondary);
+            transition: all 0.2s;
+        }
+
+        .user-panel-close:hover {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+        }
+
+        .user-panel-body {
+            padding: 1.5rem;
+        }
+
+        .user-panel-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .user-panel-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .user-panel-section-title {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.75rem;
+        }
+
+        .credit-display {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 1rem;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .credit-amount {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 0.25rem;
+        }
+
+        .credit-label {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .language-options {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .language-option-btn {
+            flex: 1;
+            padding: 0.75rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .language-option-btn.active {
+            background: var(--primary-color);
+            color: var(--text-inverse);
+            border-color: var(--primary-color);
+        }
+
+        .language-option-btn:hover:not(.active) {
+            background: var(--bg-tertiary);
+            border-color: var(--border-hover);
+        }
+
+        .user-panel-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .panel-btn {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .panel-btn:hover {
+            background: var(--bg-secondary);
+            border-color: var(--border-hover);
+        }
+
+        .panel-btn.primary {
+            background: var(--primary-color);
+            color: var(--text-inverse);
+            border-color: var(--primary-color);
+        }
+
+        .panel-btn.primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .panel-btn.danger {
+            color: var(--error-color);
+            border-color: var(--error-color);
+        }
+
+        .panel-btn.danger:hover {
+            background: var(--error-color);
+            color: var(--text-inverse);
+        }
+
+        /* Updated sidebar user info - compact display */
+        .user-info-compact {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: var(--radius-lg);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .user-info-compact:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .user-info-text {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .user-name-compact {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-inverse);
+            margin-bottom: 0.25rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .credit-compact {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .expand-icon {
+            width: 20px;
+            height: 20px;
+            color: rgba(255, 255, 255, 0.6);
+            transition: transform 0.2s;
+        }
+
+        .user-info-compact:hover .expand-icon {
+            color: rgba(255, 255, 255, 0.9);
+            transform: rotate(90deg);
+        }
+
+        /* Mobile responsiveness for user panel */
+        @media (max-width: 768px) {
+            .user-panel-popup {
+                left: 20px;
+                right: 20px;
+                width: auto;
+                max-width: none;
+            }
+        }
+
         /* Utility Classes */
         .btn-primary {
             background: var(--primary-color);
@@ -1355,7 +1608,7 @@
                 <!-- Free Trial Notice -->
                 <div class="free-trial-notice">
                     <p data-i18n="free-trial-notice">
-                        🎉 <span class="highlight">10 free conversations</span> included with every new account
+                        🎉 <span class="highlight">100 free credits</span> included with every new account
                     </p>
                 </div>
             </div>
@@ -1402,17 +1655,15 @@
             </nav>
             
             <div class="sidebar-footer">
-                <div class="user-info">
+                <div class="user-info-compact" id="userInfoCompact" onclick="toggleUserPanel()">
                     <div class="user-avatar" id="userAvatar">M</div>
-                    <div class="user-details">
-                        <h4 id="userName">Michael Chen</h4>
-                        <p id="userEmail">michael@example.com</p>
+                    <div class="user-info-text">
+                        <div class="user-name-compact" id="userName">Michael Chen</div>
+                        <div class="credit-compact" id="creditDisplay" data-i18n="credit-balance-compact">70 Credits</div>
                     </div>
-                </div>
-                
-                <div class="usage-info">
-                    <h5 data-i18n="remaining-conversations">Remaining Conversations</h5>
-                    <div class="usage-count" id="usageCount">7 / 10</div>
+                    <svg class="expand-icon" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/>
+                    </svg>
                 </div>
                 
                 <button class="btn-primary" onclick="showBilling()" data-i18n="upgrade">
@@ -1435,9 +1686,7 @@
                 </div>
                 
                 <div class="header-right">
-                    <button class="language-btn" onclick="toggleLanguageDropdown()">
-                        <span id="headerLanguage">🌐 English</span>
-                    </button>
+                    <!-- Language button removed, moved to user panel -->
                 </div>
             </div>
 
@@ -1665,6 +1914,68 @@
         </div>
     </div>
 
+    <!-- User Panel Overlay and Popup -->
+    <div id="userPanelOverlay" class="user-panel-overlay" onclick="closeUserPanel()">
+        <div class="user-panel-popup" id="userPanelPopup" onclick="event.stopPropagation()">
+            <div class="user-panel-header">
+                <div class="user-avatar" id="panelUserAvatar">M</div>
+                <div class="user-panel-info">
+                    <div class="user-panel-name" id="panelUserName">Michael Chen</div>
+                    <div class="user-panel-email" id="panelUserEmail">michael@example.com</div>
+                </div>
+                <button class="user-panel-close" onclick="closeUserPanel()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="user-panel-body">
+                <div class="user-panel-section">
+                    <div class="user-panel-section-title" data-i18n="credit-balance">Credit Balance</div>
+                    <div class="credit-display">
+                        <div class="credit-amount" id="panelCreditAmount">70</div>
+                        <div class="credit-label" data-i18n="credits">Credits</div>
+                    </div>
+                </div>
+                
+                <div class="user-panel-section">
+                    <div class="user-panel-section-title" data-i18n="language-settings">Language Settings</div>
+                    <div class="language-options">
+                        <button class="language-option-btn active" id="langEnBtn" onclick="switchLanguageInPanel('en')">
+                            🇺🇸 English
+                        </button>
+                        <button class="language-option-btn" id="langZhBtn" onclick="switchLanguageInPanel('zh')">
+                            🇨🇳 中文
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="user-panel-section">
+                    <div class="user-panel-actions">
+                        <button class="panel-btn" onclick="showAccountSettings()">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12,15.5A3.5,3.5 0 0,1 8.5,12A3.5,3.5 0 0,1 12,8.5A3.5,3.5 0 0,1 15.5,12A3.5,3.5 0 0,1 12,15.5M19.43,12.97C19.47,12.65 19.5,12.33 19.5,12C19.5,11.67 19.47,11.34 19.43,11.03L21.54,9.37C21.73,9.22 21.78,8.95 21.66,8.73L19.66,5.27C19.54,5.05 19.27,4.96 19.05,5.05L16.56,6.05C16.04,5.66 15.5,5.32 14.87,5.07L14.5,2.42C14.46,2.18 14.25,2 14,2H10C9.75,2 9.54,2.18 9.5,2.42L9.13,5.07C8.5,5.32 7.96,5.66 7.44,6.05L4.95,5.05C4.73,4.96 4.46,5.05 4.34,5.27L2.34,8.73C2.22,8.95 2.27,9.22 2.46,9.37L4.57,11.03C4.53,11.34 4.5,11.67 4.5,12C4.5,12.33 4.53,12.65 4.57,12.97L2.46,14.63C2.27,14.78 2.22,15.05 2.34,15.27L4.34,18.73C4.46,18.95 4.73,19.03 4.95,18.95L7.44,17.94C7.96,18.34 8.5,18.68 9.13,18.93L9.5,21.58C9.54,21.82 9.75,22 10,22H14C14.25,22 14.46,21.82 14.5,21.58L14.87,18.93C15.5,18.68 16.04,18.34 16.56,17.94L19.05,18.95C19.27,19.03 19.54,18.95 19.66,18.73L21.66,15.27C21.78,15.05 21.73,14.78 21.54,14.63L19.43,12.97Z"/>
+                            </svg>
+                            <span data-i18n="account-settings">Account Settings</span>
+                        </button>
+                        <button class="panel-btn primary" onclick="showBilling()">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4M12,6A6,6 0 0,0 6,12A6,6 0 0,0 12,18A6,6 0 0,0 18,12A6,6 0 0,0 12,6M12,8A4,4 0 0,1 16,12A4,4 0 0,1 12,16A4,4 0 0,1 8,12A4,4 0 0,1 12,8Z"/>
+                            </svg>
+                            <span data-i18n="upgrade">Upgrade Plan</span>
+                        </button>
+                        <button class="panel-btn danger" onclick="signOut()">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M16,17V14H9V10H16V7L21,12L16,17M14,2A2,2 0 0,1 16,4V6H14V4H5V20H14V18H16V20A2,2 0 0,1 14,22H5A2,2 0 0,1 3,20V4A2,2 0 0,1 5,2H14Z"/>
+                            </svg>
+                            <span data-i18n="sign-out">Sign Out</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         // Check authentication on page load
         let isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
@@ -1772,13 +2083,19 @@
                 'sign-in': 'Sign In',
                 'email-placeholder': 'Email address',
                 'password-placeholder': 'Password',
-                'free-trial-notice': '🎉 <span class="highlight">10 free conversations</span> included with every new account',
+                'free-trial-notice': '🎉 <span class="highlight">100 free credits</span> included with every new account',
                 'sidebar-tagline': 'AI Trade Assistant',
                 'chat': 'AI Assistant',
                 'buyer-development': 'Buyer Development',
                 'supplier-matching': 'Supplier Matching',
                 'history': 'Usage History',
-                'remaining-conversations': 'Remaining Conversations',
+                'credit-balance': 'Credit Balance',
+                'credits': 'Credits',
+                'free-credits': '100 free credits',
+                'account-settings': 'Account Settings',
+                'sign-out': 'Sign Out',
+                'language-settings': 'Language Settings',
+                'credit-balance-compact': 'Credits',
                 'upgrade': 'Upgrade Plan',
                 'ai-assistant': 'AI Assistant',
                 'welcome-title': 'How can I help you with international trade today?',
@@ -1804,13 +2121,19 @@
                 'sign-in': '登录',
                 'email-placeholder': '邮箱地址',
                 'password-placeholder': '密码',
-                'free-trial-notice': '🎉 每个新账户包含<span class="highlight">10次免费对话</span>',
+                'free-trial-notice': '🎉 每个新账户包含<span class="highlight">100免费积分</span>',
                 'sidebar-tagline': 'AI贸易助手',
                 'chat': 'AI助手',
                 'buyer-development': '买家开发',
                 'supplier-matching': '供应商匹配',
                 'history': '使用历史',
-                'remaining-conversations': '剩余对话次数',
+                'credit-balance': '积分余额',
+                'credits': '积分',
+                'free-credits': '100免费积分',
+                'account-settings': '账户设置',
+                'sign-out': '登出',
+                'language-settings': '语言设置',
+                'credit-balance-compact': '积分',
                 'upgrade': '升级套餐',
                 'ai-assistant': 'AI助手',
                 'welcome-title': '今天我如何帮助您处理国际贸易事务？',
@@ -2333,6 +2656,96 @@
         function showBilling() {
             // Placeholder for billing functionality
             alert(currentLanguage === 'en' ? 'Billing management coming soon!' : '账单管理功能即将推出！');
+        }
+
+        // User Panel Functions
+        function toggleUserPanel() {
+            const overlay = document.getElementById('userPanelOverlay');
+            const popup = document.getElementById('userPanelPopup');
+            
+            overlay.classList.add('active');
+            popup.classList.add('active');
+            
+            // Add escape key listener
+            document.addEventListener('keydown', handleEscapeKey);
+        }
+
+        function closeUserPanel() {
+            const overlay = document.getElementById('userPanelOverlay');
+            const popup = document.getElementById('userPanelPopup');
+            
+            overlay.classList.remove('active');
+            popup.classList.remove('active');
+            
+            // Remove escape key listener
+            document.removeEventListener('keydown', handleEscapeKey);
+        }
+
+        function handleEscapeKey(event) {
+            if (event.key === 'Escape') {
+                closeUserPanel();
+            }
+        }
+
+        function switchLanguageInPanel(lang) {
+            // Update language
+            currentLanguage = lang;
+            updateLanguage();
+            
+            // Update language button states
+            document.getElementById('langEnBtn').classList.toggle('active', lang === 'en');
+            document.getElementById('langZhBtn').classList.toggle('active', lang === 'zh');
+        }
+
+        function showAccountSettings() {
+            closeUserPanel();
+            alert(currentLanguage === 'en' ? 'Account settings coming soon!' : '账户设置功能即将推出！');
+        }
+
+        function signOut() {
+            if (confirm(currentLanguage === 'en' ? 'Are you sure you want to sign out?' : '确定要登出吗？')) {
+                closeUserPanel();
+                logout();
+            }
+        }
+
+        // Update user panel information
+        function updateUserPanelInfo() {
+            if (currentUser) {
+                // Update avatar initials
+                const initials = (currentUser.name || currentUser.email || 'U').charAt(0).toUpperCase();
+                document.getElementById('userAvatar').textContent = initials;
+                document.getElementById('panelUserAvatar').textContent = initials;
+                
+                // Update user name and email
+                document.getElementById('userName').textContent = currentUser.name || currentUser.email;
+                document.getElementById('panelUserName').textContent = currentUser.name || currentUser.email;
+                document.getElementById('panelUserEmail').textContent = currentUser.email;
+                
+                // Update credit display
+                const credits = currentUser.credits || 70;
+                document.getElementById('creditDisplay').textContent = `${credits} ${currentLanguage === 'en' ? 'Credits' : '积分'}`;
+                document.getElementById('panelCreditAmount').textContent = credits;
+            }
+        }
+
+        // Override the original showMainApp function to include user panel updates
+        const originalShowMainApp = showMainApp;
+        function showMainApp() {
+            originalShowMainApp();
+            updateUserPanelInfo();
+        }
+
+        // Override the updateLanguage function to update credit display
+        const originalUpdateLanguage = updateLanguage;
+        function updateLanguage() {
+            originalUpdateLanguage();
+            
+            // Update credit display language
+            if (currentUser) {
+                const credits = currentUser.credits || 70;
+                document.getElementById('creditDisplay').textContent = `${credits} ${currentLanguage === 'en' ? 'Credits' : '积分'}`;
+            }
         }
 
         // Initialize the application when the page loads
