@@ -1543,8 +1543,10 @@
 
                 <!-- Free Trial Notice -->
                 <div class="free-trial-notice">
-                    <p data-i18n="free-trial-notice">
-                        🎉 <span class="highlight">100 free credits</span> included with every new account
+                    <p>
+                        <span data-i18n="free-trial-emoji">🎉</span>
+                        <span class="highlight" data-i18n="free-trial-credits">100 free credits</span>
+                        <span data-i18n="free-trial-text">included with every new account</span>
                     </p>
                 </div>
             </div>
@@ -1995,7 +1997,9 @@
                 'sign-in': 'Sign In',
                 'email-placeholder': 'Email address',
                 'password-placeholder': 'Password',
-                'free-trial-notice': '🎉 <span class="highlight">100 free credits</span> included with every new account',
+                'free-trial-emoji': '🎉',
+                'free-trial-credits': '100 free credits',
+                'free-trial-text': 'included with every new account',
                 'sidebar-tagline': 'AI Trade Assistant',
                 'chat': 'AI Assistant',
                 'buyer-development': 'Buyer Development',
@@ -2033,7 +2037,9 @@
                 'sign-in': '登录',
                 'email-placeholder': '邮箱地址',
                 'password-placeholder': '密码',
-                'free-trial-notice': '🎉 每个新账户包含<span class="highlight">100免费积分</span>',
+                'free-trial-emoji': '🎉',
+                'free-trial-credits': '100免费积分',
+                'free-trial-text': '每个新账户包含',
                 'sidebar-tagline': 'AI贸易助手',
                 'chat': 'AI助手',
                 'buyer-development': '买家开发',
@@ -2663,7 +2669,13 @@
             elements.forEach(element => {
                 const key = element.getAttribute('data-i18n');
                 if (translations[currentLanguage][key]) {
-                    element.textContent = translations[currentLanguage][key];
+                    // Check if the translation contains HTML
+                    const translation = translations[currentLanguage][key];
+                    if (translation.includes('<') && translation.includes('>')) {
+                        element.innerHTML = translation;
+                    } else {
+                        element.textContent = translation;
+                    }
                 }
             });
 
