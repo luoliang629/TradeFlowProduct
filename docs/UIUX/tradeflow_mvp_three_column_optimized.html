@@ -391,30 +391,23 @@
             border-radius: 3px;
         }
 
-        /* 时间分组 */
-        .chat-group {
-            margin-bottom: 1rem;
+        /* 对话列表容器 */
+        .chat-list-container {
+            padding: 0.5rem;
         }
 
-        .chat-group-title {
-            font-size: 0.75rem;
-            font-weight: 600;
-            color: rgba(255, 255, 255, 0.6);
-            margin-bottom: 0.5rem;
-            padding: 0 0.5rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-
-        /* 对话项 */
+        /* 对话项 - 更紧凑 */
         .chat-item {
-            padding: 0.75rem;
-            margin-bottom: 0.25rem;
-            border-radius: 0.5rem;
+            padding: 0.5rem 0.75rem;
+            margin-bottom: 2px;
+            border-radius: 0.375rem;
             cursor: pointer;
             transition: all 0.2s ease;
             position: relative;
             border: 1px solid transparent;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
         }
 
         .chat-item:hover {
@@ -427,40 +420,35 @@
             border-color: var(--primary-color);
         }
 
+        .chat-item-content {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
         .chat-item-title {
-            font-size: 0.875rem;
-            font-weight: 500;
+            font-size: 0.8125rem;
+            font-weight: 400;
             color: var(--text-inverse);
-            margin-bottom: 0.25rem;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
-        }
-
-        .chat-item-preview {
-            font-size: 0.75rem;
-            color: rgba(255, 255, 255, 0.6);
-            line-height: 1.3;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-            margin-bottom: 0.25rem;
+            flex: 1;
         }
 
         .chat-item-time {
-            font-size: 0.6875rem;
-            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.625rem;
+            color: rgba(255, 255, 255, 0.4);
+            white-space: nowrap;
         }
 
         /* 操作按钮 */
         .chat-item-actions {
-            position: absolute;
-            right: 0.5rem;
-            top: 50%;
-            transform: translateY(-50%);
             display: none;
             gap: 0.25rem;
+            margin-left: 0.5rem;
         }
 
         .chat-item:hover .chat-item-actions {
@@ -1763,22 +1751,8 @@
 
                 <!-- 对话列表 -->
                 <div class="chat-list" id="chatList">
-                    <!-- 今天 -->
-                    <div class="chat-group" id="todayGroup" style="display: none;">
-                        <div class="chat-group-title" data-i18n="today">今天</div>
-                        <div id="todayChats"></div>
-                    </div>
-
-                    <!-- 昨天 -->
-                    <div class="chat-group" id="yesterdayGroup" style="display: none;">
-                        <div class="chat-group-title" data-i18n="yesterday">昨天</div>
-                        <div id="yesterdayChats"></div>
-                    </div>
-
-                    <!-- 更早 -->
-                    <div class="chat-group" id="earlierGroup" style="display: none;">
-                        <div class="chat-group-title" data-i18n="earlier">更早</div>
-                        <div id="earlierChats"></div>
+                    <div class="chat-list-container" id="chatContainer">
+                        <!-- 对话项将在这里动态插入 -->
                     </div>
 
                     <!-- 空状态 -->
@@ -2473,66 +2447,42 @@
         }
 
         // 渲染对话列表
+        // 渲染对话列表 - 紧凑版本
         function renderChatList(chatList = chats) {
-            const todayChats = document.getElementById('todayChats');
-            const yesterdayChats = document.getElementById('yesterdayChats');
-            const earlierChats = document.getElementById('earlierChats');
+            const chatContainer = document.getElementById('chatContainer');
             const noChats = document.getElementById('noChats');
             
-            // 清空
-            todayChats.innerHTML = '';
-            yesterdayChats.innerHTML = '';
-            earlierChats.innerHTML = '';
+            // 清空容器
+            if (chatContainer) chatContainer.innerHTML = '';
             
             if (chatList.length === 0) {
-                document.getElementById('todayGroup').style.display = 'none';
-                document.getElementById('yesterdayGroup').style.display = 'none';
-                document.getElementById('earlierGroup').style.display = 'none';
-                noChats.style.display = 'block';
+                if (noChats) noChats.style.display = 'block';
                 return;
             }
             
-            noChats.style.display = 'none';
+            if (noChats) noChats.style.display = 'none';
             
-            const now = Date.now();
-            const oneDayAgo = now - 24 * 60 * 60 * 1000;
-            const twoDaysAgo = now - 48 * 60 * 60 * 1000;
-            
-            let hasToday = false, hasYesterday = false, hasEarlier = false;
-            
+            // 直接添加所有对话，按时间倒序
             chatList.forEach(chat => {
                 const chatElement = createChatElement(chat);
-                
-                if (chat.timestamp > oneDayAgo) {
-                    todayChats.appendChild(chatElement);
-                    hasToday = true;
-                } else if (chat.timestamp > twoDaysAgo) {
-                    yesterdayChats.appendChild(chatElement);
-                    hasYesterday = true;
-                } else {
-                    earlierChats.appendChild(chatElement);
-                    hasEarlier = true;
-                }
+                if (chatContainer) chatContainer.appendChild(chatElement);
             });
-            
-            document.getElementById('todayGroup').style.display = hasToday ? 'block' : 'none';
-            document.getElementById('yesterdayGroup').style.display = hasYesterday ? 'block' : 'none';
-            document.getElementById('earlierGroup').style.display = hasEarlier ? 'block' : 'none';
         }
 
-        // 创建对话元素
+        // 创建对话元素 - 紧凑版本
         function createChatElement(chat) {
             const div = document.createElement('div');
             div.className = `chat-item ${currentChatId === chat.id ? 'active' : ''}`;
             div.setAttribute('data-chat-id', chat.id);
             div.onclick = () => switchChat(chat.id);
             
-            const timeAgo = getTimeAgo(chat.timestamp);
+            const timeAgo = getCompactTime(chat.timestamp);
             
             div.innerHTML = `
-                <div class="chat-item-title">${chat.title}</div>
-                <div class="chat-item-preview">${chat.lastMessage}</div>
-                <div class="chat-item-time">${timeAgo}</div>
+                <div class="chat-item-content">
+                    <div class="chat-item-title">${chat.title}</div>
+                    <div class="chat-item-time">${timeAgo}</div>
+                </div>
                 <div class="chat-item-actions">
                     <button class="chat-action-btn" onclick="event.stopPropagation(); renameChat('${chat.id}')" title="${
                         currentLanguage === 'en' ? 'Rename' : '重命名'
@@ -2555,6 +2505,7 @@
         }
 
         // 获取时间标记
+        // 获取时间标记
         function getTimeAgo(timestamp) {
             const now = Date.now();
             const diff = now - timestamp;
@@ -2573,6 +2524,22 @@
                 if (hours < 24) return `${hours}小时前`;
                 return `${days}天前`;
             }
+        }
+        
+        // 获取更紧凑的时间显示
+        function getCompactTime(timestamp) {
+            const now = Date.now();
+            const diff = now - timestamp;
+            const minutes = Math.floor(diff / (1000 * 60));
+            const hours = Math.floor(diff / (1000 * 60 * 60));
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            
+            if (minutes < 1) return '';
+            if (minutes < 60) return `${minutes}m`;
+            if (hours < 24) return `${hours}h`;
+            if (days < 7) return `${days}d`;
+            if (days < 30) return `${Math.floor(days/7)}w`;
+            return `${Math.floor(days/30)}mo`;
         }
 
         function toggleSidebar() {
