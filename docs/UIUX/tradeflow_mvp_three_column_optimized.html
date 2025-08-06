@@ -299,32 +299,214 @@
 
         .sidebar-nav {
             flex: 1;
-            padding: 1.5rem;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
         }
 
-        .nav-item {
+        /* 新建任务按钮 */
+        .new-task-btn {
             display: flex;
             align-items: center;
-            gap: 0.75rem;
-            padding: 0.875rem 1rem;
-            margin-bottom: 0.5rem;
-            border-radius: var(--radius-md);
-            color: rgba(255, 255, 255, 0.8);
-            text-decoration: none;
-            font-size: 0.9rem;
-            transition: all 0.2s;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1rem;
+            background: var(--primary-color);
+            color: var(--text-inverse);
+            border: none;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 500;
             cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
         }
 
-        .nav-item:hover,
-        .nav-item.active {
+        .new-task-btn:hover {
+            background: #1e40af;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(30, 58, 138, 0.3);
+        }
+
+        .new-task-btn svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        /* 搜索框 */
+        .chat-search {
+            position: relative;
+        }
+
+        .chat-search input {
+            width: 100%;
+            padding: 0.625rem 2.5rem 0.625rem 0.75rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 0.375rem;
+            color: var(--text-inverse);
+            font-size: 0.875rem;
+            transition: all 0.2s ease;
+        }
+
+        .chat-search input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .chat-search input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .chat-search svg {
+            position: absolute;
+            right: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 16px;
+            height: 16px;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        /* 对话列表 */
+        .chat-list {
+            flex: 1;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+        }
+
+        .chat-list::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .chat-list::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .chat-list::-webkit-scrollbar-thumb {
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 3px;
+        }
+
+        /* 时间分组 */
+        .chat-group {
+            margin-bottom: 1rem;
+        }
+
+        .chat-group-title {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 0.5rem;
+            padding: 0 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* 对话项 */
+        .chat-item {
+            padding: 0.75rem;
+            margin-bottom: 0.25rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+            border: 1px solid transparent;
+        }
+
+        .chat-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .chat-item.active {
             background: rgba(255, 255, 255, 0.1);
+            border-color: var(--primary-color);
+        }
+
+        .chat-item-title {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-inverse);
+            margin-bottom: 0.25rem;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .chat-item-preview {
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.6);
+            line-height: 1.3;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            margin-bottom: 0.25rem;
+        }
+
+        .chat-item-time {
+            font-size: 0.6875rem;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        /* 操作按钮 */
+        .chat-item-actions {
+            position: absolute;
+            right: 0.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            display: none;
+            gap: 0.25rem;
+        }
+
+        .chat-item:hover .chat-item-actions {
+            display: flex;
+        }
+
+        .chat-action-btn {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            border-radius: 0.25rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .chat-action-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
             color: var(--text-inverse);
         }
 
-        .nav-icon {
-            width: 20px;
-            height: 20px;
+        .chat-action-btn svg {
+            width: 12px;
+            height: 12px;
+        }
+
+        /* 空状态 */
+        .no-chats {
+            text-align: center;
+            padding: 2rem 1rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .no-chats svg {
+            width: 48px;
+            height: 48px;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .no-chats-text {
+            font-size: 0.875rem;
         }
 
         .sidebar-footer {
@@ -1563,33 +1745,50 @@
             </div>
             
             <nav class="sidebar-nav">
-                <a href="#" class="nav-item active" onclick="showChat()">
-                    <svg class="nav-icon" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M20 2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h4v3c0 .6.4 1 1 1h.5c.2 0 .5-.1.7-.3L14.6 18H20c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-7 12H5v-2h8v2zm3-3H5V9h11v2zm0-3H5V6h11v2z"/>
+                <!-- 新建任务按钮 -->
+                <button class="new-task-btn" onclick="createNewChat()">
+                    <svg fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
                     </svg>
-                    <span data-i18n="chat">AI Assistant</span>
-                </a>
-                
-                <a href="#" class="nav-item" onclick="showBuyerDevelopment()">
-                    <svg class="nav-icon" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                    <span data-i18n="new-task">新建任务</span>
+                </button>
+
+                <!-- 搜索框 -->
+                <div class="chat-search">
+                    <input type="text" id="chatSearchInput" placeholder="" data-i18n-placeholder="search-chats" oninput="searchChats(this.value)">
+                    <svg fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
                     </svg>
-                    <span data-i18n="buyer-development">Buyer Development</span>
-                </a>
-                
-                <a href="#" class="nav-item" onclick="showSupplierMatching()">
-                    <svg class="nav-icon" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
-                    </svg>
-                    <span data-i18n="supplier-matching">Supplier Matching</span>
-                </a>
-                
-                <a href="#" class="nav-item" onclick="showHistory()">
-                    <svg class="nav-icon" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M13 3c-4.97 0-9 4.03-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42C8.27 19.99 10.51 21 13 21c4.97 0 9-4.03 9-9s-4.03-9-9-9zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z"/>
-                    </svg>
-                    <span data-i18n="history">Usage History</span>
-                </a>
+                </div>
+
+                <!-- 对话列表 -->
+                <div class="chat-list" id="chatList">
+                    <!-- 今天 -->
+                    <div class="chat-group" id="todayGroup" style="display: none;">
+                        <div class="chat-group-title" data-i18n="today">今天</div>
+                        <div id="todayChats"></div>
+                    </div>
+
+                    <!-- 昨天 -->
+                    <div class="chat-group" id="yesterdayGroup" style="display: none;">
+                        <div class="chat-group-title" data-i18n="yesterday">昨天</div>
+                        <div id="yesterdayChats"></div>
+                    </div>
+
+                    <!-- 更早 -->
+                    <div class="chat-group" id="earlierGroup" style="display: none;">
+                        <div class="chat-group-title" data-i18n="earlier">更早</div>
+                        <div id="earlierChats"></div>
+                    </div>
+
+                    <!-- 空状态 -->
+                    <div class="no-chats" id="noChats">
+                        <svg fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M20 2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h4v3c0 .6.4 1 1 1h.5c.2 0 .5-.1.7-.3L14.6 18H20c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-7 12H5v-2h8v2zm3-3H5V9h11v2zm0-3H5V6h11v2z"/>
+                        </svg>
+                        <div class="no-chats-text" data-i18n="no-chats">暂无对话</div>
+                    </div>
+                </div>
             </nav>
             
             <div class="sidebar-footer">
@@ -2001,10 +2200,14 @@
                 'free-trial-credits': '100 free credits',
                 'free-trial-text': 'included with every new account',
                 'sidebar-tagline': 'AI Trade Assistant',
-                'chat': 'AI Assistant',
-                'buyer-development': 'Buyer Development',
-                'supplier-matching': 'Supplier Matching',
-                'history': 'Usage History',
+                'new-task': 'New Task',
+                'search-chats': 'Search chats',
+                'today': 'Today',
+                'yesterday': 'Yesterday', 
+                'earlier': 'Earlier',
+                'rename': 'Rename',
+                'delete': 'Delete',
+                'no-chats': 'No conversations yet',
                 'credit-balance': 'Credit Balance',
                 'credits': 'Credits',
                 'free-credits': '100 free credits',
@@ -2041,10 +2244,14 @@
                 'free-trial-credits': '100免费积分',
                 'free-trial-text': '每个新账户包含',
                 'sidebar-tagline': 'AI贸易助手',
-                'chat': 'AI助手',
-                'buyer-development': '买家开发',
-                'supplier-matching': '供应商匹配',
-                'history': '使用历史',
+                'new-task': '新建任务',
+                'search-chats': '搜索对话',
+                'today': '今天',
+                'yesterday': '昨天',
+                'earlier': '更早',
+                'rename': '重命名',
+                'delete': '删除',
+                'no-chats': '暂无对话',
                 'credit-balance': '积分余额',
                 'credits': '积分',
                 'free-credits': '100免费积分',
@@ -2084,6 +2291,9 @@
             updateLanguageSwitchButtons();
             enableChatInput();
             simulateAgentActivity();
+            
+            // Initialize chat management system
+            initChats();
         }
 
         // Unified Language Toggle Function
@@ -2115,41 +2325,254 @@
         }
 
 
-        // Navigation functions
-        function showChat() {
-            document.querySelectorAll('.nav-item').forEach(item => {
-                item.classList.remove('active');
-            });
-            event.target.closest('.nav-item').classList.add('active');
-            document.getElementById('headerTitle').textContent = 
-                currentLanguage === 'en' ? 'AI Assistant' : 'AI助手';
+        // 对话管理功能
+        let chats = [];
+        let currentChatId = null;
+        let chatCounter = 0;
+
+        // 初始化对话数据
+        function initChats() {
+            const savedChats = localStorage.getItem('tradeflow_chats');
+            if (savedChats) {
+                chats = JSON.parse(savedChats);
+                chatCounter = Math.max(...chats.map(chat => parseInt(chat.id.replace('chat', ''))), 0);
+            } else {
+                // 初始化示例数据
+                chats = [
+                    {
+                        id: 'chat1',
+                        title: currentLanguage === 'en' ? 'Find LED buyers in USA' : '寻找美国LED买家',
+                        lastMessage: currentLanguage === 'en' ? 'Found 5 qualified buyers for you...' : '已为您找到5家符合条件的买家...',
+                        timestamp: Date.now() - 3600000,
+                        messages: []
+                    },
+                    {
+                        id: 'chat2', 
+                        title: currentLanguage === 'en' ? 'Electronics supplier in China' : '中国电子供应商',
+                        lastMessage: currentLanguage === 'en' ? 'Here are the top manufacturers...' : '以下是顶级制造商...',
+                        timestamp: Date.now() - 86400000,
+                        messages: []
+                    }
+                ];
+                chatCounter = 2;
+                saveChats();
+            }
+            renderChatList();
+            if (chats.length > 0 && !currentChatId) {
+                switchChat(chats[0].id);
+            }
         }
 
-        function showBuyerDevelopment() {
-            document.querySelectorAll('.nav-item').forEach(item => {
-                item.classList.remove('active');
-            });
-            event.target.closest('.nav-item').classList.add('active');
-            document.getElementById('headerTitle').textContent = 
-                currentLanguage === 'en' ? 'Buyer Development' : '买家开发';
+        // 保存对话数据
+        function saveChats() {
+            localStorage.setItem('tradeflow_chats', JSON.stringify(chats));
         }
 
-        function showSupplierMatching() {
-            document.querySelectorAll('.nav-item').forEach(item => {
-                item.classList.remove('active');
-            });
-            event.target.closest('.nav-item').classList.add('active');
-            document.getElementById('headerTitle').textContent = 
-                currentLanguage === 'en' ? 'Supplier Matching' : '供应商匹配';
+        // 创建新对话
+        function createNewChat() {
+            const newChatId = 'chat' + (++chatCounter);
+            const newChat = {
+                id: newChatId,
+                title: currentLanguage === 'en' ? 'New Task' : '新任务',
+                lastMessage: '',
+                timestamp: Date.now(),
+                messages: []
+            };
+            
+            chats.unshift(newChat);
+            saveChats();
+            renderChatList();
+            switchChat(newChatId);
+            
+            // 聚焦到输入框
+            const chatInput = document.getElementById('chatInput');
+            if (chatInput) {
+                chatInput.focus();
+            }
         }
 
-        function showHistory() {
-            document.querySelectorAll('.nav-item').forEach(item => {
+        // 切换对话
+        function switchChat(chatId) {
+            currentChatId = chatId;
+            
+            // 更新高亮状态
+            document.querySelectorAll('.chat-item').forEach(item => {
                 item.classList.remove('active');
             });
-            event.target.closest('.nav-item').classList.add('active');
-            document.getElementById('headerTitle').textContent = 
-                currentLanguage === 'en' ? 'Usage History' : '使用历史';
+            const chatElement = document.querySelector(`[data-chat-id="${chatId}"]`);
+            if (chatElement) {
+                chatElement.classList.add('active');
+            }
+            
+            // 更新标题
+            const chat = chats.find(c => c.id === chatId);
+            if (chat) {
+                document.getElementById('headerTitle').textContent = chat.title;
+            }
+            
+            // 清空对话区域（可以在这里加载对话历史）
+            const messagesContainer = document.getElementById('messagesContainer');
+            if (messagesContainer) {
+                messagesContainer.innerHTML = '';
+            }
+        }
+
+        // 重命名对话
+        function renameChat(chatId) {
+            const chat = chats.find(c => c.id === chatId);
+            if (!chat) return;
+            
+            const newTitle = prompt(
+                currentLanguage === 'en' ? 'Enter new title:' : '输入新标题：',
+                chat.title
+            );
+            
+            if (newTitle && newTitle.trim()) {
+                chat.title = newTitle.trim();
+                saveChats();
+                renderChatList();
+                
+                // 更新标题（如果是当前对话）
+                if (currentChatId === chatId) {
+                    document.getElementById('headerTitle').textContent = chat.title;
+                }
+            }
+        }
+
+        // 删除对话
+        function deleteChat(chatId) {
+            if (!confirm(currentLanguage === 'en' ? 'Delete this conversation?' : '删除此对话？')) {
+                return;
+            }
+            
+            chats = chats.filter(c => c.id !== chatId);
+            saveChats();
+            renderChatList();
+            
+            // 如果删除的是当前对话，切换到第一个对话
+            if (currentChatId === chatId) {
+                if (chats.length > 0) {
+                    switchChat(chats[0].id);
+                } else {
+                    currentChatId = null;
+                    document.getElementById('headerTitle').textContent = 
+                        currentLanguage === 'en' ? 'AI Assistant' : 'AI助手';
+                }
+            }
+        }
+
+        // 搜索对话
+        function searchChats(query) {
+            const filteredChats = query.trim() ? 
+                chats.filter(chat => 
+                    chat.title.toLowerCase().includes(query.toLowerCase()) ||
+                    chat.lastMessage.toLowerCase().includes(query.toLowerCase())
+                ) : chats;
+            
+            renderChatList(filteredChats);
+        }
+
+        // 渲染对话列表
+        function renderChatList(chatList = chats) {
+            const todayChats = document.getElementById('todayChats');
+            const yesterdayChats = document.getElementById('yesterdayChats');
+            const earlierChats = document.getElementById('earlierChats');
+            const noChats = document.getElementById('noChats');
+            
+            // 清空
+            todayChats.innerHTML = '';
+            yesterdayChats.innerHTML = '';
+            earlierChats.innerHTML = '';
+            
+            if (chatList.length === 0) {
+                document.getElementById('todayGroup').style.display = 'none';
+                document.getElementById('yesterdayGroup').style.display = 'none';
+                document.getElementById('earlierGroup').style.display = 'none';
+                noChats.style.display = 'block';
+                return;
+            }
+            
+            noChats.style.display = 'none';
+            
+            const now = Date.now();
+            const oneDayAgo = now - 24 * 60 * 60 * 1000;
+            const twoDaysAgo = now - 48 * 60 * 60 * 1000;
+            
+            let hasToday = false, hasYesterday = false, hasEarlier = false;
+            
+            chatList.forEach(chat => {
+                const chatElement = createChatElement(chat);
+                
+                if (chat.timestamp > oneDayAgo) {
+                    todayChats.appendChild(chatElement);
+                    hasToday = true;
+                } else if (chat.timestamp > twoDaysAgo) {
+                    yesterdayChats.appendChild(chatElement);
+                    hasYesterday = true;
+                } else {
+                    earlierChats.appendChild(chatElement);
+                    hasEarlier = true;
+                }
+            });
+            
+            document.getElementById('todayGroup').style.display = hasToday ? 'block' : 'none';
+            document.getElementById('yesterdayGroup').style.display = hasYesterday ? 'block' : 'none';
+            document.getElementById('earlierGroup').style.display = hasEarlier ? 'block' : 'none';
+        }
+
+        // 创建对话元素
+        function createChatElement(chat) {
+            const div = document.createElement('div');
+            div.className = `chat-item ${currentChatId === chat.id ? 'active' : ''}`;
+            div.setAttribute('data-chat-id', chat.id);
+            div.onclick = () => switchChat(chat.id);
+            
+            const timeAgo = getTimeAgo(chat.timestamp);
+            
+            div.innerHTML = `
+                <div class="chat-item-title">${chat.title}</div>
+                <div class="chat-item-preview">${chat.lastMessage}</div>
+                <div class="chat-item-time">${timeAgo}</div>
+                <div class="chat-item-actions">
+                    <button class="chat-action-btn" onclick="event.stopPropagation(); renameChat('${chat.id}')" title="${
+                        currentLanguage === 'en' ? 'Rename' : '重命名'
+                    }">
+                        <svg fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+                        </svg>
+                    </button>
+                    <button class="chat-action-btn" onclick="event.stopPropagation(); deleteChat('${chat.id}')" title="${
+                        currentLanguage === 'en' ? 'Delete' : '删除'
+                    }">
+                        <svg fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+                        </svg>
+                    </button>
+                </div>
+            `;
+            
+            return div;
+        }
+
+        // 获取时间标记
+        function getTimeAgo(timestamp) {
+            const now = Date.now();
+            const diff = now - timestamp;
+            const minutes = Math.floor(diff / (1000 * 60));
+            const hours = Math.floor(diff / (1000 * 60 * 60));
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            
+            if (currentLanguage === 'en') {
+                if (minutes < 1) return 'Just now';
+                if (minutes < 60) return `${minutes}m ago`;
+                if (hours < 24) return `${hours}h ago`;
+                return `${days}d ago`;
+            } else {
+                if (minutes < 1) return '刚刚';
+                if (minutes < 60) return `${minutes}分钟前`;
+                if (hours < 24) return `${hours}小时前`;
+                return `${days}天前`;
+            }
         }
 
         function toggleSidebar() {
