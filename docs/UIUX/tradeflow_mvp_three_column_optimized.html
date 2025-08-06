@@ -1996,19 +1996,6 @@
             document.getElementById('mainApp').style.display = 'none';
         }
 
-        // Show main app
-        function showMainApp() {
-            document.getElementById('loginPage').style.display = 'none';
-            document.getElementById('mainApp').style.display = 'flex';
-            
-            // Update user info in header if needed
-            if (currentUser) {
-                const userNameElement = document.querySelector('.user-name');
-                if (userNameElement) {
-                    userNameElement.textContent = currentUser.name || currentUser.email;
-                }
-            }
-        }
 
         // OAuth login functions
         function loginWithGoogle() {
@@ -2174,26 +2161,6 @@
             updateLanguage();
         }
 
-        function updateLanguage() {
-            const elements = document.querySelectorAll('[data-i18n]');
-            elements.forEach(element => {
-                const key = element.getAttribute('data-i18n');
-                if (translations[currentLanguage][key]) {
-                    element.textContent = translations[currentLanguage][key];
-                }
-            });
-
-            const placeholderElements = document.querySelectorAll('[data-i18n-placeholder]');
-            placeholderElements.forEach(element => {
-                const key = element.getAttribute('data-i18n-placeholder');
-                if (translations[currentLanguage][key]) {
-                    element.placeholder = translations[currentLanguage][key];
-                }
-            });
-
-            document.getElementById('headerLanguage').textContent = 
-                currentLanguage === 'en' ? '🌐 English' : '🌐 中文';
-        }
 
         // Navigation functions
         function showChat() {
@@ -2733,22 +2700,52 @@
             }
         }
 
-        // Override the original showMainApp function to include user panel updates
-        const originalShowMainApp = showMainApp;
+        // Enhanced showMainApp function to include user panel updates
         function showMainApp() {
-            originalShowMainApp();
+            // Original showMainApp logic
+            document.getElementById('loginPage').style.display = 'none';
+            document.getElementById('mainApp').style.display = 'flex';
+            
+            // Update user info in header if needed
+            if (currentUser) {
+                const userNameElement = document.querySelector('.user-name');
+                if (userNameElement) {
+                    userNameElement.textContent = currentUser.name || currentUser.email;
+                }
+            }
+            
+            // Update user panel info
             updateUserPanelInfo();
         }
 
-        // Override the updateLanguage function to update credit display
-        const originalUpdateLanguage = updateLanguage;
+        // Enhanced updateLanguage function to include credit display
         function updateLanguage() {
-            originalUpdateLanguage();
-            
+            // Original language update logic
+            const elements = document.querySelectorAll('[data-i18n]');
+            elements.forEach(element => {
+                const key = element.getAttribute('data-i18n');
+                if (translations[currentLanguage][key]) {
+                    element.textContent = translations[currentLanguage][key];
+                }
+            });
+
+            const placeholderElements = document.querySelectorAll('[data-i18n-placeholder]');
+            placeholderElements.forEach(element => {
+                const key = element.getAttribute('data-i18n-placeholder');
+                if (translations[currentLanguage][key]) {
+                    element.placeholder = translations[currentLanguage][key];
+                }
+            });
+
+            // Update language display (headerLanguage removed as it's now in user panel)
+                
             // Update credit display language
             if (currentUser) {
                 const credits = currentUser.credits || 70;
-                document.getElementById('creditDisplay').textContent = `${credits} ${currentLanguage === 'en' ? 'Credits' : '积分'}`;
+                const creditDisplayElement = document.getElementById('creditDisplay');
+                if (creditDisplayElement) {
+                    creditDisplayElement.textContent = `${credits} ${currentLanguage === 'en' ? 'Credits' : '积分'}`;
+                }
             }
         }
 
