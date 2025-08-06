@@ -1982,7 +1982,7 @@
         let currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
 
         // Show login page or main app based on authentication
-        function initializeApp() {
+        function checkAuthAndShowPage() {
             if (isAuthenticated && currentUser) {
                 showMainApp();
             } else {
@@ -2158,6 +2158,10 @@
 
         // Initialize the application
         function initializeApp() {
+            // First check authentication and show appropriate page
+            checkAuthAndShowPage();
+            
+            // Then initialize other features
             updateLanguage();
             enableChatInput();
             simulateAgentActivity();
