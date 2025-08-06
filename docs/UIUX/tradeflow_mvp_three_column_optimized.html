@@ -221,57 +221,6 @@
             font-weight: 600;
         }
 
-        .language-selector {
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
-            background: var(--bg-tertiary);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-md);
-            padding: 0.5rem;
-            cursor: pointer;
-            font-size: 0.875rem;
-            transition: all 0.2s;
-        }
-
-        .language-selector:hover {
-            background: var(--bg-secondary);
-            border-color: var(--border-hover);
-        }
-
-        .language-dropdown {
-            position: absolute;
-            top: 100%;
-            right: 0;
-            margin-top: 0.5rem;
-            background: var(--bg-primary);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-md);
-            box-shadow: var(--shadow-md);
-            overflow: hidden;
-            z-index: 10;
-            display: none;
-        }
-
-        .language-dropdown.show {
-            display: block;
-        }
-
-        .language-option {
-            padding: 0.75rem 1rem;
-            cursor: pointer;
-            transition: background-color 0.2s;
-            white-space: nowrap;
-        }
-
-        .language-option:hover {
-            background: var(--bg-secondary);
-        }
-
-        .language-option.active {
-            background: var(--primary-color);
-            color: var(--text-inverse);
-        }
 
         .traditional-login input {
             width: 100%;
@@ -475,19 +424,39 @@
             gap: 1rem;
         }
 
-        .language-btn {
+        /* Language Switch Button - Unified Style */
+        .language-switch {
+            display: flex;
+            align-items: center;
             background: var(--bg-tertiary);
             border: 1px solid var(--border-color);
             border-radius: var(--radius-md);
-            padding: 0.5rem 1rem;
+            padding: 0.5rem 0.75rem;
             cursor: pointer;
             font-size: 0.875rem;
             transition: all 0.2s;
+            gap: 0.5rem;
+            font-weight: 500;
         }
 
-        .language-btn:hover {
+        .language-switch:hover {
             background: var(--bg-secondary);
-            border-color: var(--border-hover);
+            border-color: var(--primary-color);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .language-switch .lang-active {
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        .language-switch .lang-inactive {
+            color: var(--text-light);
+        }
+
+        .language-switch .divider {
+            color: var(--text-light);
+            margin: 0 0.25rem;
         }
 
         /* Chat Interface */
@@ -1383,33 +1352,6 @@
             color: var(--text-secondary);
         }
 
-        .language-options {
-            display: flex;
-            gap: 0.5rem;
-            margin-bottom: 1rem;
-        }
-
-        .language-option-btn {
-            flex: 1;
-            padding: 0.75rem;
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-md);
-            font-size: 0.875rem;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .language-option-btn.active {
-            background: var(--primary-color);
-            color: var(--text-inverse);
-            border-color: var(--primary-color);
-        }
-
-        .language-option-btn:hover:not(.active) {
-            background: var(--bg-tertiary);
-            border-color: var(--border-hover);
-        }
 
         .user-panel-actions {
             display: flex;
@@ -1547,18 +1489,12 @@
     <!-- Login Page -->
     <div id="loginPage" class="login-container">
         <div class="login-card fade-in">
-            <!-- Language Selector -->
-            <div class="language-selector" onclick="toggleLanguageDropdown()">
-                <span id="currentLanguage">🌐 English</span>
-                <div id="languageDropdown" class="language-dropdown">
-                    <div class="language-option active" data-lang="en" onclick="changeLanguage('en')">
-                        🇺🇸 English
-                    </div>
-                    <div class="language-option" data-lang="zh" onclick="changeLanguage('zh')">
-                        🇨🇳 中文
-                    </div>
-                </div>
-            </div>
+            <!-- Language Switch -->
+            <button class="language-switch" onclick="toggleLanguage()" style="position: absolute; top: 1rem; right: 1rem;">
+                <span class="lang-en" data-lang="en">EN</span>
+                <span class="divider">|</span>
+                <span class="lang-zh" data-lang="zh">中文</span>
+            </button>
 
             <!-- Logo Section -->
             <div class="logo-section">
@@ -1682,7 +1618,11 @@
                 </div>
                 
                 <div class="header-right">
-                    <!-- Language button removed, moved to user panel -->
+                    <button class="language-switch" onclick="toggleLanguage()" title="Switch Language">
+                        <span class="lang-en" data-lang="en">EN</span>
+                        <span class="divider">|</span>
+                        <span class="lang-zh" data-lang="zh">中文</span>
+                    </button>
                 </div>
             </div>
 
@@ -1934,17 +1874,6 @@
                     </div>
                 </div>
                 
-                <div class="user-panel-section">
-                    <div class="user-panel-section-title" data-i18n="language-settings">Language Settings</div>
-                    <div class="language-options">
-                        <button class="language-option-btn active" id="langEnBtn" onclick="switchLanguageInPanel('en')">
-                            🇺🇸 English
-                        </button>
-                        <button class="language-option-btn" id="langZhBtn" onclick="switchLanguageInPanel('zh')">
-                            🇨🇳 中文
-                        </button>
-                    </div>
-                </div>
                 
                 <div class="user-panel-section">
                     <div class="user-panel-actions">
@@ -2146,15 +2075,37 @@
             
             // Then initialize other features
             updateLanguage();
+            updateLanguageSwitchButtons();
             enableChatInput();
             simulateAgentActivity();
         }
 
-        // Language functions
-        function toggleLanguageDropdown() {
-            // Simple language toggle for demo
+        // Unified Language Toggle Function
+        function toggleLanguage() {
             currentLanguage = currentLanguage === 'en' ? 'zh' : 'en';
             updateLanguage();
+            updateLanguageSwitchButtons();
+        }
+        
+        // Update language switch button appearance
+        function updateLanguageSwitchButtons() {
+            // Update all language switch buttons
+            document.querySelectorAll('.language-switch').forEach(btn => {
+                const enSpan = btn.querySelector('.lang-en');
+                const zhSpan = btn.querySelector('.lang-zh');
+                
+                if (currentLanguage === 'en') {
+                    enSpan.classList.add('lang-active');
+                    enSpan.classList.remove('lang-inactive');
+                    zhSpan.classList.remove('lang-active');
+                    zhSpan.classList.add('lang-inactive');
+                } else {
+                    zhSpan.classList.add('lang-active');
+                    zhSpan.classList.remove('lang-inactive');
+                    enSpan.classList.remove('lang-active');
+                    enSpan.classList.add('lang-inactive');
+                }
+            });
         }
 
 
@@ -2654,15 +2605,6 @@
             }
         }
 
-        function switchLanguageInPanel(lang) {
-            // Update language
-            currentLanguage = lang;
-            updateLanguage();
-            
-            // Update language button states
-            document.getElementById('langEnBtn').classList.toggle('active', lang === 'en');
-            document.getElementById('langZhBtn').classList.toggle('active', lang === 'zh');
-        }
 
         function showAccountSettings() {
             closeUserPanel();
