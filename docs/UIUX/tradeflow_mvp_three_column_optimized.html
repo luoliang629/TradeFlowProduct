@@ -6,6 +6,214 @@
     <title>TradeFlow - AI-Powered Global B2B Trade Assistant</title>
     <style>
         /* CSS Variables for Design System */
+        /* Focused Input Mode Styles */
+        .focused-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(10px);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            animation: fadeIn 0.3s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+
+        .focused-container {
+            width: 90%;
+            max-width: 720px;
+            background: var(--bg-primary);
+            border-radius: var(--radius-xl);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            transform: scale(0.9);
+            animation: scaleIn 0.3s ease forwards;
+        }
+
+        @keyframes scaleIn {
+            to { transform: scale(1); }
+        }
+
+        .focused-header {
+            padding: 1.5rem 1.5rem 0;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .focused-close {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--bg-secondary);
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .focused-close:hover {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        .focused-content {
+            padding: 2rem 3rem 3rem;
+            text-align: center;
+        }
+
+        .focused-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .focused-subtitle {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+
+        .focused-input-wrapper {
+            background: var(--bg-secondary);
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            transition: border-color 0.2s;
+        }
+
+        .focused-input-wrapper:focus-within {
+            border-color: var(--primary-color);
+        }
+
+        .focused-textarea {
+            width: 100%;
+            padding: 1.5rem;
+            background: transparent;
+            border: none;
+            font-size: 1.125rem;
+            line-height: 1.6;
+            color: var(--text-primary);
+            resize: none;
+            min-height: 120px;
+            max-height: 300px;
+        }
+
+        .focused-textarea:focus {
+            outline: none;
+        }
+
+        .focused-toolbar {
+            padding: 1rem 1.5rem;
+            background: var(--bg-tertiary);
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .focused-tools {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .focused-tool {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--bg-secondary);
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .focused-tool:hover {
+            background: var(--bg-primary);
+            color: var(--primary-color);
+        }
+
+        .focused-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .char-count {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .focused-submit {
+            padding: 0.75rem 1.5rem;
+            background: var(--primary-color);
+            color: var(--text-inverse);
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s;
+        }
+
+        .focused-submit:hover:not(:disabled) {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+
+        .focused-submit:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .focused-hints {
+            margin-top: 1.5rem;
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+        }
+
+        .focused-hint {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            padding: 0.25rem 0.75rem;
+            background: var(--bg-secondary);
+            border-radius: var(--radius-sm);
+        }
+
+        /* Hide overlay with animation */
+        .focused-overlay.hiding {
+            animation: fadeOut 0.3s ease forwards;
+        }
+
+        @keyframes fadeOut {
+            to { opacity: 0; }
+        }
+
+        .focused-container.hiding {
+            animation: scaleOut 0.3s ease forwards;
+        }
+
+        @keyframes scaleOut {
+            to { transform: scale(0.9); }
+        }
+
         :root {
             --primary-color: #1e3a8a;
             --primary-dark: #1e40af;
@@ -2088,6 +2296,65 @@
         </div>
     </div>
 
+    <!-- Focused Input Overlay -->
+    <div id="focusedInputOverlay" class="focused-overlay" style="display: none;">
+        <div class="focused-container">
+            <div class="focused-header">
+                <button class="focused-close" onclick="hideFocusedInput()">
+                    <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                    </svg>
+                </button>
+            </div>
+            
+            <div class="focused-content">
+                <h1 class="focused-title" data-i18n="focused-title">我能为你做什么？</h1>
+                <p class="focused-subtitle" data-i18n="focused-subtitle">告诉我你的贸易需求，我会帮你找到最佳解决方案</p>
+                
+                <div class="focused-input-wrapper">
+                    <textarea 
+                        id="focusedTextarea" 
+                        class="focused-textarea" 
+                        placeholder="输入你的需求..."
+                        data-i18n-placeholder="focused-placeholder"
+                        rows="4"
+                    ></textarea>
+                    
+                    <div class="focused-toolbar">
+                        <div class="focused-tools">
+                            <button class="focused-tool" title="附件">
+                                <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M16.5 6v11.5c0 2.21-1.79 4-4 4s-4-1.79-4-4V5c0-1.38 1.12-2.5 2.5-2.5s2.5 1.12 2.5 2.5v10.5c0 .55-.45 1-1 1s-1-.45-1-1V6H10v9.5c0 1.38 1.12 2.5 2.5 2.5s2.5-1.12 2.5-2.5V5c0-2.21-1.79-4-4-4S7 2.79 7 5v12.5c0 3.04 2.46 5.5 5.5 5.5s5.5-2.46 5.5-5.5V6h-1.5z"/>
+                                </svg>
+                            </button>
+                            <button class="focused-tool" title="语音输入">
+                                <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.91-3c-.49 0-.9.36-.98.85C16.52 14.2 14.47 16 12 16s-4.52-1.8-4.93-4.15c-.08-.49-.49-.85-.98-.85-.61 0-1.09.54-1 1.14.49 3 2.89 5.35 5.91 5.78V20c0 .55.45 1 1 1s1-.45 1-1v-2.08c3.02-.43 5.42-2.78 5.91-5.78.1-.6-.39-1.14-1-1.14z"/>
+                                </svg>
+                            </button>
+                        </div>
+                        
+                        <div class="focused-actions">
+                            <span class="char-count" id="charCount">0</span>
+                            <button class="focused-submit" onclick="submitFocusedInput()" data-i18n="submit">
+                                发送
+                                <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="focused-hints">
+                    <span class="focused-hint">Enter 发送</span>
+                    <span class="focused-hint">Shift + Enter 换行</span>
+                    <span class="focused-hint">Esc 退出</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         // Check authentication on page load
         let isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
@@ -2354,27 +2621,130 @@
             localStorage.setItem('tradeflow_chats', JSON.stringify(chats));
         }
 
-        // 创建新对话
+        // 创建新对话 - 显示专注输入界面
         function createNewChat() {
+            showFocusedInput();
+        }
+
+        // 显示专注输入界面
+        function showFocusedInput() {
+            const overlay = document.getElementById('focusedInputOverlay');
+            const textarea = document.getElementById('focusedTextarea');
+            const charCount = document.getElementById('charCount');
+            
+            // 更新文本内容
+            const focusedTitle = overlay.querySelector('.focused-title');
+            const focusedSubtitle = overlay.querySelector('.focused-subtitle');
+            const submitBtn = overlay.querySelector('.focused-submit');
+            
+            if (currentLanguage === 'en') {
+                focusedTitle.textContent = 'What can I do for you?';
+                focusedSubtitle.textContent = 'Tell me your trade needs, I\'ll help you find the best solution';
+                textarea.placeholder = 'Type your requirements...';
+                submitBtn.innerHTML = 'Send <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>';
+            } else {
+                focusedTitle.textContent = '我能为你做什么？';
+                focusedSubtitle.textContent = '告诉我你的贸易需求，我会帮你找到最佳解决方案';
+                textarea.placeholder = '输入你的需求...';
+                submitBtn.innerHTML = '发送 <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>';
+            }
+            
+            // 显示界面
+            overlay.style.display = 'flex';
+            overlay.classList.remove('hiding');
+            overlay.querySelector('.focused-container').classList.remove('hiding');
+            
+            // 清空并聚焦输入框
+            textarea.value = '';
+            charCount.textContent = '0';
+            setTimeout(() => textarea.focus(), 100);
+            
+            // 添加键盘事件监听
+            textarea.onkeydown = handleFocusedKeydown;
+            textarea.oninput = updateCharCount;
+        }
+
+        // 隐藏专注输入界面
+        function hideFocusedInput() {
+            const overlay = document.getElementById('focusedInputOverlay');
+            const container = overlay.querySelector('.focused-container');
+            
+            overlay.classList.add('hiding');
+            container.classList.add('hiding');
+            
+            setTimeout(() => {
+                overlay.style.display = 'none';
+                overlay.classList.remove('hiding');
+                container.classList.remove('hiding');
+            }, 300);
+        }
+
+        // 处理专注模式键盘事件
+        function handleFocusedKeydown(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                submitFocusedInput();
+            } else if (event.key === 'Escape') {
+                hideFocusedInput();
+            }
+        }
+
+        // 更新字符计数
+        function updateCharCount() {
+            const textarea = document.getElementById('focusedTextarea');
+            const charCount = document.getElementById('charCount');
+            charCount.textContent = textarea.value.length;
+        }
+
+        // 提交专注输入
+        function submitFocusedInput() {
+            const textarea = document.getElementById('focusedTextarea');
+            const message = textarea.value.trim();
+            
+            if (!message) return;
+            
+            // 创建新对话
             const newChatId = 'chat' + (++chatCounter);
             const newChat = {
                 id: newChatId,
-                title: currentLanguage === 'en' ? 'New Task' : '新任务',
-                lastMessage: '',
+                title: message.substring(0, 30) + (message.length > 30 ? '...' : ''),
+                lastMessage: message,
                 timestamp: Date.now(),
-                messages: []
+                messages: [{ role: 'user', content: message, timestamp: Date.now() }]
             };
             
             chats.unshift(newChat);
             saveChats();
             renderChatList();
+            
+            // 隐藏专注输入界面
+            hideFocusedInput();
+            
+            // 切换到新对话
             switchChat(newChatId);
             
-            // 聚焦到输入框
-            const chatInput = document.getElementById('chatInput');
-            if (chatInput) {
-                chatInput.focus();
+            // 显示消息
+            const messagesContainer = document.getElementById('chatMessages');
+            if (messagesContainer) {
+                messagesContainer.innerHTML = `
+                    <div class="message user-message">
+                        <div class="message-avatar">U</div>
+                        <div class="message-content">
+                            <div class="message-header">
+                                <span class="message-sender">You</span>
+                                <span class="message-time">Just now</span>
+                            </div>
+                            <div class="message-text">${message}</div>
+                        </div>
+                    </div>
+                `;
             }
+            
+            // 触发AI响应（这里可以添加实际的AI处理逻辑）
+            // setTimeout(() => {
+            //     // 模拟AI响应
+            //     showAgentProgress();
+            // }, 500);
         }
 
         // 切换对话
