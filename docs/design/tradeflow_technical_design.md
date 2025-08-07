@@ -47,6 +47,7 @@ graph TD
         A[React App SPA]
         B[i18n Support] 
         C[OAuth Client]
+        D1[File Preview Panel]
     end
     
     subgraph "API Gateway Layer"
@@ -59,6 +60,7 @@ graph TD
         G[Agent Gateway Service]
         H[Business Services]
         I[Payment Service]
+        P[File Service]
     end
     
     subgraph "Google ADK Agent Layer"
@@ -68,17 +70,20 @@ graph TD
     end
     
     subgraph "Data Layer"
-        M[PostgreSQL<br/>Structured]
+        M[PostgreSQL<br/>Structured + Files]
         N[MongoDB<br/>Dialogues]
         O[Redis<br/>Cache]
+        Q[MinIO<br/>Object Storage]
     end
     
     A --> D
     A -.-> E
     B --> D
     C --> D
+    D1 --> D
     
     D --> G
+    D --> P
     E --> G
     F --> D
     F --> E
@@ -88,10 +93,15 @@ graph TD
     G --> L
     H --> M
     I --> M
+    P --> M
+    P --> Q
     
     J --> N
     K --> N
     L --> N
+    J --> P
+    K --> P
+    L --> P
     G --> O
 ```
 
@@ -101,6 +111,7 @@ graph TD
 - **React SPA**: 单页应用，提供流畅的用户体验
 - **i18n Support**: 基于React-i18next的多语言支持
 - **OAuth Client**: 处理Google/GitHub第三方登录
+- **File Preview Panel**: 右侧文件预览面板，支持对话中生成文件的预览和管理
 
 #### 2. API Gateway Layer
 - **FastAPI REST**: 提供RESTful API接口
@@ -111,6 +122,7 @@ graph TD
 - **Agent Gateway Service**: 统一的Agent调度和管理
 - **Business Services**: 用户管理、产品管理、交易管理等
 - **Payment Service**: Stripe支付集成
+- **File Service**: 文件上传、存储、预览和管理服务，支持多种文件格式
 
 #### 4. Google ADK Agent Layer
 - **Buyer Agent**: 买家开发智能助手
@@ -118,9 +130,10 @@ graph TD
 - **Market Analysis Agent**: 市场分析助手
 
 #### 5. Data Layer
-- **PostgreSQL**: 存储用户、企业、产品等结构化数据
+- **PostgreSQL**: 存储用户、企业、产品等结构化数据，以及文件元数据
 - **MongoDB**: 存储对话历史、Agent上下文等非结构化数据
 - **Redis**: 会话缓存、API限流、热点数据缓存
+- **MinIO**: 对象存储服务，存储Agent生成的文件和用户上传的文档
 
 ---
 
