@@ -428,7 +428,9 @@
 
         /* Left Sidebar - Navigation */
         .sidebar {
-            width: 280px;
+            width: 20%;
+            min-width: 240px;
+            max-width: 320px;
             background: var(--bg-dark);
             color: var(--text-inverse);
             display: flex;
@@ -722,11 +724,12 @@
         /* Middle Column - Chat Interface */
         .main-content {
             flex: 1;
+            width: calc(80% - var(--panel-width, 0px));
             display: flex;
             flex-direction: column;
             min-width: 0; /* Important for flex shrinking */
             margin-right: 0; /* 默认无右边距，由JavaScript动态调整 */
-            transition: margin-right 0.3s cubic-bezier(0.2, 0, 0.2, 1);
+            transition: all 0.3s cubic-bezier(0.2, 0, 0.2, 1);
             height: 100vh; /* 设置明确的高度 */
             overflow: hidden; /* 防止整体滚动 */
         }
@@ -1197,10 +1200,13 @@
         .preview-content-area {
             flex: 1;
             overflow-y: auto;
+            overflow-x: hidden;
             background: var(--bg-primary);
             border: 1px solid var(--border-color);
             border-radius: 8px;
             padding: 1rem;
+            height: calc(100vh - 200px); /* 减去header和actions的高度 */
+            max-height: calc(100vh - 200px);
         }
         
         .preview-placeholder {
@@ -1749,7 +1755,9 @@
             right: 0;
             top: 0;
             height: 100vh;
-            width: 360px;
+            width: 40%;
+            min-width: 400px;
+            max-width: 600px;
             background: var(--bg-primary);
             border-left: 1px solid var(--border-color);
             display: flex;
@@ -3671,6 +3679,13 @@
             
             // Initialize chat management system
             initChats();
+            
+            // 确保首个对话被加载并显示
+            setTimeout(() => {
+                if (chats.length > 0 && !currentChatId) {
+                    switchChat(chats[0].id);
+                }
+            }, 100);
         }
 
         // Unified Language Toggle Function
@@ -4790,24 +4805,33 @@
             // 根据面板状态调整布局
             let marginRight = '0';
             let inputRight = '20px';
+            let panelWidth = '0px';
+            
+            // 计算视口宽度的40%作为面板宽度
+            const viewportWidth = window.innerWidth;
+            const calculatedPanelWidth = viewportWidth * 0.4;
             
             if (isAgentPanelOpen && isFilePanelOpen) {
                 // 两个面板都打开
-                marginRight = '720px'; // 360px * 2
-                inputRight = '740px'; // 360px * 2 + 20px
+                marginRight = `${calculatedPanelWidth * 2}px`;
+                inputRight = `${calculatedPanelWidth * 2 + 20}px`;
+                panelWidth = `${calculatedPanelWidth * 2}px`;
             } else if (isAgentPanelOpen || isFilePanelOpen) {
                 // 单个面板打开
-                marginRight = '360px';
-                inputRight = '380px'; // 360px + 20px
+                marginRight = `${calculatedPanelWidth}px`;
+                inputRight = `${calculatedPanelWidth + 20}px`;
+                panelWidth = `${calculatedPanelWidth}px`;
             }
             
             // 应用布局调整
             if (window.innerWidth > 1024) {
                 mainContent.style.marginRight = marginRight;
+                mainContent.style.setProperty('--panel-width', panelWidth);
                 if (chatInput) chatInput.style.right = inputRight;
             } else {
                 // 移动端重置为默认
                 mainContent.style.marginRight = '0';
+                mainContent.style.setProperty('--panel-width', '0px');
                 if (chatInput) chatInput.style.right = '20px';
             }
         }
