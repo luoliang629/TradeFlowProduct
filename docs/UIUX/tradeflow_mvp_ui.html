@@ -725,7 +725,7 @@
             display: flex;
             flex-direction: column;
             min-width: 0; /* Important for flex shrinking */
-            margin-right: 360px;
+            margin-right: 0; /* 默认无右边距，由JavaScript动态调整 */
             transition: margin-right 0.3s cubic-bezier(0.2, 0, 0.2, 1);
             height: 100vh; /* 设置明确的高度 */
             overflow: hidden; /* 防止整体滚动 */
@@ -3296,7 +3296,7 @@
         </div>
 
         <!-- Right Column - File Preview Panel -->
-        <div class="file-preview-panel">
+        <div class="file-preview-panel closed">
             <div class="file-preview-header">
                 <div class="file-preview-header-content">
                     <div class="file-preview-title">
@@ -3324,104 +3324,6 @@
             </div>
             
             <div class="file-preview-content">
-                <!-- File List Section -->
-                <div class="file-list-section">
-                    <div class="file-list-header">
-                        <div class="file-list-title">
-                            <span data-i18n="recent-files">最近文件</span>
-                            <span class="file-count" id="fileCount">3</span>
-                        </div>
-                        <div class="file-list-actions">
-                            <button class="file-action-btn" onclick="refreshFileList()" title="刷新文件列表">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M1 4v6h6"/>
-                                    <path d="m1 10 4.1-4.1a8 8 0 0 1 11.3 0"/>
-                                    <path d="m23 20v-6h-6"/>
-                                    <path d="m23 14-4.1 4.1a8 8 0 0 1-11.3 0"/>
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="file-list" id="fileList">
-                        <div class="file-item" data-file-type="markdown" onclick="previewFile('buyer-analysis.md')">
-                            <div class="file-icon markdown">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                                    <polyline points="14,2 14,8 20,8"></polyline>
-                                </svg>
-                            </div>
-                            <div class="file-details">
-                                <div class="file-name">美国买家分析报告.md</div>
-                                <div class="file-meta">
-                                    <span class="file-size">12.5KB</span>
-                                    <span class="file-time">2分钟前</span>
-                                </div>
-                            </div>
-                            <div class="file-actions">
-                                <button class="file-action-btn" onclick="downloadFile('buyer-analysis.md')" title="下载文件">
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                                        <polyline points="7,10 12,15 17,10"/>
-                                        <line x1="12" y1="15" x2="12" y2="3"/>
-                                    </svg>
-                                </button>
-                            </div>
-                        </div>
-                        
-                        <div class="file-item" data-file-type="csv" onclick="previewFile('buyer-contacts.csv')">
-                            <div class="file-icon csv">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-                                    <path d="M9 9h6"/>
-                                    <path d="M9 15h6"/>
-                                </svg>
-                            </div>
-                            <div class="file-details">
-                                <div class="file-name">买家联系方式.csv</div>
-                                <div class="file-meta">
-                                    <span class="file-size">8.2KB</span>
-                                    <span class="file-time">5分钟前</span>
-                                </div>
-                            </div>
-                            <div class="file-actions">
-                                <button class="file-action-btn" onclick="downloadFile('buyer-contacts.csv')" title="下载文件">
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                                        <polyline points="7,10 12,15 17,10"/>
-                                        <line x1="12" y1="15" x2="12" y2="3"/>
-                                    </svg>
-                                </button>
-                            </div>
-                        </div>
-                        
-                        <div class="file-item" data-file-type="json" onclick="previewFile('email-template.json')">
-                            <div class="file-icon json">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                                    <polyline points="14,2 14,8 20,8"></polyline>
-                                    <path d="M10 12l2 2 4-4"/>
-                                </svg>
-                            </div>
-                            <div class="file-details">
-                                <div class="file-name">邮件模板配置.json</div>
-                                <div class="file-meta">
-                                    <span class="file-size">3.1KB</span>
-                                    <span class="file-time">刚才</span>
-                                </div>
-                            </div>
-                            <div class="file-actions">
-                                <button class="file-action-btn" onclick="downloadFile('email-template.json')" title="下载文件">
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                                        <polyline points="7,10 12,15 17,10"/>
-                                        <line x1="12" y1="15" x2="12" y2="3"/>
-                                    </svg>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
                 <!-- File Preview Section -->
                 <div class="file-preview-section" id="filePreviewSection">
                     <div class="preview-placeholder">
@@ -3433,7 +3335,7 @@
                         </div>
                         <div class="preview-text">
                             <p class="preview-title">选择文件进行预览</p>
-                            <p class="preview-desc">点击左侧文件列表中的任意文件<br/>即可在此处查看其内容</p>
+                            <p class="preview-desc">点击对话中的文件<br/>即可在此处查看其内容</p>
                         </div>
                     </div>
                     
@@ -4687,7 +4589,7 @@
                 panel.classList.remove('closed');
                 toggle.classList.remove('visible');
                 // Adjust main content
-                adjustMainContentForPanel(true);
+                updateLayoutForPanels();
                 // 调整聊天布局
                 setTimeout(adjustChatLayout, 300); // 等待动画完成
             }
@@ -4705,7 +4607,7 @@
                     toggle.classList.add('visible');
                 }, 150);
                 // Adjust main content
-                adjustMainContentForPanel(false);
+                updateLayoutForPanels();
             }
         }
         
@@ -4719,21 +4621,48 @@
                 // Don't show toggle button when completely closed
                 toggle.classList.remove('visible');
                 // Adjust main content
-                adjustMainContentForPanel(false);
+                updateLayoutForPanels();
                 // 调整聊天布局
                 setTimeout(adjustChatLayout, 300); // 等待动画完成
             }
         }
         
         // Adjust main content when panel state changes
-        function adjustMainContentForPanel(panelOpen) {
+        // 统一的布局管理函数
+        function updateLayoutForPanels() {
             const mainContent = document.querySelector('.main-content');
-            if (mainContent && window.innerWidth > 1024) {
-                if (panelOpen) {
-                    mainContent.style.marginRight = '360px';
-                } else {
-                    mainContent.style.marginRight = '0';
-                }
+            const chatInput = document.querySelector('.chat-input-container');
+            
+            if (!mainContent) return;
+            
+            // 检查面板状态
+            const agentPanel = document.querySelector('.agent-panel');
+            const filePanel = document.querySelector('.file-preview-panel');
+            const isAgentPanelOpen = agentPanel && !agentPanel.classList.contains('closed');
+            const isFilePanelOpen = filePanel && !filePanel.classList.contains('closed');
+            
+            // 根据面板状态调整布局
+            let marginRight = '0';
+            let inputRight = '20px';
+            
+            if (isAgentPanelOpen && isFilePanelOpen) {
+                // 两个面板都打开
+                marginRight = '720px'; // 360px * 2
+                inputRight = '740px'; // 360px * 2 + 20px
+            } else if (isAgentPanelOpen || isFilePanelOpen) {
+                // 单个面板打开
+                marginRight = '360px';
+                inputRight = '380px'; // 360px + 20px
+            }
+            
+            // 应用布局调整
+            if (window.innerWidth > 1024) {
+                mainContent.style.marginRight = marginRight;
+                if (chatInput) chatInput.style.right = inputRight;
+            } else {
+                // 移动端重置为默认
+                mainContent.style.marginRight = '0';
+                if (chatInput) chatInput.style.right = '20px';
             }
         }
         
@@ -4814,7 +4743,7 @@
                 }
             } else {
                 // Desktop behavior
-                adjustMainContentForPanel(!panel.classList.contains('closed'));
+                updateLayoutForPanels();
                 if (toggle && !panel.classList.contains('closed')) {
                     toggle.classList.remove('visible');
                 }
@@ -4861,7 +4790,7 @@
                     agentToggle.classList.remove('visible');
                 }
                 // Adjust main content
-                adjustMainContentForPanel(false);
+                updateLayoutForPanels();
             }
         }
         
@@ -4883,7 +4812,7 @@
                     agentToggle.classList.remove('visible');
                 }
                 // Adjust main content
-                adjustMainContentForPanel(true);
+                updateLayoutForPanels();
             }
         }
         
@@ -4901,7 +4830,7 @@
                 } else {
                     panel.classList.remove('closed');
                     toggle.classList.remove('visible');
-                    adjustMainContentForPanel(true);
+                    updateLayoutForPanels();
                 }
             }
         }
@@ -4918,11 +4847,7 @@
                 isFilePreviewOpen = !panel.classList.contains('closed');
                 
                 // Update main content layout
-                if (isFilePreviewOpen) {
-                    adjustMainContentForFilePanel(true);
-                } else {
-                    adjustMainContentForFilePanel(false);
-                }
+                updateLayoutForPanels();
             }
         }
 
@@ -4932,7 +4857,23 @@
             if (panel) {
                 panel.classList.add('closed');
                 isFilePreviewOpen = false;
-                adjustMainContentForFilePanel(false);
+                currentFileData = null; // 清除当前文件数据
+                
+                // 重置预览内容为占位符
+                const previewSection = document.getElementById('filePreviewSection');
+                const previewContent = document.getElementById('previewContent');
+                if (previewSection && previewContent) {
+                    previewSection.querySelector('.preview-placeholder').style.display = 'flex';
+                    previewContent.style.display = 'none';
+                }
+                
+                // 重置面板标题
+                const titleSpan = document.querySelector('.file-preview-title span');
+                const subtitleDiv = document.getElementById('filePreviewText');
+                if (titleSpan) titleSpan.textContent = '文件预览';
+                if (subtitleDiv) subtitleDiv.textContent = '选择对话中的文件进行预览';
+                
+                updateLayoutForPanels();
             }
         }
 
@@ -4942,41 +4883,10 @@
             if (panel) {
                 panel.classList.remove('closed');
                 isFilePreviewOpen = true;
-                adjustMainContentForFilePanel(true);
+                updateLayoutForPanels();
             }
         }
 
-        // Adjust main content for file preview panel
-        function adjustMainContentForFilePanel(panelOpen) {
-            const mainContent = document.querySelector('.main-content');
-            const chatInput = document.querySelector('.chat-input-container');
-            
-            if (!mainContent) return;
-            
-            const agentPanel = document.querySelector('.agent-panel');
-            const isAgentPanelOpen = agentPanel && !agentPanel.classList.contains('closed');
-            
-            if (panelOpen) {
-                if (isAgentPanelOpen) {
-                    // Both panels open - narrow the content
-                    mainContent.style.marginRight = '720px'; // 360px * 2
-                    if (chatInput) chatInput.style.right = '740px'; // 380px * 2 - 20px
-                } else {
-                    // Only file panel open
-                    mainContent.style.marginRight = '360px';
-                    if (chatInput) chatInput.style.right = '380px';
-                }
-            } else {
-                // File panel closed, check agent panel
-                if (isAgentPanelOpen) {
-                    mainContent.style.marginRight = '360px';
-                    if (chatInput) chatInput.style.right = '380px';
-                } else {
-                    mainContent.style.marginRight = '0';
-                    if (chatInput) chatInput.style.right = '20px';
-                }
-            }
-        }
 
         // Open file preview with file data
         function openFilePreview(fileData) {
@@ -4988,6 +4898,14 @@
             
             if (titleSpan) titleSpan.textContent = fileData.name;
             if (subtitleDiv) subtitleDiv.textContent = `${fileData.type.toUpperCase()} • ${fileData.size}`;
+            
+            // Show preview content and hide placeholder
+            const previewSection = document.getElementById('filePreviewSection');
+            const previewContent = document.getElementById('previewContent');
+            if (previewSection && previewContent) {
+                previewSection.querySelector('.preview-placeholder').style.display = 'none';
+                previewContent.style.display = 'block';
+            }
             
             // Render file content
             renderFileContent(fileData);
