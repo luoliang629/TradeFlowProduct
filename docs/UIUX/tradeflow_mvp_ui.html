@@ -1347,6 +1347,53 @@
             color: rgba(255, 255, 255, 0.7);
         }
 
+        /* Message Files Container */
+        .message-files {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-light);
+        }
+        
+        .message-files .file-card {
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .message-files .file-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .message-files .file-icon {
+            font-size: 1.5rem;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            margin-right: 0.75rem;
+        }
+        
+        .message-files .file-info {
+            flex: 1;
+        }
+        
+        .message-files .file-name {
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+        
+        .message-files .file-size {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+        }
+
         /* Enhanced Message Content Styles */
         .analysis-card {
             background: var(--bg-secondary);
@@ -3674,7 +3721,82 @@
                         title: currentLanguage === 'en' ? 'Find LED buyers in USA' : '寻找美国LED买家',
                         lastMessage: currentLanguage === 'en' ? 'Found 5 qualified buyers for you...' : '已为您找到5家符合条件的买家...',
                         timestamp: Date.now() - 3600000,
-                        messages: []
+                        messages: [
+                            {
+                                type: 'user',
+                                content: '我是一个LED灯具制造商，希望开发美国市场的买家。我们产品包括家用LED灯泡、商用LED面板灯和户外LED投光灯。',
+                                timestamp: Date.now() - 3600000 + 60000
+                            },
+                            {
+                                type: 'assistant',
+                                content: '很高兴为您寻找美国LED买家！我来帮您分析LED市场机会并寻找合适的买家。\n\n基于您的产品线，我重点关注以下几类买家：\n• 家居建材零售商（Home Depot、Lowe\'s等）\n• 电气批发商和分销商\n• 照明专业公司\n• 商业地产开发商\n• 政府采购部门\n\n让我为您搜索符合条件的买家信息。',
+                                timestamp: Date.now() - 3600000 + 120000
+                            },
+                            {
+                                type: 'user',
+                                content: '太好了！请重点关注年采购量在100万美元以上的大买家，特别是那些有长期合作意向的。',
+                                timestamp: Date.now() - 3600000 + 180000
+                            },
+                            {
+                                type: 'assistant',
+                                content: '明白了！我已为您筛选出5家年采购量超100万美元的优质LED买家：\n\n## 🎯 重点推荐买家\n\n### 1. ElectricPlus Distribution (纽约)\n- **采购规模**：年采购1,200万美元\n- **主营**：LED商业照明系统\n- **合作模式**：寻求3-5年长期供应协议\n- **联系人**：Mike Johnson (采购总监)\n\n### 2. Bright Future Lighting (加州)\n- **采购规模**：年采购800万美元  \n- **主营**：家用LED产品零售\n- **合作模式**：独家区域代理\n- **联系人**：Sarah Chen (业务发展经理)\n\n### 3. Metro Commercial Solutions (德州)\n- **采购规模**：年采购1,500万美元\n- **主营**：商业地产LED改造项目\n- **合作模式**：项目制合作\n- **联系人**：David Miller (项目经理)\n\n接下来我会提供详细的买家资料和联系策略。',
+                                timestamp: Date.now() - 3600000 + 240000,
+                                files: [
+                                    {
+                                        name: 'LED买家调研报告.pdf',
+                                        type: 'pdf',
+                                        size: '2.3 MB',
+                                        content: '# LED买家调研报告\n\n## 市场概况\n美国LED照明市场规模达到156亿美元，年增长率8.2%。\n\n## 主要买家类型\n1. **零售渠道买家**\n   - Home Depot：年LED采购45亿美元\n   - Lowe\'s：年LED采购32亿美元\n   - Menards：年LED采购8.5亿美元\n\n2. **批发分销商**\n   - Graybar Electric：年LED采购12亿美元\n   - WESCO International：年LED采购15亿美元\n   - Rexel USA：年LED采购9.8亿美元\n\n3. **专业照明公司**\n   - Acuity Brands：年LED采购28亿美元\n   - Hubbell Lighting：年LED采购18亿美元\n   - Cooper Lighting：年LED采购14亿美元\n\n## 采购趋势\n- 智能LED产品需求增长35%\n- 节能认证产品优先考虑\n- 长期供应协议比例增加至62%\n\n## 联系策略建议\n1. 强调产品质量认证（UL、Energy Star）\n2. 提供样品和技术支持\n3. 展示成功案例和客户推荐\n4. 参加相关行业展会建立联系'
+                                    }
+                                ]
+                            },
+                            {
+                                type: 'user',
+                                content: '这个调研报告很有用！能否提供一下主要买家的具体联系方式和产品规格要求？',
+                                timestamp: Date.now() - 3600000 + 300000
+                            },
+                            {
+                                type: 'assistant',
+                                content: '当然可以！我为您整理了详细的买家联系信息和产品规格要求。\n\n## 📞 详细买家信息\n\n### ElectricPlus Distribution\n- **邮箱**：mike.johnson@electricplus.com\n- **电话**：+1-212-555-0123\n- **地址**：125 West 45th Street, New York, NY 10036\n- **采购周期**：每季度一次大批量采购\n- **付款条件**：30天净付款\n\n### Bright Future Lighting  \n- **邮箱**：sarah.chen@brightfuture.com\n- **电话**：+1-408-555-0157\n- **地址**：2890 Zanker Road, San Jose, CA 95134\n- **采购周期**：月度补货 + 季度新品\n- **付款条件**：信用证或预付30%\n\n我还准备了一份详细的产品规格对比表，便于您了解买家需求。',
+                                timestamp: Date.now() - 3600000 + 360000,
+                                files: [
+                                    {
+                                        name: 'LED产品规格对比.xlsx',
+                                        type: 'excel',
+                                        size: '1.8 MB',
+                                        content: 'LED产品规格对比表格\n\n产品型号 | 功率 | 色温 | 寿命 | 价格(USD)\n---------|------|------|------|-----------\nLED-A60-9W | 9W | 3000K | 25000h | $2.50\nLED-A60-12W | 12W | 4000K | 30000h | $3.20\nLED-PAR30-15W | 15W | 6500K | 35000h | $4.80\nLED-T8-18W | 18W | 4000K | 40000h | $5.60\nLED-Flood-50W | 50W | 6500K | 50000h | $15.30\n\n买家规格要求：\n• ElectricPlus：主要需求商用LED面板灯，要求>40000h寿命\n• Bright Future：家用LED灯泡，重点关注3000K-4000K色温\n• Metro Commercial：大功率投光灯，要求IP65防护等级\n\n认证要求：\n• 必须：UL认证、Energy Star认证\n• 优先：DLC认证、FCC认证\n• 建议：加州能效标准CEC认证'
+                                    }
+                                ]
+                            },
+                            {
+                                type: 'user',
+                                content: '规格表很详细！还需要一份正式的商务提案模板，方便我联系这些买家时使用。',
+                                timestamp: Date.now() - 3600000 + 420000
+                            },
+                            {
+                                type: 'assistant',
+                                content: '我为您准备了一份专业的商务提案模板，包含了LED行业的关键要素和买家关注的重点内容。\n\n## 📋 商务提案要点\n\n**提案结构建议：**\n1. 公司简介及认证资质\n2. 产品线展示及技术参数\n3. 质量保证和售后服务\n4. 价格体系及付款条件\n5. 成功案例及客户证明\n6. 合作提案及时间规划\n\n**关键卖点强调：**\n- 突出质量认证（UL、Energy Star等）\n- 强调技术创新和节能优势  \n- 展示生产能力和交付保障\n- 提供本地化服务支持\n\n这份模板已经针对美国LED买家的采购习惯进行了优化。',
+                                timestamp: Date.now() - 3600000 + 480000,
+                                files: [
+                                    {
+                                        name: 'LED买家商务提案模板.docx',
+                                        type: 'word',
+                                        size: '3.1 MB',  
+                                        content: '# LED产品商务提案\n\n## 致：[买家公司名称]\n尊敬的[联系人姓名]，\n\n### 公司简介\n我们是一家专业的LED照明制造商，拥有15年行业经验。\n\n**核心优势：**\n• 年产能5000万只LED产品\n• 通过UL、Energy Star、DLC等认证\n• 拥有50+项LED技术专利\n• 服务全球200+知名客户\n\n### 产品优势\n**家用LED灯泡系列**\n- 寿命：25000-30000小时\n- 色温：2700K-6500K可选\n- 调光兼容性：95%以上\n- 节能效率：比传统灯泡节能85%\n\n**商用LED面板灯**\n- 光效：>130 lm/W\n- 寿命：>40000小时\n- 显色指数：Ra>80\n- 5年质保\n\n**户外LED投光灯**\n- 防护等级：IP65-IP67\n- 工作温度：-40°C到+50°C\n- 防浪涌：10KV\n- 光效：>150 lm/W\n\n### 质量保证\n• ISO9001质量管理体系认证\n• 每批产品100%老化测试\n• 全球联保服务网络\n• 24小时技术支持热线\n\n### 合作提案\n**阶段一：样品测试（1个月）**\n- 提供全系列产品样品\n- 技术支持和测试指导\n- 根据测试反馈优化产品\n\n**阶段二：小批量试订单（2-3个月）**\n- 建立供应链对接\n- 验证交付能力\n- 确定长期合作条款\n\n**阶段三：规模化合作（长期）**\n- 签署年度供货协议\n- 享受批量采购优惠价格\n- 提供定制化产品开发\n\n### 价格及条款\n- 付款方式：T/T 30%预付，70%发货前付清\n- 交货期：常规产品15-20天\n- 最小订单量：家用LED 5000只起，商用LED 1000只起\n- 质保期：家用2年，商用3-5年\n\n### 成功案例\n**客户A：美国大型零售商**\n- 年采购额：800万美元\n- 合作年限：5年\n- 退货率：<0.1%\n\n**客户B：照明工程公司**\n- 年采购额：1200万美元\n- 项目覆盖：全美20个州\n- 客户满意度：98%\n\n### 下一步行动\n我们希望能够：\n1. 安排视频会议详细介绍产品\n2. 寄送样品供您测试评估\n3. 邀请您参观我们的生产基地\n4. 讨论具体的合作条款\n\n期待与您建立长期互利的合作关系！\n\n此致\n敬礼！\n\n[您的姓名]\n[公司名称]\n[联系方式]'
+                                    }
+                                ]
+                            },
+                            {
+                                type: 'user',
+                                content: '完美！现在我有了完整的买家开发资料。最后一个问题：这些买家的采购决策流程一般是怎样的？',
+                                timestamp: Date.now() - 3600000 + 540000
+                            },
+                            {
+                                type: 'assistant',
+                                content: '很好的问题！了解买家的采购决策流程对成功合作至关重要。\n\n## 🔄 美国LED买家采购决策流程\n\n### 标准流程（6-12周）\n\n**第1-2周：需求确认**\n- 内部需求评估和预算申请\n- 制定产品规格要求\n- 组建采购评估小组\n\n**第3-4周：供应商寻源**\n- 发布RFQ（询价请求）\n- 筛选潜在供应商\n- 收集产品资料和报价\n\n**第5-7周：样品测试**\n- 索取样品进行技术测试\n- 第三方认证验证\n- 内部团队评估\n\n**第8-10周：商务谈判**\n- 价格和条款谈判\n- 合同条款确定\n- 法务审核\n\n**第11-12周：最终决定**\n- 高层审批\n- 签署合同\n- 启动首批订单\n\n### 关键决策因素\n1. **产品质量**（权重40%）\n2. **价格竞争力**（权重25%）\n3. **供应稳定性**（权重20%）\n4. **售后服务**（权重15%）\n\n### 加速合作的策略\n- 提前准备完整的技术文档\n- 主动提供样品和测试报告\n- 展示现有客户成功案例\n- 建立本地化服务团队\n\n现在您已经拥有了完整的美国LED买家开发工具包！祝您开发顺利！🚀',
+                                timestamp: Date.now() - 3600000 + 600000
+                            }
+                        ]
                     },
                     {
                         id: 'chat2', 
@@ -3831,17 +3953,41 @@
                 if (chat.messages && chat.messages.length > 0) {
                     chat.messages.forEach(msg => {
                         const messageDiv = document.createElement('div');
-                        messageDiv.className = msg.role === 'user' ? 'message user-message' : 'message ai-message';
-                        messageDiv.innerHTML = `
-                            <div class="message-avatar">${msg.role === 'user' ? 'U' : 'AI'}</div>
+                        const isUser = (msg.type || msg.role) === 'user';
+                        messageDiv.className = isUser ? 'message user-message' : 'message ai-message';
+                        
+                        let messageContent = `
+                            <div class="message-avatar">${isUser ? 'U' : 'AI'}</div>
                             <div class="message-content">
                                 <div class="message-header">
-                                    <span class="message-sender">${msg.role === 'user' ? 'You' : 'TradeFlow AI'}</span>
+                                    <span class="message-sender">${isUser ? 'You' : 'TradeFlow AI'}</span>
                                     <span class="message-time">Just now</span>
                                 </div>
-                                <div class="message-text">${msg.content}</div>
+                                <div class="message-text">${msg.content.replace(/\n/g, '<br>')}</div>`;
+                        
+                        // 如果有文件附件，添加文件卡片
+                        if (msg.files && msg.files.length > 0) {
+                            messageContent += '<div class="message-files">';
+                            msg.files.forEach(file => {
+                                const fileIcon = file.type === 'pdf' ? '📄' : file.type === 'excel' ? '📊' : file.type === 'word' ? '📝' : '📎';
+                                messageContent += `
+                                    <div class="file-card" onclick="previewFile('${file.name}', '${file.type}', \`${file.content}\`)">
+                                        <div class="file-icon">${fileIcon}</div>
+                                        <div class="file-info">
+                                            <div class="file-name">${file.name}</div>
+                                            <div class="file-size">${file.size}</div>
+                                        </div>
+                                    </div>
+                                `;
+                            });
+                            messageContent += '</div>';
+                        }
+                        
+                        messageContent += `
                             </div>
                         `;
+                        
+                        messageDiv.innerHTML = messageContent;
                         messagesContainer.appendChild(messageDiv);
                     });
                 }
@@ -4887,6 +5033,30 @@
             }
         }
 
+        // Preview file function - called when clicking file cards
+        function previewFile(fileName, fileType, fileContent) {
+            console.log('Previewing file:', fileName, fileType);
+            
+            // Set current file data
+            currentFileData = {
+                name: fileName,
+                type: fileType,
+                content: fileContent
+            };
+            
+            // Update panel title
+            const titleSpan = document.querySelector('.file-preview-title span');
+            const subtitleDiv = document.getElementById('filePreviewText');
+            if (titleSpan) titleSpan.textContent = fileName;
+            if (subtitleDiv) subtitleDiv.textContent = '文件预览 · ' + fileType.toUpperCase();
+            
+            // Render file content
+            renderFileContent(currentFileData);
+            
+            // Open the panel
+            openFilePanel();
+        }
+
 
         // Open file preview with file data
         function openFilePreview(fileData) {
@@ -4927,10 +5097,12 @@
                     break;
                 case 'doc':
                 case 'docx':
+                case 'word':
                     contentHTML = renderDocumentPreview(fileData);
                     break;
                 case 'xls':
                 case 'xlsx':
+                case 'excel':
                     contentHTML = renderSpreadsheetPreview(fileData);
                     break;
                 case 'txt':
@@ -5065,27 +5237,48 @@
                             <table class="preview-table">
                                 <thead>
                                     <tr>
-                                        <th>供应商名称</th>
-                                        <th>产品类别</th>
-                                        <th>价格范围</th>
-                                        <th>评级</th>
+                                        <th>产品型号</th>
+                                        <th>功率</th>
+                                        <th>色温</th>
+                                        <th>寿命</th>
+                                        <th>价格(USD)</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr>
-                                        <td>深圳光明电子</td>
-                                        <td>LED灯具</td>
-                                        <td>$2.5-$15</td>
-                                        <td>⭐⭐⭐⭐⭐</td>
+                                        <td>LED-A60-9W</td>
+                                        <td>9W</td>
+                                        <td>3000K</td>
+                                        <td>25000h</td>
+                                        <td>$2.50</td>
                                     </tr>
                                     <tr>
-                                        <td>广东华强科技</td>
-                                        <td>电子元件</td>
-                                        <td>$0.5-$8</td>
-                                        <td>⭐⭐⭐⭐</td>
+                                        <td>LED-A60-12W</td>
+                                        <td>12W</td>
+                                        <td>4000K</td>
+                                        <td>30000h</td>
+                                        <td>$3.20</td>
                                     </tr>
                                     <tr>
-                                        <td colspan="4" style="text-align: center; font-style: italic;">... 更多数据请下载查看</td>
+                                        <td>LED-PAR30-15W</td>
+                                        <td>15W</td>
+                                        <td>6500K</td>
+                                        <td>35000h</td>
+                                        <td>$4.80</td>
+                                    </tr>
+                                    <tr>
+                                        <td>LED-T8-18W</td>
+                                        <td>18W</td>
+                                        <td>4000K</td>
+                                        <td>40000h</td>
+                                        <td>$5.60</td>
+                                    </tr>
+                                    <tr>
+                                        <td>LED-Flood-50W</td>
+                                        <td>50W</td>
+                                        <td>6500K</td>
+                                        <td>50000h</td>
+                                        <td>$15.30</td>
                                     </tr>
                                 </tbody>
                             </table>
