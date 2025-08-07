@@ -966,6 +966,264 @@
             color: rgba(255, 255, 255, 0.7);
         }
 
+        /* Enhanced Message Content Styles */
+        .analysis-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-light);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .analysis-card h4 {
+            margin: 0 0 1rem 0;
+            color: var(--text-primary);
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .market-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            padding: 1rem;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
+            color: white;
+            border-radius: 8px;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            opacity: 0.9;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value {
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        /* Buyer Recommendations Styles */
+        .buyer-recommendations {
+            margin: 1rem 0;
+        }
+
+        .buyer-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-light);
+            border-radius: 12px;
+            margin: 1rem 0;
+            padding: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+        }
+
+        .buyer-card:hover {
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .buyer-card.high-priority {
+            border-left: 4px solid #10B981;
+        }
+
+        .buyer-card.medium-priority {
+            border-left: 4px solid #F59E0B;
+        }
+
+        .buyer-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .buyer-header h4 {
+            margin: 0;
+            color: var(--text-primary);
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .priority-badge {
+            background: #10B981;
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .priority-badge.medium {
+            background: #F59E0B;
+        }
+
+        .match-score {
+            background: var(--bg-tertiary);
+            color: var(--text-secondary);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            margin-left: auto;
+        }
+
+        .buyer-details {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .buyer-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+        }
+
+        .buyer-info span {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .buyer-highlights {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .highlight {
+            background: #EBF8FF;
+            color: #2563EB;
+            padding: 0.25rem 0.75rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .contact-info {
+            background: var(--bg-tertiary);
+            padding: 1rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        /* Strategy Card Styles */
+        .strategy-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-light);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .strategy-card h4 {
+            margin: 0 0 1rem 0;
+            color: var(--text-primary);
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .strategy-section {
+            margin: 1.5rem 0;
+        }
+
+        .strategy-section h5 {
+            margin: 0 0 0.75rem 0;
+            color: var(--text-primary);
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .email-template {
+            background: var(--bg-tertiary);
+            padding: 1rem;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary-color);
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .price-item {
+            background: var(--bg-tertiary);
+            padding: 1rem;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .product-name {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .price-range {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .moq {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        /* Typing Indicator */
+        .message.typing .message-text {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .typing-indicator {
+            display: flex;
+            gap: 0.25rem;
+        }
+
+        .typing-indicator span {
+            width: 8px;
+            height: 8px;
+            background: var(--primary-color);
+            border-radius: 50%;
+            animation: typingBounce 1.4s infinite ease-in-out both;
+        }
+
+        .typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
+        .typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
+        .typing-indicator span:nth-child(3) { animation-delay: 0s; }
+
+        .typing-text {
+            color: var(--text-secondary);
+            font-style: italic;
+            margin: 0;
+        }
+
+        @keyframes typingBounce {
+            0%, 80%, 100% { 
+                transform: scale(0);
+            } 40% { 
+                transform: scale(1);
+            }
+        }
+
         /* Chat Input */
         .chat-input-container {
             position: fixed;
@@ -2048,7 +2306,103 @@
                 <!-- 对话列表 -->
                 <div class="chat-list" id="chatList">
                     <div class="chat-list-container" id="chatContainer">
-                        <!-- 对话项将在这里动态插入 -->
+                        <!-- 对话项 - 模拟数据 -->
+                        
+                        <!-- 当前活跃对话 - 寻找美国LED灯具买家 -->
+                        <div class="chat-item active" data-chat-id="chat-001" onclick="loadChat('chat-001')">
+                            <div class="chat-item-header">
+                                <div class="chat-item-title">寻找美国LED灯具买家</div>
+                                <div class="chat-item-time">刚刚</div>
+                            </div>
+                            <div class="chat-item-preview">正在为您匹配优质买家，已找到15家潜在客户...</div>
+                            <div class="chat-item-actions">
+                                <button class="chat-action-btn" title="更多选项">⋮</button>
+                            </div>
+                        </div>
+
+                        <!-- 历史对话 1 - 供应商询价 -->
+                        <div class="chat-item" data-chat-id="chat-002" onclick="loadChat('chat-002')">
+                            <div class="chat-item-header">
+                                <div class="chat-item-title">手机配件供应商询价</div>
+                                <div class="chat-item-time">2小时前</div>
+                            </div>
+                            <div class="chat-item-preview">已为您找到8家可靠供应商，价格区间$2.5-$4.2</div>
+                            <div class="chat-item-actions">
+                                <button class="chat-action-btn" title="更多选项">⋮</button>
+                            </div>
+                        </div>
+
+                        <!-- 历史对话 2 - 市场分析 -->
+                        <div class="chat-item" data-chat-id="chat-003" onclick="loadChat('chat-003')">
+                            <div class="chat-item-header">
+                                <div class="chat-item-title">欧洲家居市场分析</div>
+                                <div class="chat-item-time">昨天</div>
+                            </div>
+                            <div class="chat-item-preview">市场规模€245亿，同比增长8.5%，主要需求...</div>
+                            <div class="chat-item-actions">
+                                <button class="chat-action-btn" title="更多选项">⋮</button>
+                            </div>
+                        </div>
+
+                        <!-- 历史对话 3 - 合同审查 -->
+                        <div class="chat-item" data-chat-id="chat-004" onclick="loadChat('chat-004')">
+                            <div class="chat-item-header">
+                                <div class="chat-item-title">贸易合同条款审查</div>
+                                <div class="chat-item-time">2天前</div>
+                            </div>
+                            <div class="chat-item-preview">已审查FOB条款，发现3个潜在风险点需要注意</div>
+                            <div class="chat-item-actions">
+                                <button class="chat-action-btn" title="更多选项">⋮</button>
+                            </div>
+                        </div>
+
+                        <!-- 历史对话 4 - 物流查询 -->
+                        <div class="chat-item" data-chat-id="chat-005" onclick="loadChat('chat-005')">
+                            <div class="chat-item-header">
+                                <div class="chat-item-title">深圳到洛杉矶物流</div>
+                                <div class="chat-item-time">3天前</div>
+                            </div>
+                            <div class="chat-item-preview">海运20-25天，空运5-7天，已为您比较...</div>
+                            <div class="chat-item-actions">
+                                <button class="chat-action-btn" title="更多选项">⋮</button>
+                            </div>
+                        </div>
+
+                        <!-- 历史对话 5 - 产品认证 -->
+                        <div class="chat-item" data-chat-id="chat-006" onclick="loadChat('chat-006')">
+                            <div class="chat-item-header">
+                                <div class="chat-item-title">电子产品CE认证咨询</div>
+                                <div class="chat-item-time">1周前</div>
+                            </div>
+                            <div class="chat-item-preview">CE认证流程需要6-8周，费用约$3000-5000</div>
+                            <div class="chat-item-actions">
+                                <button class="chat-action-btn" title="更多选项">⋮</button>
+                            </div>
+                        </div>
+
+                        <!-- 历史对话 6 - 汇率分析 -->
+                        <div class="chat-item" data-chat-id="chat-007" onclick="loadChat('chat-007')">
+                            <div class="chat-item-header">
+                                <div class="chat-item-title">美元汇率趋势分析</div>
+                                <div class="chat-item-time">1周前</div>
+                            </div>
+                            <div class="chat-item-preview">近期美元走强，建议择机结汇，预计...</div>
+                            <div class="chat-item-actions">
+                                <button class="chat-action-btn" title="更多选项">⋮</button>
+                            </div>
+                        </div>
+
+                        <!-- 历史对话 7 - 展会信息 -->
+                        <div class="chat-item" data-chat-id="chat-008" onclick="loadChat('chat-008')">
+                            <div class="chat-item-header">
+                                <div class="chat-item-title">2024年广交会参展指南</div>
+                                <div class="chat-item-time">2周前</div>
+                            </div>
+                            <div class="chat-item-preview">春季广交会4月15-19日，已帮您筛选...</div>
+                            <div class="chat-item-actions">
+                                <button class="chat-action-btn" title="更多选项">⋮</button>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- 空状态 -->
@@ -2154,7 +2508,273 @@
                 <!-- Regular Chat View -->
                 <div id="regularChatView">
                     <!-- Chat Messages -->
-                    <div id="chatMessages" class="chat-messages"></div>
+                    <div id="chatMessages" class="chat-messages">
+                        <!-- 完整对话示例 - 寻找美国LED灯具买家 -->
+                        
+                        <!-- 用户初始消息 -->
+                        <div class="message user">
+                            <div class="message-avatar">M</div>
+                            <div class="message-content">
+                                <div class="message-text">
+                                    <p>你好！我是一家专业生产LED灯具的厂家，主要产品包括LED吸顶灯、筒灯、面板灯等。现在想要开发美国市场，希望找到一些优质的买家。我们的产品通过了CE、FCC认证，价格有竞争力。能帮我分析一下美国LED灯具市场，并推荐一些潜在买家吗？</p>
+                                </div>
+                                <div class="message-time">14:25</div>
+                            </div>
+                        </div>
+
+                        <!-- AI助手回复 -->
+                        <div class="message assistant">
+                            <div class="message-avatar">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                                </svg>
+                            </div>
+                            <div class="message-content">
+                                <div class="message-text">
+                                    <p>很高兴为您提供帮助！我正在分析美国LED灯具市场并为您寻找合适的买家。</p>
+                                    
+                                    <div class="analysis-card">
+                                        <h4>📊 美国LED灯具市场概况</h4>
+                                        <div class="market-stats">
+                                            <div class="stat-item">
+                                                <span class="stat-label">市场规模</span>
+                                                <span class="stat-value">$156亿美元</span>
+                                            </div>
+                                            <div class="stat-item">
+                                                <span class="stat-label">年增长率</span>
+                                                <span class="stat-value">12.5%</span>
+                                            </div>
+                                            <div class="stat-item">
+                                                <span class="stat-label">进口依存度</span>
+                                                <span class="stat-value">68%</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <p><strong>主要需求趋势：</strong></p>
+                                    <ul>
+                                        <li>智能照明系统需求增长35%</li>
+                                        <li>商业照明占比最大（42%）</li>
+                                        <li>节能环保要求日益严格</li>
+                                        <li>价格敏感度适中，更看重质量</li>
+                                    </ul>
+                                </div>
+                                <div class="message-time">14:26</div>
+                            </div>
+                        </div>
+
+                        <!-- AI继续回复 - 买家推荐 -->
+                        <div class="message assistant">
+                            <div class="message-avatar">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                                </svg>
+                            </div>
+                            <div class="message-content">
+                                <div class="message-text">
+                                    <p>基于您的产品特点和市场分析，我为您推荐以下优质买家：</p>
+                                    
+                                    <div class="buyer-recommendations">
+                                        <!-- 买家1 -->
+                                        <div class="buyer-card high-priority">
+                                            <div class="buyer-header">
+                                                <h4>🏢 Bright Solutions LLC</h4>
+                                                <span class="priority-badge">高优先级</span>
+                                                <span class="match-score">匹配度 95%</span>
+                                            </div>
+                                            <div class="buyer-details">
+                                                <div class="buyer-info">
+                                                    <span><strong>位置：</strong> 加利福尼亚州洛杉矶</span>
+                                                    <span><strong>专业领域：</strong> 商业照明分销</span>
+                                                    <span><strong>年采购额：</strong> $5-8M</span>
+                                                    <span><strong>主要产品：</strong> LED面板灯、筒灯</span>
+                                                </div>
+                                                <div class="buyer-highlights">
+                                                    <span class="highlight">✓ 与中国供应商合作5年+</span>
+                                                    <span class="highlight">✓ 要求CE/FCC认证</span>
+                                                    <span class="highlight">✓ 月订单量1000-3000套</span>
+                                                </div>
+                                                <div class="contact-info">
+                                                    <strong>采购负责人：</strong> Sarah Johnson<br>
+                                                    <strong>邮箱：</strong> procurement@brightsolutions.com<br>
+                                                    <strong>最佳联系时间：</strong> 美西时间9-17点
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- 买家2 -->
+                                        <div class="buyer-card medium-priority">
+                                            <div class="buyer-header">
+                                                <h4>🏬 ElectroMart Distribution</h4>
+                                                <span class="priority-badge medium">中优先级</span>
+                                                <span class="match-score">匹配度 88%</span>
+                                            </div>
+                                            <div class="buyer-details">
+                                                <div class="buyer-info">
+                                                    <span><strong>位置：</strong> 德克萨斯州达拉斯</span>
+                                                    <span><strong>专业领域：</strong> 家居照明零售</span>
+                                                    <span><strong>年采购额：</strong> $3-5M</span>
+                                                    <span><strong>主要产品：</strong> LED吸顶灯、装饰灯</span>
+                                                </div>
+                                                <div class="buyer-highlights">
+                                                    <span class="highlight">✓ 在线销售平台强</span>
+                                                    <span class="highlight">✓ 价格敏感度适中</span>
+                                                    <span class="highlight">✓ 季度订单模式</span>
+                                                </div>
+                                                <div class="contact-info">
+                                                    <strong>采购负责人：</strong> Mike Rodriguez<br>
+                                                    <strong>邮箱：</strong> buyers@electromart.com
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- 买家3 -->
+                                        <div class="buyer-card medium-priority">
+                                            <div class="buyer-header">
+                                                <h4>🏭 Industrial Lighting Co.</h4>
+                                                <span class="priority-badge medium">中优先级</span>
+                                                <span class="match-score">匹配度 82%</span>
+                                            </div>
+                                            <div class="buyer-details">
+                                                <div class="buyer-info">
+                                                    <span><strong>位置：</strong> 纽约州布法罗</span>
+                                                    <span><strong>专业领域：</strong> 工业照明工程</span>
+                                                    <span><strong>年采购额：</strong> $8-12M</span>
+                                                    <span><strong>主要产品：</strong> 高功率LED、防爆灯具</span>
+                                                </div>
+                                                <div class="buyer-highlights">
+                                                    <span class="highlight">✓ 订单量大且稳定</span>
+                                                    <span class="highlight">✓ 质量要求严格</span>
+                                                    <span class="highlight">✓ 长期合作导向</span>
+                                                </div>
+                                                <div class="contact-info">
+                                                    <strong>采购负责人：</strong> James Wilson<br>
+                                                    <strong>邮箱：</strong> purchasing@indled.com
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="message-time">14:27</div>
+                            </div>
+                        </div>
+
+                        <!-- 用户询问更多信息 -->
+                        <div class="message user">
+                            <div class="message-avatar">M</div>
+                            <div class="message-content">
+                                <div class="message-text">
+                                    <p>非常棒的分析！我对Bright Solutions LLC特别感兴趣。能帮我制定一个具体的接触策略吗？包括邮件模板和报价建议？</p>
+                                </div>
+                                <div class="message-time">14:28</div>
+                            </div>
+                        </div>
+
+                        <!-- AI助手提供接触策略 -->
+                        <div class="message assistant">
+                            <div class="message-avatar">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                                </svg>
+                            </div>
+                            <div class="message-content">
+                                <div class="message-text">
+                                    <p>当然！我为您制定了针对Bright Solutions LLC的完整接触策略：</p>
+                                    
+                                    <div class="strategy-card">
+                                        <h4>📧 邮件开发策略</h4>
+                                        
+                                        <div class="strategy-section">
+                                            <h5>推荐发送时间</h5>
+                                            <ul>
+                                                <li><strong>最佳时机：</strong> 周二-周四，美西时间10-11AM 或 2-3PM</li>
+                                                <li><strong>避免时间：</strong> 周一早晨、周五下午</li>
+                                                <li><strong>跟进间隔：</strong> 首次发送后3-5天跟进</li>
+                                            </ul>
+                                        </div>
+
+                                        <div class="strategy-section">
+                                            <h5>邮件结构建议</h5>
+                                            <div class="email-template">
+                                                <strong>主题行：</strong> "Premium LED Lighting Solutions - CE/FCC Certified | Direct Manufacturer"<br><br>
+                                                
+                                                <strong>开头：</strong> 简短自我介绍，强调制造商身份<br>
+                                                <strong>正文：</strong> 
+                                                <ul>
+                                                    <li>产品优势（认证齐全、价格竞争力）</li>
+                                                    <li>成功案例（类似客户合作经验）</li>
+                                                    <li>差异化价值（快速交期、稳定供应）</li>
+                                                </ul>
+                                                <strong>结尾：</strong> 具体的行动呼吁，如样品申请或视频会议
+                                            </div>
+                                        </div>
+
+                                        <div class="strategy-section">
+                                            <h5>报价策略</h5>
+                                            <div class="pricing-grid">
+                                                <div class="price-item">
+                                                    <span class="product-name">LED面板灯 (600x600)</span>
+                                                    <span class="price-range">$28-32 FOB</span>
+                                                    <span class="moq">MOQ: 500pcs</span>
+                                                </div>
+                                                <div class="price-item">
+                                                    <span class="product-name">LED筒灯 (12W)</span>
+                                                    <span class="price-range">$8-12 FOB</span>
+                                                    <span class="moq">MOQ: 1000pcs</span>
+                                                </div>
+                                                <div class="price-item">
+                                                    <span class="product-name">LED吸顶灯 (24W)</span>
+                                                    <span class="price-range">$15-18 FOB</span>
+                                                    <span class="moq">MOQ: 800pcs</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <p><strong>📋 接下来建议的步骤：</strong></p>
+                                    <ol>
+                                        <li>准备产品目录和认证文件</li>
+                                        <li>制作样品包（3-5个主力产品）</li>
+                                        <li>发送开发邮件</li>
+                                        <li>跟进并安排视频会议</li>
+                                        <li>寄送样品</li>
+                                    </ol>
+                                </div>
+                                <div class="message-time">14:30</div>
+                            </div>
+                        </div>
+
+                        <!-- 用户确认 -->
+                        <div class="message user">
+                            <div class="message-avatar">M</div>
+                            <div class="message-content">
+                                <div class="message-text">
+                                    <p>太详细了，非常实用！请帮我生成具体的邮件模板，我准备马上联系他们。</p>
+                                </div>
+                                <div class="message-time">14:31</div>
+                            </div>
+                        </div>
+
+                        <!-- AI助手正在生成邮件模板 -->
+                        <div class="message assistant typing">
+                            <div class="message-avatar">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                                </svg>
+                            </div>
+                            <div class="message-content">
+                                <div class="message-text">
+                                    <div class="typing-indicator">
+                                        <span></span>
+                                        <span></span>
+                                        <span></span>
+                                    </div>
+                                    <p class="typing-text">正在生成专业邮件模板...</p>
+                                </div>
+                                <div class="message-time">14:32</div>
+                            </div>
+                        </div>
+                    </div>
 
                     <!-- Chat Input -->
                     <div class="chat-input-container">
@@ -2199,7 +2819,7 @@
                         <span class="agent-status-indicator" id="agentStatusIndicator"></span>
                         <span data-i18n="agent-status">AI Agent Status</span>
                     </div>
-                    <div class="agent-panel-subtitle" id="agentStatusText">Ready to assist you</div>
+                    <div class="agent-panel-subtitle" id="agentStatusText">正在生成专业邮件模板...</div>
                 </div>
                 <div class="agent-panel-controls">
                     <button class="agent-panel-minimize" onclick="toggleAgentPanel()" title="Minimize panel">
@@ -2238,14 +2858,16 @@
                     <div class="react-section-content">
                         <div class="react-section-body">
                             <div id="reasoningContent">
-                                <p>分析用户需求：寻找美国LED灯具买家</p>
-                                <p>基于历史数据和市场趋势进行匹配</p>
-                                <p>考虑产品类别、价格范围和MOQ要求</p>
+                                <p><strong>🔍 需求分析:</strong> 用户是LED灯具制造商，产品包括吸顶灯、筒灯、面板灯，已获CE/FCC认证</p>
+                                <p><strong>🎯 目标市场:</strong> 美国市场，寻找优质买家，注重价格竞争力</p>
+                                <p><strong>📊 匹配策略:</strong> 基于产品类别、认证要求、采购规模、合作历史进行智能匹配</p>
+                                <p><strong>💡 推荐逻辑:</strong> 优先推荐有中国供应商合作经验、要求相关认证的买家</p>
                             </div>
                             <div class="data-sources">
-                                <span class="data-source-badge verified">贸易数据库</span>
-                                <span class="data-source-badge">海关记录</span>
-                                <span class="data-source-badge">B2B平台</span>
+                                <span class="data-source-badge verified">美国海关数据库</span>
+                                <span class="data-source-badge verified">B2B交易记录</span>
+                                <span class="data-source-badge">市场调研报告</span>
+                                <span class="data-source-badge">企业信用数据</span>
                             </div>
                         </div>
                     </div>
@@ -2304,13 +2926,16 @@
                     <div class="react-section-content">
                         <div class="react-section-body">
                             <div id="observationContent">
-                                <p>找到5家符合条件的美国LED买家</p>
-                                <p>平均匹配度：92%</p>
-                                <p>年采购总额：$2M-$10M</p>
+                                <p><strong>🏢 买家筛选结果:</strong> 从超过500家美国照明买家中筛选出15家高匹配度买家</p>
+                                <p><strong>⭐ 匹配度分析:</strong> 3家高优先级(90%+)，8家中优先级(80%+)，4家标准级(70%+)</p>
+                                <p><strong>💰 采购规模:</strong> 年采购总额$45M，单笔订单$50K-$500K</p>
+                                <p><strong>📍 地理分布:</strong> 加州40%，德州25%，纽约15%，其他20%</p>
+                                <p><strong>🔄 合作潜力:</strong> 80%的买家有与中国供应商长期合作历史</p>
                             </div>
                             <div class="data-sources">
-                                <span class="data-source-badge verified">已验证</span>
-                                <span class="data-source-badge">最新数据</span>
+                                <span class="data-source-badge verified">实时验证</span>
+                                <span class="data-source-badge verified">2024最新数据</span>
+                                <span class="data-source-badge">信用评级A+</span>
                             </div>
                         </div>
                     </div>
@@ -2326,8 +2951,80 @@
                         <div class="activity-item">
                             <div class="activity-dot completed"></div>
                             <div class="activity-content">
-                                <div class="activity-text">Session started</div>
-                                <div class="activity-time">Just now</div>
+                                <div class="activity-text">✅ 会话启动，用户需求识别完成</div>
+                                <div class="activity-time">14:25</div>
+                            </div>
+                        </div>
+                        
+                        <div class="activity-item">
+                            <div class="activity-dot completed"></div>
+                            <div class="activity-content">
+                                <div class="activity-text">🔍 美国LED灯具市场数据检索完成</div>
+                                <div class="activity-time">14:26</div>
+                            </div>
+                        </div>
+                        
+                        <div class="activity-item">
+                            <div class="activity-dot completed"></div>
+                            <div class="activity-content">
+                                <div class="activity-text">📊 市场规模与趋势分析完成 ($156B市场)</div>
+                                <div class="activity-time">14:26</div>
+                            </div>
+                        </div>
+                        
+                        <div class="activity-item">
+                            <div class="activity-dot completed"></div>
+                            <div class="activity-content">
+                                <div class="activity-text">🏢 买家数据库查询完成 (500+ 候选买家)</div>
+                                <div class="activity-time">14:26</div>
+                            </div>
+                        </div>
+                        
+                        <div class="activity-item">
+                            <div class="activity-dot completed"></div>
+                            <div class="activity-content">
+                                <div class="activity-text">⭐ 智能匹配算法运行，筛选出15家高质量买家</div>
+                                <div class="activity-time">14:27</div>
+                            </div>
+                        </div>
+                        
+                        <div class="activity-item">
+                            <div class="activity-dot completed"></div>
+                            <div class="activity-content">
+                                <div class="activity-text">📋 买家详细信息整理，生成推荐报告</div>
+                                <div class="activity-time">14:27</div>
+                            </div>
+                        </div>
+                        
+                        <div class="activity-item">
+                            <div class="activity-dot completed"></div>
+                            <div class="activity-content">
+                                <div class="activity-text">💼 针对Bright Solutions LLC制定接触策略</div>
+                                <div class="activity-time">14:30</div>
+                            </div>
+                        </div>
+                        
+                        <div class="activity-item">
+                            <div class="activity-dot completed"></div>
+                            <div class="activity-content">
+                                <div class="activity-text">📧 邮件开发策略和报价建议生成完成</div>
+                                <div class="activity-time">14:30</div>
+                            </div>
+                        </div>
+                        
+                        <div class="activity-item">
+                            <div class="activity-dot in-progress"></div>
+                            <div class="activity-content">
+                                <div class="activity-text">📝 正在生成专业邮件模板...</div>
+                                <div class="activity-time">14:32</div>
+                            </div>
+                        </div>
+                        
+                        <div class="activity-item">
+                            <div class="activity-dot pending"></div>
+                            <div class="activity-content">
+                                <div class="activity-text">📤 准备发送开发邮件建议</div>
+                                <div class="activity-time">预计 14:33</div>
                             </div>
                         </div>
                     </div>
