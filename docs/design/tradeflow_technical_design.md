@@ -204,6 +204,37 @@ CREATE TABLE subscriptions (
     expires_at TIMESTAMP,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+-- 文件元数据表
+CREATE TABLE files (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID REFERENCES users(id),
+    conversation_id VARCHAR(255), -- 关联的对话ID
+    filename VARCHAR(255) NOT NULL,
+    original_filename VARCHAR(255) NOT NULL,
+    file_type VARCHAR(50) NOT NULL, -- 'image', 'document', 'code', 'data'
+    file_extension VARCHAR(10) NOT NULL,
+    content_type VARCHAR(100) NOT NULL,
+    file_size BIGINT NOT NULL,
+    minio_bucket VARCHAR(100) NOT NULL,
+    minio_object_key VARCHAR(500) NOT NULL,
+    description TEXT,
+    tags JSONB,
+    is_generated BOOLEAN DEFAULT false, -- 是否为Agent生成的文件
+    preview_content TEXT, -- 预览内容（文本文件的前几行等）
+    metadata JSONB, -- 其他元数据（尺寸、编码等）
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 文件关联表（文件与对话消息的关系）
+CREATE TABLE file_message_relations (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    file_id UUID REFERENCES files(id) ON DELETE CASCADE,
+    message_id VARCHAR(255) NOT NULL, -- MongoDB中的消息ID
+    relation_type VARCHAR(50) NOT NULL, -- 'input', 'output', 'attachment'
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 ```
 
 ### MongoDB Collections（非结构化数据）
@@ -217,9 +248,18 @@ conversations: {
   agent_type: String, // 'buyer', 'supplier', 'market'
   messages: [
     {
+      message_id: String, // 消息唯一ID
       role: String, // 'user', 'assistant'
       content: String,
       timestamp: Date,
+      files: [
+        {
+          file_id: String, // PostgreSQL中的文件ID
+          filename: String,
+          file_type: String,
+          relation_type: String // 'input', 'output', 'attachment'
+        }
+      ],
       metadata: {
         tokens: Number,
         model: String,
@@ -231,6 +271,11 @@ conversations: {
     user_profile: Object,
     product_info: Object,
     preferences: Object
+  },
+  files_summary: {
+    total_files: Number,
+    file_types: Array, // 对话中涉及的文件类型统计
+    generated_files: Number // Agent生成的文件数量
   },
   created_at: Date,
   updated_at: Date
@@ -305,6 +350,43 @@ agent_context:{session_id} -> {
   messages: [...],
   state: {...}
 }
+
+# 文件预览缓存
+file_preview:{file_id} -> {
+  content: preview_text,
+  cached_at: timestamp
+}
+```
+
+### MinIO存储结构
+
+```
+# Bucket组织结构
+tradeflow-files/
+├── users/{user_id}/
+│   ├── uploads/           # 用户上传的文件
+│   │   ├── documents/     # 文档类文件
+│   │   ├── images/        # 图片文件
+│   │   └── data/          # 数据文件
+│   └── generated/         # Agent生成的文件
+│       ├── reports/       # 生成的报告
+│       ├── code/          # 生成的代码文件
+│       ├── templates/     # 生成的模板
+│       └── analysis/      # 分析结果文件
+
+# 对象键格式
+{user_id}/{category}/{yyyy/mm/dd}/{uuid}.{extension}
+
+# 示例
+users/123e4567-e89b-12d3-a456-426614174000/
+  uploads/documents/2024/01/15/contract_abc123.pdf
+  generated/reports/2024/01/15/market_analysis_def456.docx
+  generated/code/2024/01/15/api_client_ghi789.py
+
+# 临时文件存储
+temp-files/
+├── processing/{uuid}/     # 文件处理中的临时存储
+└── preview/{file_id}/     # 预览图缓存
 ```
 
 ---
@@ -345,6 +427,31 @@ POST   /api/v1/products                  # 创建产品
 GET    /api/v1/products                  # 获取产品列表
 PUT    /api/v1/products/{id}             # 更新产品
 DELETE /api/v1/products/{id}             # 删除产品
+```
+
+#### 文件管理
+```
+# 文件上传和管理
+POST   /api/v1/files/upload              # 上传文件
+GET    /api/v1/files/{id}                # 获取文件元数据
+GET    /api/v1/files/{id}/download       # 下载文件
+GET    /api/v1/files/{id}/preview        # 获取文件预览
+DELETE /api/v1/files/{id}                # 删除文件
+PUT    /api/v1/files/{id}                # 更新文件元数据
+
+# 对话文件关联
+GET    /api/v1/conversations/{id}/files  # 获取对话关联的所有文件
+POST   /api/v1/conversations/{id}/files  # 为对话添加文件
+DELETE /api/v1/conversations/{id}/files/{file_id} # 移除对话文件关联
+
+# 文件搜索和过滤
+GET    /api/v1/files                     # 获取用户文件列表（支持分页和过滤）
+GET    /api/v1/files/search              # 按文件名、类型、标签搜索文件
+
+# 批量操作
+POST   /api/v1/files/batch/delete        # 批量删除文件
+POST   /api/v1/files/batch/move          # 批量移动文件
+POST   /api/v1/files/batch/tag           # 批量添加标签
 ```
 
 #### 订阅和支付
@@ -460,6 +567,520 @@ POST /api/v1/buyers/recommend
   }
 }
 ```
+
+#### 文件上传请求
+```json
+POST /api/v1/files/upload
+Content-Type: multipart/form-data
+
+{
+  "file": [binary_data],
+  "conversation_id": "conv_123456",
+  "description": "产品规格书",
+  "tags": ["product", "specification"],
+  "is_generated": false
+}
+```
+
+#### 文件上传响应
+```json
+{
+  "status": "success",
+  "data": {
+    "file": {
+      "id": "file_789abc",
+      "filename": "product_spec_1642567890.pdf",
+      "original_filename": "产品规格书.pdf",
+      "file_type": "document",
+      "file_size": 2048576,
+      "content_type": "application/pdf",
+      "download_url": "/api/v1/files/file_789abc/download",
+      "preview_url": "/api/v1/files/file_789abc/preview",
+      "created_at": "2024-01-19T08:30:00Z"
+    }
+  }
+}
+```
+
+#### 获取对话文件列表请求
+```json
+GET /api/v1/conversations/conv_123456/files?type=document&limit=10&offset=0
+```
+
+#### 获取对话文件列表响应
+```json
+{
+  "status": "success",
+  "data": {
+    "files": [
+      {
+        "id": "file_789abc",
+        "filename": "market_analysis_report.docx",
+        "file_type": "document",
+        "file_size": 1024000,
+        "is_generated": true,
+        "relation_type": "output",
+        "preview_content": "# 市场分析报告\n\n## 概述\n本报告分析了LED照明市场...",
+        "created_at": "2024-01-19T08:30:00Z"
+      },
+      {
+        "id": "file_def456",
+        "filename": "buyer_contact_template.txt",
+        "file_type": "code",
+        "file_size": 2048,
+        "is_generated": true,
+        "relation_type": "output",
+        "preview_content": "Dear [Company Name],\n\nWe are pleased to introduce...",
+        "created_at": "2024-01-19T08:25:00Z"
+      }
+    ],
+    "total": 15,
+    "pagination": {
+      "limit": 10,
+      "offset": 0,
+      "has_more": true
+    }
+  }
+}
+```
+
+#### 文件预览请求
+```json
+GET /api/v1/files/file_789abc/preview?lines=50&format=text
+```
+
+#### 文件预览响应
+```json
+{
+  "status": "success",
+  "data": {
+    "preview": {
+      "content": "# LED产品规格书\n\n## 基本参数\n- 功率: 12W\n- 色温: 4000K\n- 流明: 1200lm...",
+      "format": "markdown",
+      "total_lines": 156,
+      "preview_lines": 50,
+      "file_info": {
+        "filename": "product_spec.md",
+        "file_size": 8192,
+        "last_modified": "2024-01-19T08:30:00Z"
+      }
+    }
+  }
+}
+```
+
+---
+
+## 文件预览系统设计
+
+### 系统概述
+
+文件预览系统是对话内容展示的重要组成部分，用于在右侧面板中预览和管理对话过程中产生的各种文件。系统支持多种文件格式的预览，提供直观的文件管理界面。
+
+### 支持的文件类型
+
+#### 代码文件
+- **.js, .ts, .jsx, .tsx**: JavaScript/TypeScript文件，支持语法高亮
+- **.py**: Python文件，支持语法高亮和代码折叠
+- **.json**: JSON文件，支持格式化显示和语法验证
+- **.yaml, .yml**: YAML配置文件
+- **.sql**: SQL脚本文件
+
+#### 文档文件
+- **.md**: Markdown文件，支持渲染预览和源码查看
+- **.txt**: 纯文本文件
+- **.pdf**: PDF文档，支持分页预览
+- **.docx**: Word文档，转换为HTML预览
+- **.html**: HTML文件，支持渲染和源码模式
+
+#### 数据文件
+- **.csv**: CSV数据文件，支持表格形式展示
+- **.xlsx**: Excel文件，支持工作表切换
+- **.json**: JSON数据文件，支持树形结构展示
+
+#### 图像文件
+- **.png, .jpg, .jpeg**: 位图图像，支持缩放和全屏查看
+- **.svg**: 矢量图像，支持代码查看和渲染预览
+- **.webp**: 现代图像格式
+
+### 架构设计
+
+#### 文件处理流程
+
+```mermaid
+graph TD
+    A[Agent生成文件] --> B[文件服务接收]
+    B --> C[文件类型识别]
+    C --> D[存储到MinIO]
+    D --> E[元数据存储到PostgreSQL]
+    E --> F[关联到对话消息]
+    F --> G[生成预览内容]
+    G --> H[缓存预览到Redis]
+    H --> I[通知前端更新]
+    
+    J[用户点击文件] --> K[检查预览缓存]
+    K --> L{缓存存在?}
+    L -->|是| M[返回缓存内容]
+    L -->|否| N[从MinIO读取文件]
+    N --> O[生成预览内容]
+    O --> P[更新缓存]
+    P --> M
+```
+
+#### 前端组件架构
+
+```typescript
+// 文件预览面板组件结构
+interface FilePreviewPanel {
+  // 文件列表组件
+  FileList: {
+    filters: FileFilter[];
+    sortOptions: SortOption[];
+    files: FileInfo[];
+  };
+  
+  // 预览组件
+  FilePreview: {
+    currentFile: FileInfo | null;
+    previewMode: 'code' | 'rendered' | 'image' | 'table';
+    renderComponent: CodePreview | ImagePreview | TablePreview | DocumentPreview;
+  };
+  
+  // 操作工具栏
+  FileToolbar: {
+    actions: ['download', 'copy', 'share', 'delete'];
+    viewOptions: ['fullscreen', 'split', 'panel'];
+  };
+}
+```
+
+### 预览实现方案
+
+#### 代码文件预览
+```typescript
+// 使用react-syntax-highlighter进行语法高亮
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
+
+const CodePreview: React.FC<{ content: string; language: string }> = ({ content, language }) => {
+  return (
+    <SyntaxHighlighter 
+      language={language}
+      style={vscDarkPlus}
+      showLineNumbers={true}
+      wrapLines={true}
+    >
+      {content}
+    </SyntaxHighlighter>
+  );
+};
+```
+
+#### Markdown文件预览
+```typescript
+// 使用react-markdown进行渲染
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+
+const MarkdownPreview: React.FC<{ content: string }> = ({ content }) => {
+  return (
+    <ReactMarkdown
+      remarkPlugins={[remarkGfm]}
+      components={{
+        code: ({ node, inline, className, children, ...props }) => {
+          const match = /language-(\w+)/.exec(className || '');
+          return !inline && match ? (
+            <SyntaxHighlighter language={match[1]} {...props}>
+              {String(children).replace(/\n$/, '')}
+            </SyntaxHighlighter>
+          ) : (
+            <code className={className} {...props}>
+              {children}
+            </code>
+          );
+        }
+      }}
+    >
+      {content}
+    </ReactMarkdown>
+  );
+};
+```
+
+#### CSV数据预览
+```typescript
+// 使用react-table进行表格展示
+import { useTable, usePagination } from 'react-table';
+
+const CSVPreview: React.FC<{ data: any[]; columns: any[] }> = ({ data, columns }) => {
+  const {
+    getTableProps,
+    getTableBodyProps,
+    headerGroups,
+    page,
+    prepareRow,
+    canPreviousPage,
+    canNextPage,
+    nextPage,
+    previousPage,
+    pageCount,
+    state: { pageIndex }
+  } = useTable({ columns, data }, usePagination);
+
+  return (
+    <div>
+      <table {...getTableProps()}>
+        <thead>
+          {headerGroups.map(headerGroup => (
+            <tr {...headerGroup.getHeaderGroupProps()}>
+              {headerGroup.headers.map(column => (
+                <th {...column.getHeaderProps()}>
+                  {column.render('Header')}
+                </th>
+              ))}
+            </tr>
+          ))}
+        </thead>
+        <tbody {...getTableBodyProps()}>
+          {page.map(row => {
+            prepareRow(row);
+            return (
+              <tr {...row.getRowProps()}>
+                {row.cells.map(cell => (
+                  <td {...cell.getCellProps()}>
+                    {cell.render('Cell')}
+                  </td>
+                ))}
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+      {/* 分页控件 */}
+      <div>
+        <button onClick={() => previousPage()} disabled={!canPreviousPage}>
+          上一页
+        </button>
+        <span>
+          第 {pageIndex + 1} 页，共 {pageCount} 页
+        </span>
+        <button onClick={() => nextPage()} disabled={!canNextPage}>
+          下一页
+        </button>
+      </div>
+    </div>
+  );
+};
+```
+
+### 后端文件服务实现
+
+#### 文件服务类设计
+
+```python
+# src/backend/services/file_service.py
+from typing import List, Optional, BinaryIO
+import minio
+from minio import Minio
+import uuid
+import os
+from datetime import datetime
+import magic
+
+class FileService:
+    """文件管理服务"""
+    
+    def __init__(self, minio_client: Minio, db_session):
+        self.minio_client = minio_client
+        self.db_session = db_session
+        self.bucket_name = "tradeflow-files"
+    
+    async def upload_file(
+        self,
+        file: BinaryIO,
+        user_id: str,
+        conversation_id: str = None,
+        original_filename: str = None,
+        description: str = None,
+        tags: List[str] = None
+    ) -> dict:
+        """上传文件并返回文件信息"""
+        
+        # 生成文件ID和存储路径
+        file_id = str(uuid.uuid4())
+        file_content = file.read()
+        file_size = len(file_content)
+        
+        # 检测文件类型
+        content_type = magic.from_buffer(file_content, mime=True)
+        file_extension = self._get_file_extension(original_filename or "")
+        file_type = self._classify_file_type(content_type, file_extension)
+        
+        # 生成MinIO对象键
+        today = datetime.now()
+        category = "generated" if conversation_id else "uploads"
+        object_key = f"users/{user_id}/{category}/{file_type}s/{today.strftime('%Y/%m/%d')}/{file_id}{file_extension}"
+        
+        # 上传到MinIO
+        self.minio_client.put_object(
+            bucket_name=self.bucket_name,
+            object_name=object_key,
+            data=BytesIO(file_content),
+            length=file_size,
+            content_type=content_type
+        )
+        
+        # 生成预览内容
+        preview_content = await self._generate_preview(
+            file_content, file_type, file_extension
+        )
+        
+        # 保存元数据到数据库
+        file_record = FileRecord(
+            id=file_id,
+            user_id=user_id,
+            conversation_id=conversation_id,
+            filename=f"{original_filename}_{int(datetime.now().timestamp())}{file_extension}",
+            original_filename=original_filename,
+            file_type=file_type,
+            file_extension=file_extension,
+            content_type=content_type,
+            file_size=file_size,
+            minio_bucket=self.bucket_name,
+            minio_object_key=object_key,
+            description=description,
+            tags=tags or [],
+            preview_content=preview_content[:1000] if preview_content else None  # 限制预览长度
+        )
+        
+        self.db_session.add(file_record)
+        await self.db_session.commit()
+        
+        return {
+            "id": file_id,
+            "filename": file_record.filename,
+            "file_type": file_type,
+            "file_size": file_size,
+            "content_type": content_type,
+            "download_url": f"/api/v1/files/{file_id}/download",
+            "preview_url": f"/api/v1/files/{file_id}/preview",
+            "created_at": file_record.created_at
+        }
+    
+    async def get_file_preview(
+        self, 
+        file_id: str, 
+        lines: int = None,
+        format: str = "auto"
+    ) -> dict:
+        """获取文件预览内容"""
+        
+        # 从缓存检查
+        cache_key = f"file_preview:{file_id}:{lines}:{format}"
+        cached_content = await redis_client.get(cache_key)
+        if cached_content:
+            return json.loads(cached_content)
+        
+        # 从数据库获取文件信息
+        file_record = await self.db_session.get(FileRecord, file_id)
+        if not file_record:
+            raise FileNotFoundError(f"File {file_id} not found")
+        
+        # 从MinIO获取文件内容
+        response = self.minio_client.get_object(
+            bucket_name=file_record.minio_bucket,
+            object_name=file_record.minio_object_key
+        )
+        content = response.data
+        
+        # 生成预览
+        preview_content = await self._generate_preview(
+            content, 
+            file_record.file_type, 
+            file_record.file_extension,
+            lines
+        )
+        
+        result = {
+            "content": preview_content,
+            "format": self._detect_preview_format(file_record.file_extension),
+            "file_info": {
+                "filename": file_record.filename,
+                "file_size": file_record.file_size,
+                "file_type": file_record.file_type,
+                "last_modified": file_record.updated_at
+            }
+        }
+        
+        # 缓存预览内容（1小时）
+        await redis_client.setex(cache_key, 3600, json.dumps(result))
+        
+        return result
+    
+    def _classify_file_type(self, content_type: str, extension: str) -> str:
+        """根据MIME类型和扩展名分类文件"""
+        if extension in ['.py', '.js', '.ts', '.jsx', '.tsx', '.json', '.sql', '.yaml', '.yml']:
+            return 'code'
+        elif extension in ['.md', '.txt', '.pdf', '.docx', '.html']:
+            return 'document'
+        elif extension in ['.csv', '.xlsx']:
+            return 'data'
+        elif content_type.startswith('image/'):
+            return 'image'
+        else:
+            return 'document'
+    
+    async def _generate_preview(
+        self, 
+        content: bytes, 
+        file_type: str, 
+        extension: str,
+        lines: int = 50
+    ) -> str:
+        """生成文件预览内容"""
+        try:
+            if file_type == 'image':
+                return f"[图像文件: {extension}]"
+            
+            # 尝试解码为文本
+            text_content = content.decode('utf-8')
+            
+            if lines:
+                text_lines = text_content.split('\n')[:lines]
+                return '\n'.join(text_lines)
+            
+            # 对于大文件，只返回前1000个字符
+            if len(text_content) > 1000:
+                return text_content[:1000] + "..."
+            
+            return text_content
+            
+        except UnicodeDecodeError:
+            return f"[二进制文件: {extension}]"
+```
+
+### 性能优化策略
+
+#### 1. 预览内容缓存
+- 使用Redis缓存常用文件的预览内容
+- 支持按文件修改时间自动失效
+- 大文件采用分段预览和延迟加载
+
+#### 2. 图像优化
+- 自动生成缩略图
+- 支持WebP格式压缩
+- 实现渐进式加载
+
+#### 3. 大文件处理
+- 支持分块上传和下载
+- 大文本文件采用虚拟滚动
+- PDF文件按页预览
+
+#### 4. 带宽优化
+- 实现文件内容压缩
+- 支持Range请求
+- CDN加速静态文件访问
 
 ---
 
@@ -697,6 +1318,534 @@ class AgentGatewayService:
         except Exception as e:
             logger.error(f"Agent error: {str(e)}")
             raise
+```
+
+---
+
+## MinIO对象存储集成方案
+
+### MinIO选择理由
+
+相比于设计师建议的Google Cloud Storage，我们选择MinIO作为对象存储方案的原因：
+
+1. **自主可控**: MinIO是开源解决方案，避免云服务vendor lock-in
+2. **成本优势**: 自托管MinIO成本更低，特别是在MVP阶段
+3. **部署灵活**: 支持本地开发、私有云和公有云多种部署方式
+4. **S3兼容**: 完全兼容Amazon S3 API，便于后续迁移
+5. **高性能**: 专为云原生环境优化，性能表现优异
+
+### MinIO架构设计
+
+#### 服务配置
+
+```yaml
+# minio-config.yaml
+version: '3.8'
+services:
+  minio:
+    image: minio/minio:latest
+    container_name: tradeflow-minio
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio-data:/data
+    environment:
+      MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY}
+      MINIO_SECRET_KEY: ${MINIO_SECRET_KEY}
+      MINIO_BROWSER_REDIRECT_URL: http://localhost:9001
+    command: server /data --console-address ":9001"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+
+volumes:
+  minio-data:
+    driver: local
+```
+
+#### 客户端集成
+
+```python
+# src/backend/config/minio_config.py
+from minio import Minio
+from pydantic import BaseSettings
+import logging
+
+class MinIOConfig(BaseSettings):
+    """MinIO配置类"""
+    
+    MINIO_ENDPOINT: str = "localhost:9000"
+    MINIO_ACCESS_KEY: str
+    MINIO_SECRET_KEY: str
+    MINIO_SECURE: bool = False  # 开发环境使用HTTP
+    MINIO_REGION: str = "us-east-1"
+    
+    # Bucket配置
+    MINIO_BUCKET_FILES: str = "tradeflow-files"
+    MINIO_BUCKET_TEMP: str = "tradeflow-temp"
+    MINIO_BUCKET_BACKUPS: str = "tradeflow-backups"
+    
+    class Config:
+        env_file = ".env"
+
+class MinIOClient:
+    """MinIO客户端单例"""
+    
+    _instance = None
+    _client = None
+    
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super(MinIOClient, cls).__new__(cls)
+        return cls._instance
+    
+    def __init__(self):
+        if self._client is None:
+            self.config = MinIOConfig()
+            self._client = Minio(
+                endpoint=self.config.MINIO_ENDPOINT,
+                access_key=self.config.MINIO_ACCESS_KEY,
+                secret_key=self.config.MINIO_SECRET_KEY,
+                secure=self.config.MINIO_SECURE,
+                region=self.config.MINIO_REGION
+            )
+            self._ensure_buckets_exist()
+    
+    def _ensure_buckets_exist(self):
+        """确保必要的bucket存在"""
+        buckets = [
+            self.config.MINIO_BUCKET_FILES,
+            self.config.MINIO_BUCKET_TEMP,
+            self.config.MINIO_BUCKET_BACKUPS
+        ]
+        
+        for bucket in buckets:
+            if not self._client.bucket_exists(bucket):
+                self._client.make_bucket(bucket)
+                
+                # 设置bucket策略
+                if bucket == self.config.MINIO_BUCKET_FILES:
+                    self._set_public_read_policy(bucket)
+    
+    def _set_public_read_policy(self, bucket_name: str):
+        """设置bucket的公共读取策略"""
+        policy = {
+            "Version": "2012-10-17",
+            "Statement": [
+                {
+                    "Effect": "Allow",
+                    "Principal": {"AWS": "*"},
+                    "Action": ["s3:GetObject"],
+                    "Resource": [f"arn:aws:s3:::{bucket_name}/*"]
+                }
+            ]
+        }
+        
+        import json
+        self._client.set_bucket_policy(
+            bucket_name, 
+            json.dumps(policy)
+        )
+    
+    @property
+    def client(self) -> Minio:
+        return self._client
+
+# 全局MinIO客户端实例
+minio_client = MinIOClient().client
+```
+
+### Agent文件生成集成
+
+#### Agent工具扩展
+
+```python
+# src/agent/tools/file_generation_tool.py
+from google.adk.tools import BaseTool
+from pydantic import BaseModel, Field
+from typing import Dict, List, Any
+import uuid
+import io
+from ..services.file_service import FileService
+
+class FileGenerationParams(BaseModel):
+    content: str = Field(description="文件内容")
+    filename: str = Field(description="文件名")
+    file_type: str = Field(description="文件类型: code/document/data")
+    description: str = Field(description="文件描述")
+
+class FileGenerationTool(BaseTool):
+    """Agent文件生成工具"""
+    
+    name = "generate_file"
+    description = "生成文件并保存到存储系统"
+    parameters_model = FileGenerationParams
+    
+    def __init__(self, file_service: FileService):
+        super().__init__()
+        self.file_service = file_service
+    
+    async def run_async(
+        self, 
+        args: Dict, 
+        tool_context: Any
+    ) -> Dict:
+        """执行文件生成"""
+        params = FileGenerationParams(**args)
+        
+        # 创建文件内容的字节流
+        file_content = io.BytesIO(params.content.encode('utf-8'))
+        
+        # 从工具上下文获取用户和对话信息
+        user_id = tool_context.get("user_id")
+        conversation_id = tool_context.get("conversation_id")
+        
+        # 上传文件
+        file_info = await self.file_service.upload_file(
+            file=file_content,
+            user_id=user_id,
+            conversation_id=conversation_id,
+            original_filename=params.filename,
+            description=params.description,
+            tags=[params.file_type, "agent_generated"]
+        )
+        
+        return {
+            "success": True,
+            "file_id": file_info["id"],
+            "filename": file_info["filename"],
+            "download_url": file_info["download_url"],
+            "preview_url": file_info["preview_url"],
+            "message": f"文件 {params.filename} 已生成并保存"
+        }
+```
+
+#### Agent集成示例
+
+```python
+# src/agent/buyer_agent.py 更新
+class BuyerDevelopmentAgent(BaseTradeAgent):
+    """买家开发Agent - 集成文件生成功能"""
+    
+    def _init_tools(self):
+        return [
+            TradeDataSearchTool(),
+            BuyerRecommendationTool(),
+            EmailGeneratorTool(),
+            TranslationTool(),
+            FileGenerationTool(file_service)  # 新增文件生成工具
+        ]
+    
+    def _get_instruction(self):
+        return """
+        你是TradeFlow的专业买家开发助手，帮助出口商找到合适的海外买家。
+        
+        核心能力：
+        1. 根据产品信息智能匹配潜在买家
+        2. 分析目标市场需求和趋势
+        3. 生成专业的开发信模板和业务文档
+        4. 提供文化适配的沟通建议
+        
+        文件生成能力：
+        - 当需要生成开发信模板时，使用generate_file工具保存为.txt或.md文件
+        - 生成市场分析报告时，保存为.md文件方便阅读
+        - 创建联系人列表时，保存为.csv文件方便后续使用
+        - 代码示例保存为相应的代码文件格式
+        
+        文件命名规则：
+        - 使用描述性文件名，包含日期
+        - 例如：buyer_development_email_template_2024-01-19.txt
+        - 市场分析报告：market_analysis_LED_US_2024-01-19.md
+        """
+```
+
+### 存储策略设计
+
+#### 生命周期管理
+
+```python
+# src/backend/services/storage_lifecycle.py
+from enum import Enum
+from datetime import datetime, timedelta
+import asyncio
+
+class FileLifecycleStage(Enum):
+    ACTIVE = "active"           # 活跃使用中
+    ARCHIVED = "archived"       # 已归档
+    TO_DELETE = "to_delete"     # 待删除
+    DELETED = "deleted"         # 已删除
+
+class StorageLifecycleManager:
+    """存储生命周期管理"""
+    
+    def __init__(self, minio_client, db_session):
+        self.minio_client = minio_client
+        self.db_session = db_session
+    
+    async def manage_lifecycle(self):
+        """执行存储生命周期管理"""
+        # 1. 标记长期未访问的文件为归档状态
+        await self._mark_inactive_files()
+        
+        # 2. 将归档文件移动到低成本存储
+        await self._archive_old_files()
+        
+        # 3. 删除过期文件
+        await self._cleanup_expired_files()
+        
+        # 4. 清理临时文件
+        await self._cleanup_temp_files()
+    
+    async def _mark_inactive_files(self):
+        """标记90天未访问的文件为归档"""
+        cutoff_date = datetime.utcnow() - timedelta(days=90)
+        
+        # 查询长期未访问的活跃文件
+        inactive_files = await self.db_session.execute(
+            """
+            UPDATE files 
+            SET lifecycle_stage = 'archived', updated_at = NOW()
+            WHERE lifecycle_stage = 'active' 
+              AND last_accessed < :cutoff_date
+            """,
+            {"cutoff_date": cutoff_date}
+        )
+        
+        await self.db_session.commit()
+    
+    async def _archive_old_files(self):
+        """将归档文件移动到归档bucket"""
+        archived_files = await self.db_session.execute(
+            """
+            SELECT id, minio_bucket, minio_object_key
+            FROM files 
+            WHERE lifecycle_stage = 'archived' 
+              AND minio_bucket != 'tradeflow-archives'
+            """
+        )
+        
+        for file_record in archived_files:
+            try:
+                # 复制到归档bucket
+                self.minio_client.copy_object(
+                    bucket_name="tradeflow-archives",
+                    object_name=file_record.minio_object_key,
+                    source=f"{file_record.minio_bucket}/{file_record.minio_object_key}"
+                )
+                
+                # 删除原文件
+                self.minio_client.remove_object(
+                    bucket_name=file_record.minio_bucket,
+                    object_name=file_record.minio_object_key
+                )
+                
+                # 更新数据库记录
+                await self.db_session.execute(
+                    """
+                    UPDATE files 
+                    SET minio_bucket = 'tradeflow-archives'
+                    WHERE id = :file_id
+                    """,
+                    {"file_id": file_record.id}
+                )
+                
+            except Exception as e:
+                logging.error(f"Failed to archive file {file_record.id}: {str(e)}")
+        
+        await self.db_session.commit()
+    
+    async def _cleanup_expired_files(self):
+        """删除标记为删除且超过保留期的文件"""
+        cutoff_date = datetime.utcnow() - timedelta(days=30)
+        
+        expired_files = await self.db_session.execute(
+            """
+            SELECT id, minio_bucket, minio_object_key
+            FROM files 
+            WHERE lifecycle_stage = 'to_delete' 
+              AND updated_at < :cutoff_date
+            """,
+            {"cutoff_date": cutoff_date}
+        )
+        
+        for file_record in expired_files:
+            try:
+                # 从MinIO删除
+                self.minio_client.remove_object(
+                    bucket_name=file_record.minio_bucket,
+                    object_name=file_record.minio_object_key
+                )
+                
+                # 更新数据库状态
+                await self.db_session.execute(
+                    """
+                    UPDATE files 
+                    SET lifecycle_stage = 'deleted', minio_object_key = NULL
+                    WHERE id = :file_id
+                    """,
+                    {"file_id": file_record.id}
+                )
+                
+            except Exception as e:
+                logging.error(f"Failed to delete expired file {file_record.id}: {str(e)}")
+        
+        await self.db_session.commit()
+```
+
+### 安全策略
+
+#### 访问控制
+
+```python
+# src/backend/middleware/file_access_control.py
+from fastapi import HTTPException, Depends
+from ..auth.jwt_auth import get_current_user
+
+class FileAccessControl:
+    """文件访问控制中间件"""
+    
+    def __init__(self, db_session):
+        self.db_session = db_session
+    
+    async def check_file_access(
+        self, 
+        file_id: str, 
+        operation: str,  # 'read', 'write', 'delete'
+        current_user = Depends(get_current_user)
+    ):
+        """检查文件访问权限"""
+        
+        # 获取文件记录
+        file_record = await self.db_session.get(FileRecord, file_id)
+        if not file_record:
+            raise HTTPException(404, "File not found")
+        
+        # 检查所有权
+        if file_record.user_id != current_user.id:
+            raise HTTPException(403, "Access denied")
+        
+        # 检查文件状态
+        if file_record.lifecycle_stage == 'deleted':
+            raise HTTPException(410, "File has been deleted")
+        
+        # 检查操作权限
+        if operation == 'delete' and file_record.is_generated:
+            # 生成的文件可能有特殊删除规则
+            pass
+        
+        return file_record
+```
+
+#### 数据加密
+
+```python
+# src/backend/utils/encryption.py
+from cryptography.fernet import Fernet
+import base64
+import os
+
+class FileEncryption:
+    """敏感文件加密工具"""
+    
+    def __init__(self):
+        # 从环境变量获取加密密钥
+        key = os.environ.get('FILE_ENCRYPTION_KEY')
+        if not key:
+            key = Fernet.generate_key()
+            # 在生产环境中，这应该安全存储
+            print(f"Generated encryption key: {key.decode()}")
+        else:
+            key = key.encode()
+        
+        self.cipher = Fernet(key)
+    
+    def encrypt_content(self, content: bytes) -> bytes:
+        """加密文件内容"""
+        return self.cipher.encrypt(content)
+    
+    def decrypt_content(self, encrypted_content: bytes) -> bytes:
+        """解密文件内容"""
+        return self.cipher.decrypt(encrypted_content)
+    
+    def should_encrypt_file(self, filename: str, content_type: str) -> bool:
+        """判断文件是否需要加密"""
+        # 包含敏感信息的文件类型需要加密
+        sensitive_patterns = [
+            'contract', 'agreement', 'invoice', 
+            'financial', 'personal', 'confidential'
+        ]
+        
+        filename_lower = filename.lower()
+        return any(pattern in filename_lower for pattern in sensitive_patterns)
+```
+
+### 备份策略
+
+```python
+# src/backend/services/backup_service.py
+import asyncio
+from datetime import datetime, timedelta
+
+class MinIOBackupService:
+    """MinIO数据备份服务"""
+    
+    def __init__(self, minio_client, backup_config):
+        self.minio_client = minio_client
+        self.backup_config = backup_config
+        self.backup_bucket = "tradeflow-backups"
+    
+    async def create_daily_backup(self):
+        """创建每日备份"""
+        today = datetime.now().strftime('%Y-%m-%d')
+        backup_prefix = f"daily/{today}/"
+        
+        # 备份用户文件
+        await self._backup_bucket_contents(
+            source_bucket="tradeflow-files",
+            backup_prefix=backup_prefix + "files/"
+        )
+        
+        # 备份数据库（如果需要）
+        await self._backup_database_dumps(backup_prefix + "database/")
+    
+    async def _backup_bucket_contents(self, source_bucket: str, backup_prefix: str):
+        """备份bucket内容"""
+        objects = self.minio_client.list_objects(
+            bucket_name=source_bucket,
+            recursive=True
+        )
+        
+        backup_tasks = []
+        for obj in objects:
+            # 跳过已经备份的文件
+            backup_key = backup_prefix + obj.object_name
+            if not self._object_exists(self.backup_bucket, backup_key):
+                task = self._copy_object_to_backup(
+                    source_bucket, obj.object_name, backup_key
+                )
+                backup_tasks.append(task)
+        
+        # 并发执行备份任务
+        await asyncio.gather(*backup_tasks)
+    
+    async def _copy_object_to_backup(
+        self, 
+        source_bucket: str, 
+        source_key: str, 
+        backup_key: str
+    ):
+        """复制对象到备份bucket"""
+        try:
+            self.minio_client.copy_object(
+                bucket_name=self.backup_bucket,
+                object_name=backup_key,
+                source=f"{source_bucket}/{source_key}"
+            )
+        except Exception as e:
+            logging.error(f"Backup failed for {source_key}: {str(e)}")
 ```
 
 ---
@@ -1037,10 +2186,15 @@ services:
       - DATABASE_URL=postgresql://user:pass@postgres:5432/tradeflow
       - MONGODB_URL=mongodb://mongodb:27017/tradeflow
       - REDIS_URL=redis://redis:6379
+      - MINIO_ENDPOINT=minio:9000
+      - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY:-tradeflow_access_key}
+      - MINIO_SECRET_KEY=${MINIO_SECRET_KEY:-tradeflow_secret_key}
+      - MINIO_SECURE=false
     depends_on:
       - postgres
       - mongodb
       - redis
+      - minio
     volumes:
       - ./src:/app/src
     
@@ -1052,48 +2206,251 @@ services:
       POSTGRES_DB: tradeflow
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
     
   mongodb:
     image: mongo:6
     volumes:
       - mongo_data:/data/db
+    ports:
+      - "27017:27017"
     
   redis:
     image: redis:7-alpine
     volumes:
       - redis_data:/data
+    ports:
+      - "6379:6379"
+  
+  minio:
+    image: minio/minio:latest
+    container_name: tradeflow-minio
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio_data:/data
+    environment:
+      MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY:-tradeflow_access_key}
+      MINIO_SECRET_KEY: ${MINIO_SECRET_KEY:-tradeflow_secret_key}
+      MINIO_BROWSER_REDIRECT_URL: http://localhost:9001
+    command: server /data --console-address ":9001"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+  
+  # MinIO客户端初始化服务（可选）
+  minio-init:
+    image: minio/mc:latest
+    depends_on:
+      - minio
+    volumes:
+      - ./scripts/minio-init.sh:/init.sh:ro
+    entrypoint: ["/bin/sh", "/init.sh"]
+    environment:
+      MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY:-tradeflow_access_key}
+      MINIO_SECRET_KEY: ${MINIO_SECRET_KEY:-tradeflow_secret_key}
 
 volumes:
   postgres_data:
   mongo_data:
   redis_data:
+  minio_data:
 ```
 
-### 生产部署（Cloud Run）
+#### MinIO初始化脚本
+
+```bash
+# scripts/minio-init.sh
+#!/bin/bash
+
+# 等待MinIO服务启动
+sleep 10
+
+# 配置mc客户端
+mc alias set minio http://minio:9000 $MINIO_ACCESS_KEY $MINIO_SECRET_KEY
+
+# 创建必要的bucket
+mc mb minio/tradeflow-files --ignore-existing
+mc mb minio/tradeflow-temp --ignore-existing  
+mc mb minio/tradeflow-backups --ignore-existing
+mc mb minio/tradeflow-archives --ignore-existing
+
+# 设置文件bucket的公共读取策略
+mc policy set public minio/tradeflow-files
+
+# 设置生命周期规则
+mc lifecycle add minio/tradeflow-temp --expiry 7d
+mc lifecycle add minio/tradeflow-files --transition-days 30 --tier STANDARD_IA
+
+echo "MinIO initialization completed"
+```
+
+### 生产部署配置
+
+#### Cloud Run + Cloud Storage混合方案
+
+对于生产环境，我们推荐使用Cloud Run部署应用服务，同时保持MinIO作为对象存储，以在成本和性能之间取得平衡：
 
 ```bash
 #!/bin/bash
 # deploy.sh
 
-# 构建镜像
+# 设置项目变量
+PROJECT_ID="tradeflow-production"
+REGION="us-central1"
+MINIO_INSTANCE="tradeflow-minio-vm"
+
+# 1. 部署MinIO到GCE实例
+gcloud compute instances create $MINIO_INSTANCE \
+  --zone=${REGION}-a \
+  --machine-type=e2-standard-2 \
+  --boot-disk-size=50GB \
+  --boot-disk-type=pd-ssd \
+  --image-family=ubuntu-2004-lts \
+  --image-project=ubuntu-os-cloud \
+  --tags=minio-server \
+  --metadata-from-file startup-script=scripts/minio-gce-startup.sh
+
+# 2. 配置防火墙规则
+gcloud compute firewall-rules create allow-minio \
+  --allow tcp:9000,tcp:9001 \
+  --source-ranges 0.0.0.0/0 \
+  --target-tags minio-server
+
+# 3. 构建后端镜像
 gcloud builds submit --tag gcr.io/${PROJECT_ID}/tradeflow-backend
 
-# 部署到Cloud Run
+# 4. 部署到Cloud Run
 gcloud run deploy tradeflow-backend \
   --image gcr.io/${PROJECT_ID}/tradeflow-backend \
   --platform managed \
-  --region us-central1 \
+  --region $REGION \
   --allow-unauthenticated \
   --set-env-vars="
     GOOGLE_CLOUD_PROJECT=${PROJECT_ID},
     DATABASE_URL=${DATABASE_URL},
     MONGODB_URL=${MONGODB_URL},
-    REDIS_URL=${REDIS_URL}
+    REDIS_URL=${REDIS_URL},
+    MINIO_ENDPOINT=${MINIO_EXTERNAL_IP}:9000,
+    MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY},
+    MINIO_SECRET_KEY=${MINIO_SECRET_KEY},
+    MINIO_SECURE=true
   " \
   --min-instances=1 \
   --max-instances=10 \
   --memory=2Gi \
   --cpu=2
+```
+
+#### GCE上的MinIO部署脚本
+
+```bash
+# scripts/minio-gce-startup.sh
+#!/bin/bash
+
+# 更新系统
+apt-get update
+apt-get install -y curl
+
+# 安装MinIO
+wget https://dl.min.io/server/minio/release/linux-amd64/minio
+chmod +x minio
+sudo mv minio /usr/local/bin/
+
+# 创建MinIO用户和数据目录
+sudo useradd -r minio-user -s /sbin/nologin
+sudo mkdir -p /opt/minio/data
+sudo chown minio-user:minio-user /opt/minio/data
+
+# 创建MinIO配置
+cat > /etc/default/minio << EOF
+MINIO_ACCESS_KEY="${MINIO_ACCESS_KEY}"
+MINIO_SECRET_KEY="${MINIO_SECRET_KEY}"
+MINIO_VOLUMES="/opt/minio/data"
+MINIO_OPTS="--console-address :9001"
+EOF
+
+# 创建systemd服务
+cat > /etc/systemd/system/minio.service << EOF
+[Unit]
+Description=MinIO
+Documentation=https://docs.min.io
+Wants=network-online.target
+After=network-online.target
+AssertFileIsExecutable=/usr/local/bin/minio
+
+[Service]
+WorkingDirectory=/opt/minio
+User=minio-user
+Group=minio-user
+EnvironmentFile=/etc/default/minio
+ExecStartPre=/bin/bash -c "if [ -z \"\${MINIO_ACCESS_KEY}\" ]; then echo \"MINIO_ACCESS_KEY not set in /etc/default/minio\"; exit 1; fi"
+ExecStart=/usr/local/bin/minio server \$MINIO_OPTS \$MINIO_VOLUMES
+Restart=always
+LimitNOFILE=65536
+TasksMax=infinity
+TimeoutStopSec=infinity
+SendSIGKILL=no
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+# 启动MinIO服务
+systemctl daemon-reload
+systemctl enable minio
+systemctl start minio
+
+# 安装和配置MinIO客户端
+wget https://dl.min.io/client/mc/release/linux-amd64/mc
+chmod +x mc
+sudo mv mc /usr/local/bin/
+
+# 等待服务启动后初始化bucket
+sleep 30
+/usr/local/bin/mc alias set local http://localhost:9000 $MINIO_ACCESS_KEY $MINIO_SECRET_KEY
+/usr/local/bin/mc mb local/tradeflow-files --ignore-existing
+/usr/local/bin/mc mb local/tradeflow-temp --ignore-existing
+/usr/local/bin/mc mb local/tradeflow-backups --ignore-existing
+/usr/local/bin/mc policy set public local/tradeflow-files
+
+echo "MinIO setup completed"
+```
+
+#### 环境变量配置
+
+```bash
+# .env.production
+# 数据库配置
+DATABASE_URL=postgresql://user:password@postgres-instance:5432/tradeflow
+MONGODB_URL=mongodb+srv://user:password@mongodb-cluster/tradeflow
+REDIS_URL=redis://redis-instance:6379
+
+# MinIO配置
+MINIO_ENDPOINT=your-minio-server.com:9000
+MINIO_ACCESS_KEY=your-production-access-key
+MINIO_SECRET_KEY=your-production-secret-key
+MINIO_SECURE=true
+
+# JWT配置
+JWT_SECRET_KEY=your-jwt-secret-key
+
+# OAuth配置
+GOOGLE_CLIENT_ID=your-google-client-id
+GOOGLE_CLIENT_SECRET=your-google-client-secret
+GITHUB_CLIENT_ID=your-github-client-id
+GITHUB_CLIENT_SECRET=your-github-client-secret
+
+# 文件上传限制
+MAX_FILE_SIZE=50MB
+ALLOWED_FILE_TYPES=.pdf,.docx,.txt,.md,.py,.js,.json,.csv,.xlsx,.png,.jpg,.svg
+
+# 加密配置
+FILE_ENCRYPTION_KEY=your-file-encryption-key
 ```
 
 ---
