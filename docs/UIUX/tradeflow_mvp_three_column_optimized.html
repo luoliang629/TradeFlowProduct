@@ -6,115 +6,78 @@
     <title>TradeFlow - AI-Powered Global B2B Trade Assistant</title>
     <style>
         /* CSS Variables for Design System */
-        /* Focused Input Mode Styles */
-        .focused-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(10px);
-            z-index: 9999;
+        /* Focused Input View Styles */
+        .focused-input-view {
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
-            opacity: 0;
-            animation: fadeIn 0.3s ease forwards;
+            height: 100%;
+            padding: 3rem;
+            animation: fadeIn 0.3s ease;
         }
 
         @keyframes fadeIn {
+            from { opacity: 0; }
             to { opacity: 1; }
         }
 
-        .focused-container {
-            width: 90%;
-            max-width: 720px;
-            background: var(--bg-primary);
-            border-radius: var(--radius-xl);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-            transform: scale(0.9);
-            animation: scaleIn 0.3s ease forwards;
-        }
-
-        @keyframes scaleIn {
-            to { transform: scale(1); }
-        }
-
-        .focused-header {
-            padding: 1.5rem 1.5rem 0;
-            display: flex;
-            justify-content: flex-end;
-        }
-
-        .focused-close {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            background: var(--bg-secondary);
-            border: none;
-            color: var(--text-secondary);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s;
-        }
-
-        .focused-close:hover {
-            background: var(--bg-tertiary);
-            color: var(--text-primary);
-        }
-
-        .focused-content {
-            padding: 2rem 3rem 3rem;
+        .focused-input-content {
+            width: 100%;
+            max-width: 900px;
             text-align: center;
         }
 
-        .focused-title {
-            font-size: 2rem;
+        .focused-input-title {
+            font-size: 2.5rem;
             font-weight: 700;
             color: var(--text-primary);
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.75rem;
         }
 
-        .focused-subtitle {
-            font-size: 1rem;
+        .focused-input-subtitle {
+            font-size: 1.125rem;
             color: var(--text-secondary);
-            margin-bottom: 2rem;
+            margin-bottom: 3rem;
         }
 
-        .focused-input-wrapper {
+        .focused-input-box {
             background: var(--bg-secondary);
             border: 2px solid var(--border-color);
             border-radius: var(--radius-lg);
             overflow: hidden;
-            transition: border-color 0.2s;
+            transition: all 0.2s;
         }
 
-        .focused-input-wrapper:focus-within {
+        .focused-input-box:focus-within {
             border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.1);
         }
 
-        .focused-textarea {
+        .focused-input-field {
             width: 100%;
-            padding: 1.5rem;
+            padding: 1.5rem 2rem;
             background: transparent;
             border: none;
             font-size: 1.125rem;
             line-height: 1.6;
             color: var(--text-primary);
             resize: none;
-            min-height: 120px;
+            min-height: 100px;
             max-height: 300px;
         }
 
-        .focused-textarea:focus {
+        .focused-input-field:focus {
             outline: none;
         }
 
-        .focused-toolbar {
-            padding: 1rem 1.5rem;
+        .focused-input-field::placeholder {
+            color: var(--text-secondary);
+            opacity: 0.6;
+        }
+
+        .focused-input-toolbar {
+            padding: 1.25rem 1.5rem;
             background: var(--bg-tertiary);
             border-top: 1px solid var(--border-color);
             display: flex;
@@ -122,14 +85,14 @@
             justify-content: space-between;
         }
 
-        .focused-tools {
+        .focused-input-tools {
             display: flex;
             gap: 0.5rem;
         }
 
-        .focused-tool {
-            width: 36px;
-            height: 36px;
+        .focused-input-tool {
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
             background: var(--bg-secondary);
             border: none;
@@ -141,30 +104,31 @@
             transition: all 0.2s;
         }
 
-        .focused-tool:hover {
+        .focused-input-tool:hover {
             background: var(--bg-primary);
             color: var(--primary-color);
+            transform: scale(1.05);
         }
 
-        .focused-actions {
+        .focused-input-actions {
             display: flex;
             align-items: center;
             gap: 1rem;
         }
 
-        .char-count {
+        .focused-char-count {
             font-size: 0.875rem;
             color: var(--text-secondary);
         }
 
-        .focused-submit {
-            padding: 0.75rem 1.5rem;
+        .focused-input-submit {
+            padding: 0.875rem 2rem;
             background: var(--primary-color);
             color: var(--text-inverse);
             border: none;
             border-radius: var(--radius-md);
             font-size: 1rem;
-            font-weight: 500;
+            font-weight: 600;
             cursor: pointer;
             display: flex;
             align-items: center;
@@ -172,46 +136,31 @@
             transition: all 0.2s;
         }
 
-        .focused-submit:hover:not(:disabled) {
+        .focused-input-submit:hover:not(:disabled) {
             background: var(--primary-dark);
-            transform: translateY(-1px);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(30, 58, 138, 0.3);
         }
 
-        .focused-submit:disabled {
+        .focused-input-submit:disabled {
             opacity: 0.5;
             cursor: not-allowed;
         }
 
-        .focused-hints {
-            margin-top: 1.5rem;
+        .focused-input-hints {
+            margin-top: 2rem;
             display: flex;
             justify-content: center;
-            gap: 1.5rem;
+            gap: 2rem;
         }
 
-        .focused-hint {
-            font-size: 0.75rem;
+        .focused-input-hint {
+            font-size: 0.8125rem;
             color: var(--text-secondary);
-            padding: 0.25rem 0.75rem;
+            padding: 0.375rem 1rem;
             background: var(--bg-secondary);
             border-radius: var(--radius-sm);
-        }
-
-        /* Hide overlay with animation */
-        .focused-overlay.hiding {
-            animation: fadeOut 0.3s ease forwards;
-        }
-
-        @keyframes fadeOut {
-            to { opacity: 0; }
-        }
-
-        .focused-container.hiding {
-            animation: scaleOut 0.3s ease forwards;
-        }
-
-        @keyframes scaleOut {
-            to { transform: scale(0.9); }
+            border: 1px solid var(--border-color);
         }
 
         :root {
@@ -1011,11 +960,20 @@
 
         /* Chat Input */
         .chat-input-container {
+            position: fixed;
+            bottom: 0;
+            left: 280px;
+            right: 0;
             background: var(--bg-primary);
             border: 1px solid var(--border-color);
-            border-radius: var(--radius-lg);
-            padding: 1rem;
-            box-shadow: var(--shadow-sm);
+            border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+            padding: 1.5rem;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+            z-index: 100;
+        }
+        
+        .chat-messages {
+            padding-bottom: 140px;
         }
 
         .chat-input {
@@ -1086,20 +1044,88 @@
             cursor: not-allowed;
         }
 
-        /* Right Column - Agent Progress Panel */
+        /* Right Column - Agent Progress Panel (Drawer Style) */
         .agent-panel {
-            width: 320px;
+            position: fixed;
+            right: 0;
+            top: 0;
+            height: 100vh;
+            width: 360px;
             background: var(--bg-primary);
             border-left: 1px solid var(--border-color);
             display: flex;
             flex-direction: column;
             overflow: hidden;
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+            box-shadow: -4px 0 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .agent-panel.open {
+            transform: translateX(0);
+        }
+        
+        /* Toggle button for agent panel */
+        .agent-panel-toggle {
+            position: fixed;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 40px;
+            height: 80px;
+            background: var(--primary-color);
+            border: none;
+            border-radius: 8px 0 0 8px;
+            color: var(--text-inverse);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            z-index: 999;
+            box-shadow: -2px 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .agent-panel-toggle:hover {
+            background: var(--primary-dark);
+            width: 45px;
+        }
+        
+        .agent-panel-toggle.hidden {
+            display: none;
         }
 
         .agent-panel-header {
             padding: 1.5rem;
             border-bottom: 1px solid var(--border-color);
             background: var(--bg-secondary);
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+        
+        .agent-panel-header-content {
+            flex: 1;
+        }
+        
+        .agent-panel-close {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        
+        .agent-panel-close:hover {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
         }
 
         .agent-panel-title {
@@ -2023,67 +2049,122 @@
 
             <!-- Chat Container -->
             <div id="chatContainer" class="chat-container">
-                <!-- Welcome Section -->
-                <div class="welcome-section">
-                    <h2 class="welcome-title" data-i18n="welcome-title">
-                        How can I help you with international trade today?
-                    </h2>
-                    <p class="welcome-subtitle" data-i18n="welcome-subtitle">
-                        I'm your AI assistant for buyer development, supplier matching, and trade intelligence.
-                    </p>
-                    
-                    <!-- Quick Actions -->
-                    <div class="quick-actions">
-                        <div class="quick-action-card" onclick="startBuyerDevelopment()">
-                            <div class="quick-action-icon">🔍</div>
-                            <h3 class="quick-action-title" data-i18n="find-buyers">Find Buyers</h3>
-                            <p class="quick-action-desc" data-i18n="find-buyers-desc">
-                                Discover potential buyers for your products in global markets
-                            </p>
+                <!-- Focused Input View (for new chats) -->
+                <div id="focusedInputView" class="focused-input-view" style="display: none;">
+                    <div class="focused-input-content">
+                        <h1 class="focused-input-title" data-i18n="focused-title">
+                            What can I do for you?
+                        </h1>
+                        <p class="focused-input-subtitle" data-i18n="focused-subtitle">
+                            Tell me your trade needs, I'll help you find the best solution
+                        </p>
+                        
+                        <div class="focused-input-box">
+                            <textarea 
+                                id="focusedInputField" 
+                                class="focused-input-field" 
+                                placeholder="Type your requirements..."
+                                data-i18n-placeholder="focused-placeholder"
+                                rows="5"
+                            ></textarea>
+                            
+                            <div class="focused-input-toolbar">
+                                <div class="focused-input-tools">
+                                    <button class="focused-input-tool" title="Attach file">
+                                        <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+                                            <path d="M16.5 6v11.5c0 2.21-1.79 4-4 4s-4-1.79-4-4V5c0-1.38 1.12-2.5 2.5-2.5s2.5 1.12 2.5 2.5v10.5c0 .55-.45 1-1 1s-1-.45-1-1V6H10v9.5c0 1.38 1.12 2.5 2.5 2.5s2.5-1.12 2.5-2.5V5c0-2.21-1.79-4-4-4S7 2.79 7 5v12.5c0 3.04 2.46 5.5 5.5 5.5s5.5-2.46 5.5-5.5V6h-1.5z"/>
+                                        </svg>
+                                    </button>
+                                    <button class="focused-input-tool" title="Voice input">
+                                        <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+                                            <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.91-3c-.49 0-.9.36-.98.85C16.52 14.2 14.47 16 12 16s-4.52-1.8-4.93-4.15c-.08-.49-.49-.85-.98-.85-.61 0-1.09.54-1 1.14.49 3 2.89 5.35 5.91 5.78V20c0 .55.45 1 1 1s1-.45 1-1v-2.08c3.02-.43 5.42-2.78 5.91-5.78.1-.6-.39-1.14-1-1.14z"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                                
+                                <div class="focused-input-actions">
+                                    <span class="focused-char-count" id="focusedCharCount">0</span>
+                                    <button class="focused-input-submit" onclick="submitFocusedMessage()" data-i18n="submit">
+                                        Send
+                                        <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+                                            <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                         
-                        <div class="quick-action-card" onclick="startSupplierMatching()">
-                            <div class="quick-action-icon">🏭</div>
-                            <h3 class="quick-action-title" data-i18n="find-suppliers">Find Suppliers</h3>
-                            <p class="quick-action-desc" data-i18n="find-suppliers-desc">
-                                Connect with reliable suppliers for your procurement needs
-                            </p>
+                        <div class="focused-input-hints">
+                            <span class="focused-input-hint">Enter to send</span>
+                            <span class="focused-input-hint">Shift + Enter for new line</span>
                         </div>
                     </div>
                 </div>
 
-                <!-- Chat Messages -->
-                <div id="chatMessages" class="chat-messages"></div>
+                <!-- Regular Chat View -->
+                <div id="regularChatView">
+                    <!-- Welcome Section -->
+                    <div class="welcome-section">
+                        <h2 class="welcome-title" data-i18n="welcome-title">
+                            How can I help you with international trade today?
+                        </h2>
+                        <p class="welcome-subtitle" data-i18n="welcome-subtitle">
+                            I'm your AI assistant for buyer development, supplier matching, and trade intelligence.
+                        </p>
+                        
+                        <!-- Quick Actions -->
+                        <div class="quick-actions">
+                            <div class="quick-action-card" onclick="startBuyerDevelopment()">
+                                <div class="quick-action-icon">🔍</div>
+                                <h3 class="quick-action-title" data-i18n="find-buyers">Find Buyers</h3>
+                                <p class="quick-action-desc" data-i18n="find-buyers-desc">
+                                    Discover potential buyers for your products in global markets
+                                </p>
+                            </div>
+                            
+                            <div class="quick-action-card" onclick="startSupplierMatching()">
+                                <div class="quick-action-icon">🏭</div>
+                                <h3 class="quick-action-title" data-i18n="find-suppliers">Find Suppliers</h3>
+                                <p class="quick-action-desc" data-i18n="find-suppliers-desc">
+                                    Connect with reliable suppliers for your procurement needs
+                                </p>
+                            </div>
+                        </div>
+                    </div>
 
-                <!-- Chat Input -->
-                <div class="chat-input-container">
-                    <textarea 
-                        id="chatInput" 
-                        class="chat-input" 
-                        placeholder="Type your message here..." 
-                        data-i18n-placeholder="chat-placeholder"
-                        onkeydown="handleInputKeydown(event)"
-                        oninput="adjustTextareaHeight()"
-                    ></textarea>
-                    
-                    <div class="chat-input-footer">
-                        <div class="input-actions">
-                            <button class="input-btn" onclick="attachFile()" title="Attach file">
-                                <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M16.5 6v11.5c0 2.21-1.79 4-4 4s-4-1.79-4-4V5c0-1.38 1.12-2.5 2.5-2.5s2.5 1.12 2.5 2.5v10.5c0 .55-.45 1-1 1s-1-.45-1-1V6H10v9.5c0 1.38 1.12 2.5 2.5 2.5s2.5-1.12 2.5-2.5V5c0-2.21-1.79-4-4-4S7 2.79 7 5v12.5c0 3.04 2.46 5.5 5.5 5.5s5.5-2.46 5.5-5.5V6h-1.5z"/>
-                                </svg>
+                    <!-- Chat Messages -->
+                    <div id="chatMessages" class="chat-messages"></div>
+
+                    <!-- Chat Input -->
+                    <div class="chat-input-container">
+                        <textarea 
+                            id="chatInput" 
+                            class="chat-input" 
+                            placeholder="Type your message here..." 
+                            data-i18n-placeholder="chat-placeholder"
+                            onkeydown="handleInputKeydown(event)"
+                            oninput="adjustTextareaHeight()"
+                        ></textarea>
+                        
+                        <div class="chat-input-footer">
+                            <div class="input-actions">
+                                <button class="input-btn" onclick="attachFile()" title="Attach file">
+                                    <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M16.5 6v11.5c0 2.21-1.79 4-4 4s-4-1.79-4-4V5c0-1.38 1.12-2.5 2.5-2.5s2.5 1.12 2.5 2.5v10.5c0 .55-.45 1-1 1s-1-.45-1-1V6H10v9.5c0 1.38 1.12 2.5 2.5 2.5s2.5-1.12 2.5-2.5V5c0-2.21-1.79-4-4-4S7 2.79 7 5v12.5c0 3.04 2.46 5.5 5.5 5.5s5.5-2.46 5.5-5.5V6h-1.5z"/>
+                                    </svg>
+                                </button>
+                            </div>
+                            
+                            <button 
+                                id="sendButton" 
+                                class="send-btn" 
+                                onclick="sendMessage()" 
+                                disabled
+                                data-i18n="send"
+                            >
+                                Send
                             </button>
                         </div>
-                        
-                        <button 
-                            id="sendButton" 
-                            class="send-btn" 
-                            onclick="sendMessage()" 
-                            disabled
-                            data-i18n="send"
-                        >
-                            Send
-                        </button>
                     </div>
                 </div>
             </div>
@@ -2291,65 +2372,6 @@
                             <span data-i18n="sign-out">Sign Out</span>
                         </button>
                     </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Focused Input Overlay -->
-    <div id="focusedInputOverlay" class="focused-overlay" style="display: none;">
-        <div class="focused-container">
-            <div class="focused-header">
-                <button class="focused-close" onclick="hideFocusedInput()">
-                    <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
-                    </svg>
-                </button>
-            </div>
-            
-            <div class="focused-content">
-                <h1 class="focused-title" data-i18n="focused-title">我能为你做什么？</h1>
-                <p class="focused-subtitle" data-i18n="focused-subtitle">告诉我你的贸易需求，我会帮你找到最佳解决方案</p>
-                
-                <div class="focused-input-wrapper">
-                    <textarea 
-                        id="focusedTextarea" 
-                        class="focused-textarea" 
-                        placeholder="输入你的需求..."
-                        data-i18n-placeholder="focused-placeholder"
-                        rows="4"
-                    ></textarea>
-                    
-                    <div class="focused-toolbar">
-                        <div class="focused-tools">
-                            <button class="focused-tool" title="附件">
-                                <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M16.5 6v11.5c0 2.21-1.79 4-4 4s-4-1.79-4-4V5c0-1.38 1.12-2.5 2.5-2.5s2.5 1.12 2.5 2.5v10.5c0 .55-.45 1-1 1s-1-.45-1-1V6H10v9.5c0 1.38 1.12 2.5 2.5 2.5s2.5-1.12 2.5-2.5V5c0-2.21-1.79-4-4-4S7 2.79 7 5v12.5c0 3.04 2.46 5.5 5.5 5.5s5.5-2.46 5.5-5.5V6h-1.5z"/>
-                                </svg>
-                            </button>
-                            <button class="focused-tool" title="语音输入">
-                                <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.91-3c-.49 0-.9.36-.98.85C16.52 14.2 14.47 16 12 16s-4.52-1.8-4.93-4.15c-.08-.49-.49-.85-.98-.85-.61 0-1.09.54-1 1.14.49 3 2.89 5.35 5.91 5.78V20c0 .55.45 1 1 1s1-.45 1-1v-2.08c3.02-.43 5.42-2.78 5.91-5.78.1-.6-.39-1.14-1-1.14z"/>
-                                </svg>
-                            </button>
-                        </div>
-                        
-                        <div class="focused-actions">
-                            <span class="char-count" id="charCount">0</span>
-                            <button class="focused-submit" onclick="submitFocusedInput()" data-i18n="submit">
-                                发送
-                                <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="focused-hints">
-                    <span class="focused-hint">Enter 发送</span>
-                    <span class="focused-hint">Shift + Enter 换行</span>
-                    <span class="focused-hint">Esc 退出</span>
                 </div>
             </div>
         </div>
@@ -2623,36 +2645,44 @@
 
         // 创建新对话 - 显示专注输入界面
         function createNewChat() {
-            showFocusedInput();
+            // 创建一个临时的新对话 ID
+            const tempChatId = 'temp-' + Date.now();
+            
+            // 显示专注输入视图
+            showFocusedInputView();
+            
+            // 更新标题
+            document.getElementById('headerTitle').textContent = 
+                currentLanguage === 'en' ? 'New Task' : '新任务';
         }
 
-        // 显示专注输入界面
-        function showFocusedInput() {
-            const overlay = document.getElementById('focusedInputOverlay');
-            const textarea = document.getElementById('focusedTextarea');
-            const charCount = document.getElementById('charCount');
+        // 显示专注输入视图
+        function showFocusedInputView() {
+            const focusedView = document.getElementById('focusedInputView');
+            const regularView = document.getElementById('regularChatView');
+            const textarea = document.getElementById('focusedInputField');
+            const charCount = document.getElementById('focusedCharCount');
             
             // 更新文本内容
-            const focusedTitle = overlay.querySelector('.focused-title');
-            const focusedSubtitle = overlay.querySelector('.focused-subtitle');
-            const submitBtn = overlay.querySelector('.focused-submit');
+            const title = focusedView.querySelector('.focused-input-title');
+            const subtitle = focusedView.querySelector('.focused-input-subtitle');
+            const submitBtn = focusedView.querySelector('.focused-input-submit');
             
             if (currentLanguage === 'en') {
-                focusedTitle.textContent = 'What can I do for you?';
-                focusedSubtitle.textContent = 'Tell me your trade needs, I\'ll help you find the best solution';
+                title.textContent = 'What can I do for you?';
+                subtitle.textContent = 'Tell me your trade needs, I\'ll help you find the best solution';
                 textarea.placeholder = 'Type your requirements...';
                 submitBtn.innerHTML = 'Send <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>';
             } else {
-                focusedTitle.textContent = '我能为你做什么？';
-                focusedSubtitle.textContent = '告诉我你的贸易需求，我会帮你找到最佳解决方案';
+                title.textContent = '我能为你做什么？';
+                subtitle.textContent = '告诉我你的贸易需求，我会帮你找到最佳解决方案';
                 textarea.placeholder = '输入你的需求...';
                 submitBtn.innerHTML = '发送 <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>';
             }
             
-            // 显示界面
-            overlay.style.display = 'flex';
-            overlay.classList.remove('hiding');
-            overlay.querySelector('.focused-container').classList.remove('hiding');
+            // 隐藏常规视图，显示专注视图
+            regularView.style.display = 'none';
+            focusedView.style.display = 'flex';
             
             // 清空并聚焦输入框
             textarea.value = '';
@@ -2660,45 +2690,34 @@
             setTimeout(() => textarea.focus(), 100);
             
             // 添加键盘事件监听
-            textarea.onkeydown = handleFocusedKeydown;
-            textarea.oninput = updateCharCount;
+            textarea.onkeydown = handleFocusedInputKeydown;
+            textarea.oninput = updateFocusedCharCount;
         }
 
-        // 隐藏专注输入界面
-        function hideFocusedInput() {
-            const overlay = document.getElementById('focusedInputOverlay');
-            const container = overlay.querySelector('.focused-container');
-            
-            overlay.classList.add('hiding');
-            container.classList.add('hiding');
-            
-            setTimeout(() => {
-                overlay.style.display = 'none';
-                overlay.classList.remove('hiding');
-                container.classList.remove('hiding');
-            }, 300);
+        // 隐藏专注输入视图
+        function hideFocusedInputView() {
+            // Use showChatView to properly handle agent panel toggle visibility
+            showChatView();
         }
 
-        // 处理专注模式键盘事件
-        function handleFocusedKeydown(event) {
+        // 处理专注输入键盘事件
+        function handleFocusedInputKeydown(event) {
             if (event.key === 'Enter' && !event.shiftKey) {
                 event.preventDefault();
-                submitFocusedInput();
-            } else if (event.key === 'Escape') {
-                hideFocusedInput();
+                submitFocusedMessage();
             }
         }
 
         // 更新字符计数
-        function updateCharCount() {
-            const textarea = document.getElementById('focusedTextarea');
-            const charCount = document.getElementById('charCount');
+        function updateFocusedCharCount() {
+            const textarea = document.getElementById('focusedInputField');
+            const charCount = document.getElementById('focusedCharCount');
             charCount.textContent = textarea.value.length;
         }
 
-        // 提交专注输入
-        function submitFocusedInput() {
-            const textarea = document.getElementById('focusedTextarea');
+        // 提交专注输入消息
+        function submitFocusedMessage() {
+            const textarea = document.getElementById('focusedInputField');
             const message = textarea.value.trim();
             
             if (!message) return;
@@ -2717,39 +2736,22 @@
             saveChats();
             renderChatList();
             
-            // 隐藏专注输入界面
-            hideFocusedInput();
+            // 隐藏专注输入视图
+            hideFocusedInputView();
             
             // 切换到新对话
             switchChat(newChatId);
             
-            // 显示消息
-            const messagesContainer = document.getElementById('chatMessages');
-            if (messagesContainer) {
-                messagesContainer.innerHTML = `
-                    <div class="message user-message">
-                        <div class="message-avatar">U</div>
-                        <div class="message-content">
-                            <div class="message-header">
-                                <span class="message-sender">You</span>
-                                <span class="message-time">Just now</span>
-                            </div>
-                            <div class="message-text">${message}</div>
-                        </div>
-                    </div>
-                `;
-            }
-            
             // 触发AI响应（这里可以添加实际的AI处理逻辑）
-            // setTimeout(() => {
-            //     // 模拟AI响应
-            //     showAgentProgress();
-            // }, 500);
+            // 可以在这里添加Agent处理逻辑
         }
 
         // 切换对话
         function switchChat(chatId) {
             currentChatId = chatId;
+            
+            // 确保显示常规视图
+            hideFocusedInputView();
             
             // 更新高亮状态
             document.querySelectorAll('.chat-item').forEach(item => {
@@ -2766,10 +2768,28 @@
                 document.getElementById('headerTitle').textContent = chat.title;
             }
             
-            // 清空对话区域（可以在这里加载对话历史）
-            const messagesContainer = document.getElementById('messagesContainer');
-            if (messagesContainer) {
+            // 加载对话历史
+            const messagesContainer = document.getElementById('chatMessages');
+            if (messagesContainer && chat) {
                 messagesContainer.innerHTML = '';
+                // 加载历史消息
+                if (chat.messages && chat.messages.length > 0) {
+                    chat.messages.forEach(msg => {
+                        const messageDiv = document.createElement('div');
+                        messageDiv.className = msg.role === 'user' ? 'message user-message' : 'message ai-message';
+                        messageDiv.innerHTML = `
+                            <div class="message-avatar">${msg.role === 'user' ? 'U' : 'AI'}</div>
+                            <div class="message-content">
+                                <div class="message-header">
+                                    <span class="message-sender">${msg.role === 'user' ? 'You' : 'TradeFlow AI'}</span>
+                                    <span class="message-time">Just now</span>
+                                </div>
+                                <div class="message-text">${msg.content}</div>
+                            </div>
+                        `;
+                        messagesContainer.appendChild(messageDiv);
+                    });
+                }
             }
         }
 
@@ -3477,8 +3497,62 @@
             }
         }
 
+        // Toggle Agent Panel (Drawer)
+        function toggleAgentPanel() {
+            const panel = document.getElementById('agentPanel');
+            const toggle = document.getElementById('agentPanelToggle');
+            
+            if (panel.classList.contains('open')) {
+                panel.classList.remove('open');
+                toggle.style.display = 'flex';
+            } else {
+                panel.classList.add('open');
+                setTimeout(() => {
+                    toggle.style.display = 'none';
+                }, 300);
+            }
+        }
+        
+        // Hide agent panel when showing focused input view
+        function showFocusedInputView() {
+            const focusedView = document.getElementById('focusedInputView');
+            const regularView = document.getElementById('regularChatView');
+            const agentPanel = document.getElementById('agentPanel');
+            const agentToggle = document.getElementById('agentPanelToggle');
+            
+            if (focusedView && regularView) {
+                focusedView.style.display = 'flex';
+                regularView.style.display = 'none';
+                // Hide agent panel for new tasks
+                agentPanel.classList.remove('open');
+                agentToggle.classList.add('hidden');
+            }
+        }
+        
+        // Show agent panel toggle when in chat view
+        function showChatView() {
+            const focusedView = document.getElementById('focusedInputView');
+            const regularView = document.getElementById('regularChatView');
+            const agentToggle = document.getElementById('agentPanelToggle');
+            
+            if (focusedView && regularView) {
+                focusedView.style.display = 'none';
+                regularView.style.display = 'block';
+                // Show agent panel toggle in chat mode
+                agentToggle.classList.remove('hidden');
+                agentToggle.style.display = 'flex';
+            }
+        }
+        
         // Initialize the application when the page loads
         document.addEventListener('DOMContentLoaded', initializeApp);
     </script>
+    
+    <!-- Agent Panel Toggle Button -->
+    <button class="agent-panel-toggle" id="agentPanelToggle" onclick="toggleAgentPanel()">
+        <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M9 11H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zm2-7h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z"/>
+        </svg>
+    </button>
 </body>
 </html>

@@ -6,6 +6,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 TradeFlow是一款面向全球的，基于对话式AI Agent的全球B2B贸易智能助手，通过自然语言交互帮助用户完成买家开发、供应商采购等贸易业务。
 
+
+
 ## 技术栈
 
 - **数据库**: PostgreSQL, MongoDB
@@ -53,6 +55,13 @@ TradeFlowProduct/
 2. **接口文档**: 所有API接口需在 `src/interface_docs/` 中明确定义
 3. **多语言支持**: 考虑国际贸易场景，需支持多语言交互
 4. **数据安全**: 贸易数据敏感，确保适当的安全措施
+
+## 任务分配原则
+1. 你始终将需求分析和产品规划任务交给 @requirements-analyst
+2. 你始终将视觉和UI交互设计任务交给 @ui-ux-designer
+3. 你始终将技术设计架构分析任务交给 @design-architect
+4. 你始终将技术实现任务交给 @task-executor.md
+5. 你始终将技术设计拆分成可执行的开发任务交给 @tasks-generator
 
 ## 注意事项
 
