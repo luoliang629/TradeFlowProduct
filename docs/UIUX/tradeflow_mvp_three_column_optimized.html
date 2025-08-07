@@ -3502,6 +3502,11 @@
             const panel = document.getElementById('agentPanel');
             const toggle = document.getElementById('agentPanelToggle');
             
+            if (!panel || !toggle) {
+                console.error('Agent panel or toggle button not found');
+                return;
+            }
+            
             if (panel.classList.contains('open')) {
                 panel.classList.remove('open');
                 toggle.style.display = 'flex';
@@ -3517,15 +3522,19 @@
         function showFocusedInputView() {
             const focusedView = document.getElementById('focusedInputView');
             const regularView = document.getElementById('regularChatView');
-            const agentPanel = document.getElementById('agentPanel');
-            const agentToggle = document.getElementById('agentPanelToggle');
+            const agentPanel = document.getElementById('agentPanel') || document.querySelector('.agent-panel');
+            const agentToggle = document.getElementById('agentPanelToggle') || document.querySelector('.agent-panel-toggle');
             
             if (focusedView && regularView) {
                 focusedView.style.display = 'flex';
                 regularView.style.display = 'none';
                 // Hide agent panel for new tasks
-                agentPanel.classList.remove('open');
-                agentToggle.classList.add('hidden');
+                if (agentPanel) {
+                    agentPanel.classList.remove('open');
+                }
+                if (agentToggle) {
+                    agentToggle.classList.add('hidden');
+                }
             }
         }
         
