@@ -1324,13 +1324,8 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            cursor: pointer;
-            transition: background-color 0.2s;
         }
 
-        .react-section-header:hover {
-            background: var(--bg-tertiary);
-        }
 
         .react-section-title {
             display: flex;
@@ -1364,22 +1359,11 @@
         }
 
         .react-section-content {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.3s ease;
+            max-height: none;
+            overflow: visible;
         }
 
-        .react-section.expanded .react-section-content {
-            max-height: 500px;
-        }
-
-        .react-section-header .chevron {
-            transition: transform 0.3s ease;
-        }
-
-        .react-section.expanded .chevron {
-            transform: rotate(180deg);
-        }
+        /* Chevron removed - no longer needed */
 
         .react-section-body {
             padding: 0 1.25rem 1.25rem;
@@ -2161,26 +2145,21 @@
             
             <div class="agent-panel-content">
                 <!-- Reasoning Section -->
-                <div class="react-section reasoning expanded" id="reasoningSection">
-                    <div class="react-section-header" onclick="toggleReactSection('reasoning')">
+                <div class="react-section reasoning" id="reasoningSection">
+                    <div class="react-section-header">
                         <div class="react-section-title">
                             <div class="react-section-icon">R</div>
                             <span data-i18n="reasoning">Reasoning</span>
                         </div>
-                        <div style="display: flex; align-items: center; gap: 1rem;">
-                            <div class="credibility-score">
-                                <div class="star-rating" id="reasoningStars">
-                                    <span class="star">★</span>
-                                    <span class="star">★</span>
-                                    <span class="star">★</span>
-                                    <span class="star">★</span>
-                                    <span class="star empty">★</span>
-                                </div>
-                                <span>4.0/5.0</span>
+                        <div class="credibility-score">
+                            <div class="star-rating" id="reasoningStars">
+                                <span class="star">★</span>
+                                <span class="star">★</span>
+                                <span class="star">★</span>
+                                <span class="star">★</span>
+                                <span class="star empty">★</span>
                             </div>
-                            <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M7 10l5 5 5-5z"/>
-                            </svg>
+                            <span>4.0/5.0</span>
                         </div>
                     </div>
                     <div class="react-section-content">
@@ -2201,25 +2180,20 @@
 
                 <!-- Acting Section -->
                 <div class="react-section acting" id="actingSection">
-                    <div class="react-section-header" onclick="toggleReactSection('acting')">
+                    <div class="react-section-header">
                         <div class="react-section-title">
                             <div class="react-section-icon">A</div>
                             <span data-i18n="acting">Acting</span>
                         </div>
-                        <div style="display: flex; align-items: center; gap: 1rem;">
-                            <div class="credibility-score">
-                                <div class="star-rating" id="actingStars">
-                                    <span class="star">★</span>
-                                    <span class="star">★</span>
-                                    <span class="star">★</span>
-                                    <span class="star">★</span>
-                                    <span class="star">★</span>
-                                </div>
-                                <span>5.0/5.0</span>
+                        <div class="credibility-score">
+                            <div class="star-rating" id="actingStars">
+                                <span class="star">★</span>
+                                <span class="star">★</span>
+                                <span class="star">★</span>
+                                <span class="star">★</span>
+                                <span class="star">★</span>
                             </div>
-                            <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M7 10l5 5 5-5z"/>
-                            </svg>
+                            <span>5.0/5.0</span>
                         </div>
                     </div>
                     <div class="react-section-content">
@@ -2238,25 +2212,20 @@
 
                 <!-- Observation Section -->
                 <div class="react-section observing" id="observingSection">
-                    <div class="react-section-header" onclick="toggleReactSection('observing')">
+                    <div class="react-section-header">
                         <div class="react-section-title">
                             <div class="react-section-icon">O</div>
                             <span data-i18n="observation">Observation</span>
                         </div>
-                        <div style="display: flex; align-items: center; gap: 1rem;">
-                            <div class="credibility-score">
-                                <div class="star-rating" id="observationStars">
-                                    <span class="star">★</span>
-                                    <span class="star">★</span>
-                                    <span class="star">★</span>
-                                    <span class="star">★</span>
-                                    <span class="star empty">★</span>
-                                </div>
-                                <span>4.5/5.0</span>
+                        <div class="credibility-score">
+                            <div class="star-rating" id="observationStars">
+                                <span class="star">★</span>
+                                <span class="star">★</span>
+                                <span class="star">★</span>
+                                <span class="star">★</span>
+                                <span class="star empty">★</span>
                             </div>
-                            <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M7 10l5 5 5-5z"/>
-                            </svg>
+                            <span>4.5/5.0</span>
                         </div>
                     </div>
                     <div class="react-section-content">
