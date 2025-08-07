@@ -1344,8 +1344,8 @@
             cursor: not-allowed;
         }
 
-        /* Right Column - Agent Progress Panel (Drawer Style) */
-        .agent-panel {
+        /* Right Column - File Preview Panel (Drawer Style) */
+        .file-preview-panel {
             position: fixed;
             right: 0;
             top: 0;
@@ -1362,14 +1362,14 @@
             transition: transform 0.3s cubic-bezier(0.2, 0, 0.2, 1);
         }
         
-        .agent-panel.closed {
+        .file-preview-panel.closed {
             transform: translateX(100%);
         }
         
-        /* Agent panel is always visible now */
+        /* File preview panel is always visible now */
         
-        /* Toggle button for agent panel */
-        .agent-panel-toggle {
+        /* Toggle button for file preview panel */
+        .file-preview-toggle {
             position: fixed;
             right: 16px;
             top: 50%;
@@ -1390,22 +1390,22 @@
             opacity: 0;
         }
         
-        .agent-panel-toggle.visible {
+        .file-preview-toggle.visible {
             display: flex;
             opacity: 1;
         }
         
-        .agent-panel-toggle:hover {
+        .file-preview-toggle:hover {
             background: var(--primary-dark);
             transform: translateY(-50%) scale(1.05);
             box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
         }
         
-        .agent-panel-toggle:active {
+        .file-preview-toggle:active {
             transform: translateY(-50%) scale(0.95);
         }
 
-        .agent-panel-header {
+        .file-preview-header {
             padding: 1.5rem;
             border-bottom: 1px solid var(--border-color);
             background: var(--bg-secondary);
@@ -1414,17 +1414,17 @@
             align-items: center;
         }
         
-        .agent-panel-header-content {
+        .file-preview-header-content {
             flex: 1;
         }
         
-        .agent-panel-controls {
+        .file-preview-controls {
             display: flex;
             align-items: center;
             gap: 0.5rem;
         }
         
-        .agent-panel-minimize {
+        .file-preview-minimize {
             width: 32px;
             height: 32px;
             border-radius: 6px;
@@ -1439,17 +1439,17 @@
             position: relative;
         }
         
-        .agent-panel-minimize:hover {
+        .file-preview-minimize:hover {
             background: var(--bg-tertiary);
             color: var(--text-primary);
             transform: scale(1.05);
         }
         
-        .agent-panel-minimize:active {
+        .file-preview-minimize:active {
             transform: scale(0.95);
         }
         
-        .agent-panel-close {
+        .file-preview-close {
             width: 32px;
             height: 32px;
             border-radius: 6px;
@@ -1463,17 +1463,17 @@
             transition: all 0.2s cubic-bezier(0.2, 0, 0.2, 1);
         }
         
-        .agent-panel-close:hover {
+        .file-preview-close:hover {
             background: rgba(239, 68, 68, 0.1);
             color: rgb(239, 68, 68);
             transform: scale(1.05);
         }
         
-        .agent-panel-close:active {
+        .file-preview-close:active {
             transform: scale(0.95);
         }
 
-        .agent-panel-title {
+        .file-preview-title {
             font-size: 1.125rem;
             font-weight: 600;
             color: var(--text-primary);
@@ -1483,44 +1483,331 @@
             gap: 0.5rem;
         }
 
-        .agent-status-indicator {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: var(--success-color);
-            animation: pulse 2s infinite;
-        }
 
-        .agent-status-indicator.thinking {
-            background: var(--warning-color);
-        }
-
-        .agent-status-indicator.reasoning {
-            background: #3b82f6; /* Blue for reasoning */
-        }
-
-        .agent-status-indicator.acting {
-            background: #f97316; /* Orange for acting */
-        }
-
-        .agent-status-indicator.observing {
-            background: #10b981; /* Green for observing */
-        }
-
-        .agent-status-indicator.idle {
-            background: var(--text-light);
-            animation: none;
-        }
-
-        .agent-panel-subtitle {
+        .file-preview-subtitle {
             font-size: 0.875rem;
             color: var(--text-secondary);
         }
 
-        .agent-panel-content {
+        .file-preview-content {
             flex: 1;
             overflow-y: auto;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* File List Section */
+        .file-list-section {
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-secondary);
             padding: 1rem;
+        }
+
+        .file-list-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .file-list-title {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .file-count {
+            background: var(--primary-color);
+            color: var(--text-inverse);
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: var(--radius-sm);
+        }
+
+        .file-list-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .file-action-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s cubic-bezier(0.2, 0, 0.2, 1);
+        }
+
+        .file-action-btn:hover {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border-color: var(--primary-color);
+        }
+
+        .file-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .file-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            margin-bottom: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.2, 0, 0.2, 1);
+            background: var(--bg-primary);
+        }
+
+        .file-item:hover {
+            border-color: var(--primary-color);
+            box-shadow: var(--shadow-sm);
+            transform: translateY(-1px);
+        }
+
+        .file-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .file-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .file-icon.markdown {
+            background: rgba(0, 123, 255, 0.1);
+            color: #007bff;
+        }
+
+        .file-icon.csv {
+            background: rgba(40, 167, 69, 0.1);
+            color: #28a745;
+        }
+
+        .file-icon.json {
+            background: rgba(255, 193, 7, 0.1);
+            color: #ffc107;
+        }
+
+        .file-details {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .file-name {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .file-meta {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .file-actions {
+            display: flex;
+            gap: 0.25rem;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .file-item:hover .file-actions {
+            opacity: 1;
+        }
+
+        /* File Preview Section */
+        .file-preview-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+        }
+
+        .preview-placeholder {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem 1rem;
+            text-align: center;
+        }
+
+        .preview-icon {
+            color: var(--text-light);
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .preview-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .preview-desc {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .preview-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+        }
+
+        .preview-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-tertiary);
+        }
+
+        .preview-file-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .preview-file-name {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .preview-file-path {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            font-family: 'Monaco', 'Consolas', monospace;
+        }
+
+        .preview-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .preview-action-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s cubic-bezier(0.2, 0, 0.2, 1);
+        }
+
+        .preview-action-btn:hover {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            border-color: var(--primary-color);
+        }
+
+        .preview-viewer {
+            flex: 1;
+            overflow: auto;
+            padding: 1.5rem;
+            background: var(--bg-primary);
+        }
+
+        .markdown-content {
+            max-width: none;
+            line-height: 1.6;
+            color: var(--text-primary);
+        }
+
+        .markdown-content h1,
+        .markdown-content h2,
+        .markdown-content h3,
+        .markdown-content h4,
+        .markdown-content h5,
+        .markdown-content h6 {
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .markdown-content h1 { font-size: 1.5rem; }
+        .markdown-content h2 { font-size: 1.25rem; }
+        .markdown-content h3 { font-size: 1.1rem; }
+
+        .markdown-content p {
+            margin-bottom: 1rem;
+        }
+
+        .markdown-content code {
+            background: var(--bg-tertiary);
+            padding: 0.125rem 0.25rem;
+            border-radius: 3px;
+            font-size: 0.85rem;
+            font-family: 'Monaco', 'Consolas', monospace;
+        }
+
+        .markdown-content pre {
+            background: var(--bg-dark);
+            color: var(--text-inverse);
+            padding: 1rem;
+            border-radius: var(--radius-md);
+            overflow-x: auto;
+            margin: 1rem 0;
+        }
+
+        .markdown-content pre code {
+            background: none;
+            padding: 0;
+        }
+
+        .markdown-content table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+
+        .markdown-content th,
+        .markdown-content td {
+            border: 1px solid var(--border-color);
+            padding: 0.75rem;
+            text-align: left;
+        }
+
+        .markdown-content th {
+            background: var(--bg-secondary);
+            font-weight: 600;
         }
 
         /* Current Operation */
@@ -1601,359 +1888,24 @@
             }
         }
 
-        .react-section.active {
-            animation: reactPulse 2s infinite;
-        }
-
-        /* Smooth fade-in animation */
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .fade-in-up {
-            animation: fadeInUp 0.5s ease-out;
-        }
-
-        .progress-text {
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-            text-align: center;
-        }
-
-        /* ReAct Process Sections */
-        .react-section {
-            margin-bottom: 1.5rem;
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-lg);
-            overflow: hidden;
-            transition: all 0.3s ease;
-        }
-
-        .react-section.active {
-            border-width: 2px;
-        }
-
-        .react-section.reasoning.active {
-            border-color: #3b82f6;
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
-        }
-
-        .react-section.acting.active {
-            border-color: #f97316;
-            box-shadow: 0 4px 12px rgba(249, 115, 22, 0.15);
-        }
-
-        .react-section.observing.active {
-            border-color: #10b981;
-            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.15);
-        }
-
-        .react-section-header {
-            padding: 1rem 1.25rem;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
 
 
-        .react-section-title {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            font-weight: 600;
-        }
-
-        .react-section-icon {
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.875rem;
-            font-weight: 700;
-            color: white;
-        }
-
-        .react-section.reasoning .react-section-icon {
-            background: #3b82f6;
-        }
-
-        .react-section.acting .react-section-icon {
-            background: #f97316;
-        }
-
-        .react-section.observing .react-section-icon {
-            background: #10b981;
-        }
-
-        .react-section-content {
-            max-height: none;
-            overflow: visible;
-        }
-
-        /* Chevron removed - no longer needed */
-
-        .react-section-body {
-            padding: 0 1.25rem 1.25rem;
-        }
-
-        /* Credibility Score */
-        .credibility-score {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-size: 0.875rem;
-            color: var(--text-secondary);
-        }
-
-        .star-rating {
-            display: flex;
-            gap: 0.125rem;
-        }
-
-        .star {
-            width: 16px;
-            height: 16px;
-            color: #fbbf24;
-        }
-
-        .star.empty {
-            opacity: 0.3;
-        }
-
-        /* Data Sources */
-        .data-sources {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-            margin-top: 0.75rem;
-        }
-
-        .data-source-badge {
-            padding: 0.25rem 0.75rem;
-            background: var(--bg-tertiary);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-full);
-            font-size: 0.75rem;
-            color: var(--text-secondary);
-        }
-
-        .data-source-badge.verified {
-            border-color: var(--success-color);
-            color: var(--success-color);
-        }
-
-        /* Activity Log */
-        .activity-section {
-            margin-bottom: 1.5rem;
-        }
-
-        .activity-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 1rem;
-        }
-
-        .activity-title {
-            font-size: 0.95rem;
-            font-weight: 600;
-            color: var(--text-primary);
-        }
-
-        .activity-toggle {
-            background: none;
-            border: none;
-            cursor: pointer;
-            color: var(--text-secondary);
-            font-size: 0.8rem;
-            padding: 0.25rem 0.5rem;
-            border-radius: var(--radius-sm);
-            transition: all 0.2s;
-        }
-
-        .activity-toggle:hover {
-            background: var(--bg-tertiary);
-            color: var(--text-primary);
-        }
-
-        .activity-list {
-            max-height: 300px;
-            overflow-y: auto;
-        }
-
-        .activity-item {
-            display: flex;
-            gap: 0.75rem;
-            padding: 0.75rem 0;
-            border-bottom: 1px solid var(--border-color);
-            animation: slideInRight 0.3s ease-out;
-        }
-
-        .activity-item:last-child {
-            border-bottom: none;
-        }
-
-        .activity-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            margin-top: 0.375rem;
-            flex-shrink: 0;
-        }
-
-        .activity-dot.completed {
-            background: var(--success-color);
-        }
-
-        .activity-dot.in-progress {
-            background: var(--warning-color);
-            animation: pulse 1.5s infinite;
-        }
-
-        .activity-dot.pending {
-            background: var(--text-light);
-        }
-
-        .activity-content {
-            flex: 1;
-            min-width: 0;
-        }
-
-        .activity-text {
-            font-size: 0.85rem;
-            color: var(--text-primary);
-            margin-bottom: 0.25rem;
-            line-height: 1.4;
-        }
-
-        .activity-time {
-            font-size: 0.75rem;
-            color: var(--text-light);
-        }
-
-        .activity-details {
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-            margin-top: 0.25rem;
-            padding: 0.5rem;
-            background: var(--bg-secondary);
-            border-radius: var(--radius-sm);
-            border-left: 3px solid var(--info-color);
-        }
-
-        /* Thinking Process */
-        .thinking-section {
-            background: var(--bg-tertiary);
-            border-radius: var(--radius-lg);
-            padding: 1rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .thinking-header {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            margin-bottom: 0.75rem;
-        }
-
-        .thinking-icon {
-            width: 20px;
-            height: 20px;
-            color: var(--warning-color);
-            animation: spin 2s linear infinite;
-        }
-
-        .thinking-title {
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: var(--text-primary);
-        }
-
-        .thinking-content {
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-            line-height: 1.4;
-        }
-
-        /* Results Preview */
-        .results-section {
-            background: var(--bg-primary);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-lg);
-            padding: 1rem;
-        }
-
-        .results-header {
-            font-size: 0.95rem;
-            font-weight: 600;
-            color: var(--text-primary);
-            margin-bottom: 0.75rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .results-count {
-            background: var(--primary-color);
-            color: var(--text-inverse);
-            font-size: 0.75rem;
-            padding: 0.25rem 0.5rem;
-            border-radius: var(--radius-sm);
-        }
-
-        .results-list {
-            max-height: 200px;
-            overflow-y: auto;
-        }
-
-        .result-item {
-            padding: 0.75rem;
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-md);
-            margin-bottom: 0.5rem;
-            font-size: 0.8rem;
-            line-height: 1.4;
-        }
-
-        .result-item:last-child {
-            margin-bottom: 0;
-        }
-
-        .result-title {
-            font-weight: 600;
-            color: var(--text-primary);
-            margin-bottom: 0.25rem;
-        }
-
-        .result-desc {
-            color: var(--text-secondary);
-        }
 
         /* Mobile Responsiveness */
         @media (max-width: 1024px) {
-            .agent-panel {
+            .file-preview-panel {
                 width: 100%;
                 z-index: 2000;
             }
             
-            .agent-panel-toggle {
+            .file-preview-toggle {
                 right: 20px;
                 bottom: 20px;
                 top: auto;
                 transform: none;
             }
             
-            .agent-panel-toggle:hover {
+            .file-preview-toggle:hover {
                 transform: scale(1.05);
             }
             
@@ -2860,23 +2812,26 @@
             </div>
         </div>
 
-        <!-- Right Column - Agent Progress Panel -->
-        <div class="agent-panel">
-            <div class="agent-panel-header">
-                <div class="agent-panel-header-content">
-                    <div class="agent-panel-title">
-                        <span class="agent-status-indicator" id="agentStatusIndicator"></span>
-                        <span data-i18n="agent-status">AI Agent Status</span>
+        <!-- Right Column - File Preview Panel -->
+        <div class="file-preview-panel">
+            <div class="file-preview-header">
+                <div class="file-preview-header-content">
+                    <div class="file-preview-title">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14,2 14,8 20,8"></polyline>
+                        </svg>
+                        <span data-i18n="file-preview">文件预览</span>
                     </div>
-                    <div class="agent-panel-subtitle" id="agentStatusText">正在生成专业邮件模板...</div>
+                    <div class="file-preview-subtitle" id="filePreviewText">选择对话中的文件进行预览</div>
                 </div>
-                <div class="agent-panel-controls">
-                    <button class="agent-panel-minimize" onclick="toggleAgentPanel()" title="Minimize panel">
+                <div class="file-preview-controls">
+                    <button class="file-preview-minimize" onclick="toggleFilePanel()" title="最小化面板">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M6 9l6 6 6-6"/>
                         </svg>
                     </button>
-                    <button class="agent-panel-close" onclick="closeAgentPanel()" title="Close panel">
+                    <button class="file-preview-close" onclick="closeFilePanel()" title="关闭面板">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <line x1="18" y1="6" x2="6" y2="18"></line>
                             <line x1="6" y1="6" x2="18" y2="18"></line>
@@ -2885,208 +2840,156 @@
                 </div>
             </div>
             
-            <div class="agent-panel-content">
-                <!-- Reasoning Section -->
-                <div class="react-section reasoning" id="reasoningSection">
-                    <div class="react-section-header">
-                        <div class="react-section-title">
-                            <div class="react-section-icon">R</div>
-                            <span data-i18n="reasoning">Reasoning</span>
+            <div class="file-preview-content">
+                <!-- File List Section -->
+                <div class="file-list-section">
+                    <div class="file-list-header">
+                        <div class="file-list-title">
+                            <span data-i18n="recent-files">最近文件</span>
+                            <span class="file-count" id="fileCount">3</span>
                         </div>
-                        <div class="credibility-score">
-                            <div class="star-rating" id="reasoningStars">
-                                <span class="star">★</span>
-                                <span class="star">★</span>
-                                <span class="star">★</span>
-                                <span class="star">★</span>
-                                <span class="star empty">★</span>
-                            </div>
-                            <span>4.0/5.0</span>
-                        </div>
-                    </div>
-                    <div class="react-section-content">
-                        <div class="react-section-body">
-                            <div id="reasoningContent">
-                                <p><strong>🔍 需求分析:</strong> 用户是LED灯具制造商，产品包括吸顶灯、筒灯、面板灯，已获CE/FCC认证</p>
-                                <p><strong>🎯 目标市场:</strong> 美国市场，寻找优质买家，注重价格竞争力</p>
-                                <p><strong>📊 匹配策略:</strong> 基于产品类别、认证要求、采购规模、合作历史进行智能匹配</p>
-                                <p><strong>💡 推荐逻辑:</strong> 优先推荐有中国供应商合作经验、要求相关认证的买家</p>
-                            </div>
-                            <div class="data-sources">
-                                <span class="data-source-badge verified">美国海关数据库</span>
-                                <span class="data-source-badge verified">B2B交易记录</span>
-                                <span class="data-source-badge">市场调研报告</span>
-                                <span class="data-source-badge">企业信用数据</span>
-                            </div>
+                        <div class="file-list-actions">
+                            <button class="file-action-btn" onclick="refreshFileList()" title="刷新文件列表">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M1 4v6h6"/>
+                                    <path d="m1 10 4.1-4.1a8 8 0 0 1 11.3 0"/>
+                                    <path d="m23 20v-6h-6"/>
+                                    <path d="m23 14-4.1 4.1a8 8 0 0 1-11.3 0"/>
+                                </svg>
+                            </button>
                         </div>
                     </div>
-                </div>
-
-                <!-- Acting Section -->
-                <div class="react-section acting" id="actingSection">
-                    <div class="react-section-header">
-                        <div class="react-section-title">
-                            <div class="react-section-icon">A</div>
-                            <span data-i18n="acting">Acting</span>
-                        </div>
-                        <div class="credibility-score">
-                            <div class="star-rating" id="actingStars">
-                                <span class="star">★</span>
-                                <span class="star">★</span>
-                                <span class="star">★</span>
-                                <span class="star">★</span>
-                                <span class="star">★</span>
+                    <div class="file-list" id="fileList">
+                        <div class="file-item" data-file-type="markdown" onclick="previewFile('buyer-analysis.md')">
+                            <div class="file-icon markdown">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                    <polyline points="14,2 14,8 20,8"></polyline>
+                                </svg>
                             </div>
-                            <span>5.0/5.0</span>
-                        </div>
-                    </div>
-                    <div class="react-section-content">
-                        <div class="react-section-body">
-                            <div id="actingContent">
-                                <p>正在搜索相关买家数据...</p>
-                                <p>筛选符合条件的公司...</p>
-                                <p>验证联系方式和采购历史...</p>
+                            <div class="file-details">
+                                <div class="file-name">美国买家分析报告.md</div>
+                                <div class="file-meta">
+                                    <span class="file-size">12.5KB</span>
+                                    <span class="file-time">2分钟前</span>
+                                </div>
                             </div>
-                            <div class="progress-bar">
-                                <div class="progress-fill" id="actingProgress" style="width: 60%"></div>
+                            <div class="file-actions">
+                                <button class="file-action-btn" onclick="downloadFile('buyer-analysis.md')" title="下载文件">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                        <polyline points="7,10 12,15 17,10"/>
+                                        <line x1="12" y1="15" x2="12" y2="3"/>
+                                    </svg>
+                                </button>
                             </div>
                         </div>
-                    </div>
-                </div>
-
-                <!-- Observation Section -->
-                <div class="react-section observing" id="observingSection">
-                    <div class="react-section-header">
-                        <div class="react-section-title">
-                            <div class="react-section-icon">O</div>
-                            <span data-i18n="observation">Observation</span>
-                        </div>
-                        <div class="credibility-score">
-                            <div class="star-rating" id="observationStars">
-                                <span class="star">★</span>
-                                <span class="star">★</span>
-                                <span class="star">★</span>
-                                <span class="star">★</span>
-                                <span class="star empty">★</span>
+                        
+                        <div class="file-item" data-file-type="csv" onclick="previewFile('buyer-contacts.csv')">
+                            <div class="file-icon csv">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                                    <path d="M9 9h6"/>
+                                    <path d="M9 15h6"/>
+                                </svg>
                             </div>
-                            <span>4.5/5.0</span>
-                        </div>
-                    </div>
-                    <div class="react-section-content">
-                        <div class="react-section-body">
-                            <div id="observationContent">
-                                <p><strong>🏢 买家筛选结果:</strong> 从超过500家美国照明买家中筛选出15家高匹配度买家</p>
-                                <p><strong>⭐ 匹配度分析:</strong> 3家高优先级(90%+)，8家中优先级(80%+)，4家标准级(70%+)</p>
-                                <p><strong>💰 采购规模:</strong> 年采购总额$45M，单笔订单$50K-$500K</p>
-                                <p><strong>📍 地理分布:</strong> 加州40%，德州25%，纽约15%，其他20%</p>
-                                <p><strong>🔄 合作潜力:</strong> 80%的买家有与中国供应商长期合作历史</p>
+                            <div class="file-details">
+                                <div class="file-name">买家联系方式.csv</div>
+                                <div class="file-meta">
+                                    <span class="file-size">8.2KB</span>
+                                    <span class="file-time">5分钟前</span>
+                                </div>
                             </div>
-                            <div class="data-sources">
-                                <span class="data-source-badge verified">实时验证</span>
-                                <span class="data-source-badge verified">2024最新数据</span>
-                                <span class="data-source-badge">信用评级A+</span>
+                            <div class="file-actions">
+                                <button class="file-action-btn" onclick="downloadFile('buyer-contacts.csv')" title="下载文件">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                        <polyline points="7,10 12,15 17,10"/>
+                                        <line x1="12" y1="15" x2="12" y2="3"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="file-item" data-file-type="json" onclick="previewFile('email-template.json')">
+                            <div class="file-icon json">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                    <polyline points="14,2 14,8 20,8"></polyline>
+                                    <path d="M10 12l2 2 4-4"/>
+                                </svg>
+                            </div>
+                            <div class="file-details">
+                                <div class="file-name">邮件模板配置.json</div>
+                                <div class="file-meta">
+                                    <span class="file-size">3.1KB</span>
+                                    <span class="file-time">刚才</span>
+                                </div>
+                            </div>
+                            <div class="file-actions">
+                                <button class="file-action-btn" onclick="downloadFile('email-template.json')" title="下载文件">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                        <polyline points="7,10 12,15 17,10"/>
+                                        <line x1="12" y1="15" x2="12" y2="3"/>
+                                    </svg>
+                                </button>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Activity Log -->
-                <div class="activity-section">
-                    <div class="activity-header">
-                        <div class="activity-title">Recent Activity</div>
-                        <button class="activity-toggle" onclick="toggleActivityLog()">Show All</button>
-                    </div>
-                    <div class="activity-list" id="activityList">
-                        <div class="activity-item">
-                            <div class="activity-dot completed"></div>
-                            <div class="activity-content">
-                                <div class="activity-text">✅ 会话启动，用户需求识别完成</div>
-                                <div class="activity-time">14:25</div>
-                            </div>
+                <!-- File Preview Section -->
+                <div class="file-preview-section" id="filePreviewSection">
+                    <div class="preview-placeholder">
+                        <div class="preview-icon">
+                            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14,2 14,8 20,8"></polyline>
+                            </svg>
                         </div>
-                        
-                        <div class="activity-item">
-                            <div class="activity-dot completed"></div>
-                            <div class="activity-content">
-                                <div class="activity-text">🔍 美国LED灯具市场数据检索完成</div>
-                                <div class="activity-time">14:26</div>
-                            </div>
-                        </div>
-                        
-                        <div class="activity-item">
-                            <div class="activity-dot completed"></div>
-                            <div class="activity-content">
-                                <div class="activity-text">📊 市场规模与趋势分析完成 ($156B市场)</div>
-                                <div class="activity-time">14:26</div>
-                            </div>
-                        </div>
-                        
-                        <div class="activity-item">
-                            <div class="activity-dot completed"></div>
-                            <div class="activity-content">
-                                <div class="activity-text">🏢 买家数据库查询完成 (500+ 候选买家)</div>
-                                <div class="activity-time">14:26</div>
-                            </div>
-                        </div>
-                        
-                        <div class="activity-item">
-                            <div class="activity-dot completed"></div>
-                            <div class="activity-content">
-                                <div class="activity-text">⭐ 智能匹配算法运行，筛选出15家高质量买家</div>
-                                <div class="activity-time">14:27</div>
-                            </div>
-                        </div>
-                        
-                        <div class="activity-item">
-                            <div class="activity-dot completed"></div>
-                            <div class="activity-content">
-                                <div class="activity-text">📋 买家详细信息整理，生成推荐报告</div>
-                                <div class="activity-time">14:27</div>
-                            </div>
-                        </div>
-                        
-                        <div class="activity-item">
-                            <div class="activity-dot completed"></div>
-                            <div class="activity-content">
-                                <div class="activity-text">💼 针对Bright Solutions LLC制定接触策略</div>
-                                <div class="activity-time">14:30</div>
-                            </div>
-                        </div>
-                        
-                        <div class="activity-item">
-                            <div class="activity-dot completed"></div>
-                            <div class="activity-content">
-                                <div class="activity-text">📧 邮件开发策略和报价建议生成完成</div>
-                                <div class="activity-time">14:30</div>
-                            </div>
-                        </div>
-                        
-                        <div class="activity-item">
-                            <div class="activity-dot in-progress"></div>
-                            <div class="activity-content">
-                                <div class="activity-text">📝 正在生成专业邮件模板...</div>
-                                <div class="activity-time">14:32</div>
-                            </div>
-                        </div>
-                        
-                        <div class="activity-item">
-                            <div class="activity-dot pending"></div>
-                            <div class="activity-content">
-                                <div class="activity-text">📤 准备发送开发邮件建议</div>
-                                <div class="activity-time">预计 14:33</div>
-                            </div>
+                        <div class="preview-text">
+                            <p class="preview-title">选择文件进行预览</p>
+                            <p class="preview-desc">点击左侧文件列表中的任意文件<br/>即可在此处查看其内容</p>
                         </div>
                     </div>
-                </div>
-
-                <!-- Results Preview -->
-                <div class="results-section" id="resultsSection" style="display: none;">
-                    <div class="results-header">
-                        Preliminary Results
-                        <span class="results-count" id="resultsCount">0</span>
-                    </div>
-                    <div class="results-list" id="resultsList">
-                        <!-- Results will be populated here -->
+                    
+                    <!-- Active Preview Content -->
+                    <div class="preview-content" id="previewContent" style="display: none;">
+                        <div class="preview-header">
+                            <div class="preview-file-info">
+                                <div class="preview-file-name" id="previewFileName">美国买家分析报告.md</div>
+                                <div class="preview-file-path" id="previewFilePath">/chat-files/buyer-analysis.md</div>
+                            </div>
+                            <div class="preview-actions">
+                                <button class="preview-action-btn" onclick="copyFileContent()" title="复制内容">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                                    </svg>
+                                </button>
+                                <button class="preview-action-btn" onclick="downloadCurrentFile()" title="下载文件">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                        <polyline points="7,10 12,15 17,10"/>
+                                        <line x1="12" y1="15" x2="12" y2="3"/>
+                                    </svg>
+                                </button>
+                                <button class="preview-action-btn" onclick="closePreview()" title="关闭预览">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <line x1="18" y1="6" x2="6" y2="18"/>
+                                        <line x1="6" y1="6" x2="18" y2="18"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Preview Viewer -->
+                        <div class="preview-viewer" id="previewViewer">
+                            <div class="markdown-content">
+                                <!-- Markdown content will be rendered here -->
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
