@@ -806,6 +806,7 @@
             max-width: none;
             padding: 2rem 20px;
             overflow: hidden;
+            margin-right: 360px; /* Give space for agent panel */
         }
 
         .welcome-section {
@@ -968,15 +969,13 @@
             position: fixed;
             bottom: 20px;
             left: 300px;
-            right: 20px;
+            right: 380px; /* Give space for agent panel (360px + 20px margin) */
             background: var(--bg-primary);
             border: 1px solid var(--border-color);
             border-radius: var(--radius-lg);
             padding: 1rem 1.25rem;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
             z-index: 100;
-            max-width: 1200px;
-            margin: 0 auto;
         }
         
         .chat-messages {
@@ -1064,15 +1063,11 @@
             display: flex;
             flex-direction: column;
             overflow: hidden;
-            transform: translateX(100%);
-            transition: transform 0.3s ease;
             z-index: 1000;
             box-shadow: -4px 0 15px rgba(0, 0, 0, 0.1);
         }
         
-        .agent-panel.open {
-            transform: translateX(0);
-        }
+        /* Agent panel is always visible now */
         
         /* Toggle button for agent panel */
         .agent-panel-toggle {
@@ -3506,10 +3501,5 @@
     </script>
     
     <!-- Agent Panel Toggle Button -->
-    <button class="agent-panel-toggle" id="agentPanelToggle" onclick="toggleAgentPanel()">
-        <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M9 11H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zm2-7h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z"/>
-        </svg>
-    </button>
 </body>
 </html>
