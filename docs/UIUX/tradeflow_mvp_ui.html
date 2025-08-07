@@ -428,9 +428,9 @@
 
         /* Left Sidebar - Navigation */
         .sidebar {
-            width: 20%;
-            min-width: 240px;
-            max-width: 320px;
+            width: 280px;
+            min-width: 280px;
+            max-width: 280px;
             background: var(--bg-dark);
             color: var(--text-inverse);
             display: flex;
@@ -724,7 +724,7 @@
         /* Middle Column - Chat Interface */
         .main-content {
             flex: 1;
-            width: calc(80% - var(--panel-width, 0px));
+            width: calc(100% - 280px - var(--panel-width, 0px));
             display: flex;
             flex-direction: column;
             min-width: 0; /* Important for flex shrinking */
@@ -1755,9 +1755,9 @@
             right: 0;
             top: 0;
             height: 100vh;
-            width: 40%;
+            width: 400px;
             min-width: 400px;
-            max-width: 600px;
+            max-width: 400px;
             background: var(--bg-primary);
             border-left: 1px solid var(--border-color);
             display: flex;
@@ -2860,7 +2860,7 @@
             </div>
 
             <!-- Chat Container -->
-            <div id="chatContainer" class="chat-container">
+            <div id="mainChatContainer" class="chat-container">
                 <!-- Focused Input View (for new chats) -->
                 <div id="focusedInputView" class="focused-input-view" style="display: none;">
                     <div class="focused-input-content">
@@ -3677,15 +3677,8 @@
             enableChatInput();
             simulateAgentActivity();
             
-            // Initialize chat management system
+            // Initialize chat management system - 立即初始化并渲染
             initChats();
-            
-            // 确保首个对话被加载并显示
-            setTimeout(() => {
-                if (chats.length > 0 && !currentChatId) {
-                    switchChat(chats[0].id);
-                }
-            }, 100);
         }
 
         // Unified Language Toggle Function
@@ -3725,7 +3718,7 @@
         // 初始化对话数据
         function initChats() {
             const savedChats = localStorage.getItem('tradeflow_chats');
-            if (savedChats) {
+            if (savedChats && savedChats !== '[]') {
                 chats = JSON.parse(savedChats);
                 chatCounter = Math.max(...chats.map(chat => parseInt(chat.id.replace('chat', ''))), 0);
             } else {
@@ -4807,20 +4800,19 @@
             let inputRight = '20px';
             let panelWidth = '0px';
             
-            // 计算视口宽度的40%作为面板宽度
-            const viewportWidth = window.innerWidth;
-            const calculatedPanelWidth = viewportWidth * 0.4;
+            // 使用固定宽度400px作为面板宽度
+            const fixedPanelWidth = 400;
             
             if (isAgentPanelOpen && isFilePanelOpen) {
                 // 两个面板都打开
-                marginRight = `${calculatedPanelWidth * 2}px`;
-                inputRight = `${calculatedPanelWidth * 2 + 20}px`;
-                panelWidth = `${calculatedPanelWidth * 2}px`;
+                marginRight = `${fixedPanelWidth * 2}px`;
+                inputRight = `${fixedPanelWidth * 2 + 20}px`;
+                panelWidth = `${fixedPanelWidth * 2}px`;
             } else if (isAgentPanelOpen || isFilePanelOpen) {
                 // 单个面板打开
-                marginRight = `${calculatedPanelWidth}px`;
-                inputRight = `${calculatedPanelWidth + 20}px`;
-                panelWidth = `${calculatedPanelWidth}px`;
+                marginRight = `${fixedPanelWidth}px`;
+                inputRight = `${fixedPanelWidth + 20}px`;
+                panelWidth = `${fixedPanelWidth}px`;
             }
             
             // 应用布局调整
