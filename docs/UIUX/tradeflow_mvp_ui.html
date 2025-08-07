@@ -727,6 +727,8 @@
             min-width: 0; /* Important for flex shrinking */
             margin-right: 360px;
             transition: margin-right 0.3s cubic-bezier(0.2, 0, 0.2, 1);
+            height: 100vh; /* 设置明确的高度 */
+            overflow: hidden; /* 防止整体滚动 */
         }
 
         .header {
@@ -880,13 +882,40 @@
         .chat-messages {
             flex: 1;
             overflow-y: auto;
-            margin-bottom: 2rem;
-            min-height: 300px;
+            overflow-x: hidden; /* 防止水平滚动 */
+            min-height: 0; /* 允许缩小 */
             max-width: 1200px;
             width: 100%;
             margin-left: auto;
             margin-right: auto;
             padding: 0 1.25rem;
+            /* 为固定输入框预留空间 */
+            padding-bottom: 120px; /* 动态调整的底部间距 */
+            /* 确保滚动区域有明确的边界 */
+            height: calc(100vh - 120px); /* 减去头部和输入框的高度 */
+            box-sizing: border-box;
+            /* 美化滚动条 */
+            scrollbar-width: thin;
+            scrollbar-color: var(--border-color) transparent;
+        }
+        
+        /* Webkit浏览器滚动条样式 */
+        .chat-messages::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .chat-messages::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        
+        .chat-messages::-webkit-scrollbar-thumb {
+            background-color: var(--border-color);
+            border-radius: 3px;
+            opacity: 0.5;
+        }
+        
+        .chat-messages::-webkit-scrollbar-thumb:hover {
+            background-color: var(--text-light);
         }
 
         /* Enhanced Message Styles */
@@ -1236,11 +1265,13 @@
             padding: 1rem 1.25rem;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
             z-index: 100;
+            max-height: 200px; /* 限制最大高度 */
+            min-height: 70px; /* 最小高度 */
+            /* 确保输入框不会被遮挡 */
+            backdrop-filter: blur(10px);
         }
         
-        .chat-messages {
-            padding-bottom: 180px;
-        }
+        /* 移除重复的 chat-messages 样式，已在上面统一处理 */
 
         .chat-input {
             width: 100%;
@@ -1255,6 +1286,8 @@
             background: transparent;
             color: var(--text-primary);
             padding: 0.5rem 0;
+            overflow-y: auto; /* 允许垂直滚动 */
+            transition: height 0.1s ease; /* 平滑的高度变化 */
         }
 
         .chat-input::placeholder {
@@ -1953,6 +1986,22 @@
 
             .quick-actions {
                 grid-template-columns: 1fr;
+            }
+            /* 移动端聊天界面优化 */
+            .main-content {
+                margin-right: 0 !important;
+                height: 100vh;
+            }
+            .chat-messages {
+                height: calc(100vh - 160px); /* 为移动端调整高度计算 */
+                padding: 0 1rem;
+                padding-bottom: 100px;
+            }
+            .chat-input-container {
+                left: 20px;
+                right: 20px;
+                bottom: 20px;
+                max-height: 150px; /* 移动端减小最大高度 */
             }
         }
 
@@ -3696,6 +3745,11 @@
 
             chatInput.addEventListener('input', function() {
                 sendButton.disabled = this.value.trim() === '';
+                // 自动调整输入框高度
+                autoResizeTextarea(this);
+                // 当输入框内容变化时调整布局（防抖处理）
+                clearTimeout(this.layoutTimeout);
+                this.layoutTimeout = setTimeout(adjustChatLayout, 150);
             });
         }
 
@@ -3726,7 +3780,10 @@
             // Clear input
             chatInput.value = '';
             document.getElementById('sendButton').disabled = true;
-            adjustTextareaHeight();
+            autoResizeTextarea(chatInput); // 使用新的函数名
+            
+            // 滚动到底部显示新消息
+            setTimeout(() => scrollToBottom(), 100);
 
             // Hide welcome section
             document.querySelector('.welcome-section').style.display = 'none';
@@ -3766,7 +3823,8 @@
             messageDiv.appendChild(content);
             
             chatMessages.appendChild(messageDiv);
-            chatMessages.scrollTop = chatMessages.scrollHeight;
+            // 使用平滑滚动到底部
+            setTimeout(() => scrollToBottom(), 50);
         }
 
         // Toggle ReAct section expansion
@@ -4244,6 +4302,8 @@
                 toggle.classList.remove('visible');
                 // Adjust main content
                 adjustMainContentForPanel(true);
+                // 调整聊天布局
+                setTimeout(adjustChatLayout, 300); // 等待动画完成
             }
         }
         
@@ -4274,6 +4334,8 @@
                 toggle.classList.remove('visible');
                 // Adjust main content
                 adjustMainContentForPanel(false);
+                // 调整聊天布局
+                setTimeout(adjustChatLayout, 300); // 等待动画完成
             }
         }
         
@@ -4289,6 +4351,64 @@
             }
         }
         
+        // 自动调整文本区域高度
+        function autoResizeTextarea(textarea) {
+            if (!textarea) return;
+            
+            // 重置高度以获取正确的scrollHeight
+            textarea.style.height = 'auto';
+            
+            // 计算新高度
+            const newHeight = Math.min(
+                Math.max(textarea.scrollHeight, 50), // 最小高度50px
+                150 // 最大高度150px
+            );
+            
+            textarea.style.height = newHeight + 'px';
+        }
+
+        // 平滑滚动到聊天消息底部
+        function scrollToBottom(smooth = true) {
+            const chatMessages = document.querySelector('.chat-messages');
+            if (chatMessages) {
+                if (smooth) {
+                    chatMessages.scrollTo({
+                        top: chatMessages.scrollHeight,
+                        behavior: 'smooth'
+                    });
+                } else {
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                }
+            }
+        }
+
+        // 动态调整聊天布局
+        function adjustChatLayout() {
+            const chatMessages = document.querySelector('.chat-messages');
+            const chatInputContainer = document.querySelector('.chat-input-container');
+            const header = document.querySelector('.header');
+            
+            if (chatMessages && chatInputContainer && header) {
+                const headerHeight = header.offsetHeight;
+                const inputHeight = chatInputContainer.offsetHeight;
+                const windowHeight = window.innerHeight;
+                
+                // 计算聊天消息区域的最佳高度
+                const availableHeight = windowHeight - headerHeight - inputHeight - 40; // 40px for margins
+                chatMessages.style.height = `${availableHeight}px`;
+                
+                // 确保输入框底部间距正确
+                const inputBottomMargin = 20;
+                chatMessages.style.paddingBottom = `${inputHeight + inputBottomMargin}px`;
+                
+                // 布局调整后保持在底部（如果已经在底部）
+                const wasAtBottom = chatMessages.scrollHeight - chatMessages.scrollTop <= chatMessages.clientHeight + 50;
+                if (wasAtBottom) {
+                    setTimeout(() => scrollToBottom(false), 50);
+                }
+            }
+        }
+
         // Handle window resize
         function handleWindowResize() {
             const panel = document.querySelector('.agent-panel');
@@ -4313,6 +4433,9 @@
                     toggle.classList.remove('visible');
                 }
             }
+            
+            // 在窗口大小变化时调整聊天布局
+            adjustChatLayout();
         }
         
         // Listen for window resize
@@ -4401,6 +4524,8 @@
         document.addEventListener('DOMContentLoaded', function() {
             initializeApp();
             initializeAgentPanel();
+            // 初始调整聊天布局
+            setTimeout(adjustChatLayout, 100); // 延迟确保元素已渲染
         });
     </script>
     
