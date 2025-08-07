@@ -995,6 +995,358 @@
             color: rgba(255, 255, 255, 0.7);
         }
 
+        /* File Card Component Styles */
+        .file-card {
+            display: flex;
+            align-items: center;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1rem;
+            margin: 0.75rem 0;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            max-width: 360px;
+        }
+        
+        .file-card:hover {
+            background: var(--bg-tertiary);
+            border-color: var(--primary-color);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transform: translateY(-1px);
+        }
+        
+        .file-card-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--primary-color);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            flex-shrink: 0;
+        }
+        
+        .file-card-icon svg {
+            width: 24px;
+            height: 24px;
+            color: white;
+        }
+        
+        .file-card-content {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .file-card-title {
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .file-card-meta {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .file-card-size,
+        .file-card-type {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+        
+        .file-card-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+        
+        .file-card:hover .file-card-actions {
+            opacity: 1;
+        }
+        
+        .file-card-action {
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: var(--bg-primary);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .file-card-action:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .file-card-action svg {
+            width: 16px;
+            height: 16px;
+        }
+        
+        /* File type specific icon colors */
+        .file-card.pdf .file-card-icon {
+            background: #dc2626;
+        }
+        
+        .file-card.doc .file-card-icon,
+        .file-card.docx .file-card-icon {
+            background: #2563eb;
+        }
+        
+        .file-card.xls .file-card-icon,
+        .file-card.xlsx .file-card-icon {
+            background: #059669;
+        }
+        
+        .file-card.ppt .file-card-icon,
+        .file-card.pptx .file-card-icon {
+            background: #ea580c;
+        }
+        
+        .file-card.txt .file-card-icon {
+            background: #6b7280;
+        }
+        
+        .file-card.image .file-card-icon {
+            background: #7c3aed;
+        }
+
+        /* File Preview Content Styles */
+        .file-content-preview {
+            padding: 1.5rem;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+        
+        .preview-header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .preview-icon-large {
+            width: 80px;
+            height: 80px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .preview-icon-large.pdf {
+            background: #dc2626;
+        }
+        
+        .preview-icon-large.doc {
+            background: #2563eb;
+        }
+        
+        .preview-icon-large.xls {
+            background: #059669;
+        }
+        
+        .preview-icon-large.txt {
+            background: #6b7280;
+        }
+        
+        .preview-icon-large.image {
+            background: #7c3aed;
+        }
+        
+        .preview-icon-large.default {
+            background: var(--text-secondary);
+        }
+        
+        .preview-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+            word-break: break-word;
+        }
+        
+        .preview-meta {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+        
+        .preview-content-area {
+            flex: 1;
+            overflow-y: auto;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1rem;
+        }
+        
+        .preview-placeholder {
+            text-align: center;
+            color: var(--text-secondary);
+            padding: 2rem;
+        }
+        
+        .preview-placeholder p {
+            margin: 0.5rem 0;
+        }
+        
+        .document-content h3 {
+            color: var(--text-primary);
+            margin: 0 0 1rem 0;
+            font-size: 1.125rem;
+        }
+        
+        .document-content p {
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin: 0.5rem 0;
+        }
+        
+        .document-content ul {
+            margin: 1rem 0;
+            padding-left: 1.5rem;
+        }
+        
+        .document-content li {
+            color: var(--text-secondary);
+            margin: 0.5rem 0;
+        }
+        
+        .spreadsheet-preview {
+            overflow-x: auto;
+        }
+        
+        .preview-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.875rem;
+        }
+        
+        .preview-table th,
+        .preview-table td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .preview-table th {
+            background: var(--bg-secondary);
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .preview-table td {
+            color: var(--text-secondary);
+        }
+        
+        .text-content pre {
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.85rem;
+            line-height: 1.5;
+            color: var(--text-secondary);
+            background: var(--bg-secondary);
+            padding: 1rem;
+            border-radius: 6px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+        
+        .image-preview {
+            text-align: center;
+        }
+        
+        .image-preview img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .preview-actions {
+            display: flex;
+            gap: 0.75rem;
+            justify-content: center;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
+        }
+        
+        .preview-action-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .preview-action-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .preview-action-btn:active {
+            transform: translateY(0);
+        }
+        
+        .preview-action-btn svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        /* Message File Container */
+        .message-file-container {
+            margin: 0.75rem 0 0.5rem 0;
+        }
+
+        .message.user .message-file-container .file-card {
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .message.user .message-file-container .file-card:hover {
+            border-color: rgba(255, 255, 255, 0.5);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .message.user .message-file-container .file-card-title,
+        .message.user .message-file-container .file-card-meta {
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .message.user .message-file-container .file-card-meta {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
         /* Enhanced Message Content Styles */
         .analysis-card {
             background: var(--bg-secondary);
@@ -2775,6 +3127,137 @@
                                 <div class="message-time">14:32</div>
                             </div>
                         </div>
+
+                        <!-- AI助手发送相关文档 -->
+                        <div class="message assistant">
+                            <div class="message-avatar">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                                </svg>
+                            </div>
+                            <div class="message-content">
+                                <div class="message-text">
+                                    <p>为了帮助您更好地准备开发工作，我为您整理了以下相关文档资料：</p>
+                                </div>
+                                
+                                <div class="message-file-container">
+                                    <div class="file-card pdf" onclick="handleFileCardClick('file_001')" data-file-id="file_001">
+                                        <div class="file-card-icon">
+                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                                <polyline points="14,2 14,8 20,8"></polyline>
+                                                <text x="12" y="18" text-anchor="middle" style="font-size: 6px; fill: currentColor;">PDF</text>
+                                            </svg>
+                                        </div>
+                                        <div class="file-card-content">
+                                            <div class="file-card-title" title="美国LED灯具市场调研报告2024">美国LED灯具市场调研报告2024</div>
+                                            <div class="file-card-meta">
+                                                <div class="file-card-size">2.3 MB</div>
+                                                <div class="file-card-type">PDF</div>
+                                            </div>
+                                        </div>
+                                        <div class="file-card-actions">
+                                            <button class="file-card-action" onclick="event.stopPropagation(); downloadFile('file_001')" title="下载">
+                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                                    <polyline points="7,10 12,15 17,10"></polyline>
+                                                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                                                </svg>
+                                            </button>
+                                            <button class="file-card-action" onclick="event.stopPropagation(); shareFile('file_001')" title="分享">
+                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                    <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path>
+                                                    <polyline points="16,6 12,2 8,6"></polyline>
+                                                    <line x1="12" y1="2" x2="12" y2="15"></line>
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="message-file-container">
+                                    <div class="file-card xlsx" onclick="handleFileCardClick('file_002')" data-file-id="file_002">
+                                        <div class="file-card-icon">
+                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                                <polyline points="14,2 14,8 20,8"></polyline>
+                                                <text x="12" y="18" text-anchor="middle" style="font-size: 5px; fill: currentColor;">XLS</text>
+                                            </svg>
+                                        </div>
+                                        <div class="file-card-content">
+                                            <div class="file-card-title" title="Bright Solutions LLC 买家详细资料表">Bright Solutions LLC 买家详细资料表</div>
+                                            <div class="file-card-meta">
+                                                <div class="file-card-size">456 KB</div>
+                                                <div class="file-card-type">XLSX</div>
+                                            </div>
+                                        </div>
+                                        <div class="file-card-actions">
+                                            <button class="file-card-action" onclick="event.stopPropagation(); downloadFile('file_002')" title="下载">
+                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                                    <polyline points="7,10 12,15 17,10"></polyline>
+                                                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                                                </svg>
+                                            </button>
+                                            <button class="file-card-action" onclick="event.stopPropagation(); shareFile('file_002')" title="分享">
+                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                    <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path>
+                                                    <polyline points="16,6 12,2 8,6"></polyline>
+                                                    <line x1="12" y1="2" x2="12" y2="15"></line>
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="message-file-container">
+                                    <div class="file-card docx" onclick="handleFileCardClick('file_003')" data-file-id="file_003">
+                                        <div class="file-card-icon">
+                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                                <polyline points="14,2 14,8 20,8"></polyline>
+                                                <text x="12" y="18" text-anchor="middle" style="font-size: 5px; fill: currentColor;">DOC</text>
+                                            </svg>
+                                        </div>
+                                        <div class="file-card-content">
+                                            <div class="file-card-title" title="开发邮件模板 - Bright Solutions LLC">开发邮件模板 - Bright Solutions LLC</div>
+                                            <div class="file-card-meta">
+                                                <div class="file-card-size">124 KB</div>
+                                                <div class="file-card-type">DOCX</div>
+                                            </div>
+                                        </div>
+                                        <div class="file-card-actions">
+                                            <button class="file-card-action" onclick="event.stopPropagation(); downloadFile('file_003')" title="下载">
+                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                                    <polyline points="7,10 12,15 17,10"></polyline>
+                                                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                                                </svg>
+                                            </button>
+                                            <button class="file-card-action" onclick="event.stopPropagation(); shareFile('file_003')" title="分享">
+                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                    <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path>
+                                                    <polyline points="16,6 12,2 8,6"></polyline>
+                                                    <line x1="12" y1="2" x2="12" y2="15"></line>
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="message-text">
+                                    <p>您可以点击上面的文件查看详细内容。这些文档将帮助您：</p>
+                                    <ul>
+                                        <li><strong>市场调研报告：</strong> 深入了解美国LED市场趋势和机会</li>
+                                        <li><strong>买家资料表：</strong> 包含Bright Solutions LLC的详细采购信息和联系方式</li>
+                                        <li><strong>邮件模板：</strong> 专门为该买家定制的开发邮件模板</li>
+                                    </ul>
+                                    <p>建议您先仔细阅读这些资料，然后我们可以进一步讨论具体的开发策略。</p>
+                                </div>
+                                
+                                <div class="message-time">14:33</div>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Chat Input -->
@@ -4422,11 +4905,824 @@
                 }
             }
         }
+
+        // File Preview Functions
+        let currentFileData = null;
+        let isFilePreviewOpen = false;
+
+        // Toggle file preview panel
+        function toggleFilePanel() {
+            const panel = document.querySelector('.file-preview-panel');
+            if (panel) {
+                panel.classList.toggle('closed');
+                isFilePreviewOpen = !panel.classList.contains('closed');
+                
+                // Update main content layout
+                if (isFilePreviewOpen) {
+                    adjustMainContentForFilePanel(true);
+                } else {
+                    adjustMainContentForFilePanel(false);
+                }
+            }
+        }
+
+        // Close file preview panel
+        function closeFilePanel() {
+            const panel = document.querySelector('.file-preview-panel');
+            if (panel) {
+                panel.classList.add('closed');
+                isFilePreviewOpen = false;
+                adjustMainContentForFilePanel(false);
+            }
+        }
+
+        // Open file preview panel
+        function openFilePanel() {
+            const panel = document.querySelector('.file-preview-panel');
+            if (panel) {
+                panel.classList.remove('closed');
+                isFilePreviewOpen = true;
+                adjustMainContentForFilePanel(true);
+            }
+        }
+
+        // Adjust main content for file preview panel
+        function adjustMainContentForFilePanel(panelOpen) {
+            const mainContent = document.querySelector('.main-content');
+            const chatInput = document.querySelector('.chat-input-container');
+            
+            if (!mainContent) return;
+            
+            const agentPanel = document.querySelector('.agent-panel');
+            const isAgentPanelOpen = agentPanel && !agentPanel.classList.contains('closed');
+            
+            if (panelOpen) {
+                if (isAgentPanelOpen) {
+                    // Both panels open - narrow the content
+                    mainContent.style.marginRight = '720px'; // 360px * 2
+                    if (chatInput) chatInput.style.right = '740px'; // 380px * 2 - 20px
+                } else {
+                    // Only file panel open
+                    mainContent.style.marginRight = '360px';
+                    if (chatInput) chatInput.style.right = '380px';
+                }
+            } else {
+                // File panel closed, check agent panel
+                if (isAgentPanelOpen) {
+                    mainContent.style.marginRight = '360px';
+                    if (chatInput) chatInput.style.right = '380px';
+                } else {
+                    mainContent.style.marginRight = '0';
+                    if (chatInput) chatInput.style.right = '20px';
+                }
+            }
+        }
+
+        // Open file preview with file data
+        function openFilePreview(fileData) {
+            currentFileData = fileData;
+            
+            // Update panel header
+            const titleSpan = document.querySelector('.file-preview-title span');
+            const subtitleDiv = document.getElementById('filePreviewText');
+            
+            if (titleSpan) titleSpan.textContent = fileData.name;
+            if (subtitleDiv) subtitleDiv.textContent = `${fileData.type.toUpperCase()} • ${fileData.size}`;
+            
+            // Render file content
+            renderFileContent(fileData);
+            
+            // Open the panel
+            openFilePanel();
+        }
+
+        // Render file content in preview panel
+        function renderFileContent(fileData) {
+            const previewSection = document.getElementById('filePreviewSection');
+            if (!previewSection) return;
+            
+            let contentHTML = '';
+            
+            switch (fileData.type.toLowerCase()) {
+                case 'pdf':
+                    contentHTML = renderPDFPreview(fileData);
+                    break;
+                case 'doc':
+                case 'docx':
+                    contentHTML = renderDocumentPreview(fileData);
+                    break;
+                case 'xls':
+                case 'xlsx':
+                    contentHTML = renderSpreadsheetPreview(fileData);
+                    break;
+                case 'txt':
+                    contentHTML = renderTextPreview(fileData);
+                    break;
+                case 'jpg':
+                case 'jpeg':
+                case 'png':
+                case 'gif':
+                    contentHTML = renderImagePreview(fileData);
+                    break;
+                default:
+                    contentHTML = renderDefaultPreview(fileData);
+            }
+            
+            previewSection.innerHTML = contentHTML;
+        }
+
+        // Render PDF preview
+        function renderPDFPreview(fileData) {
+            return `
+                <div class="file-content-preview">
+                    <div class="preview-header">
+                        <div class="preview-icon-large pdf">
+                            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14,2 14,8 20,8"></polyline>
+                                <text x="12" y="18" text-anchor="middle" style="font-size: 6px; fill: currentColor;">PDF</text>
+                            </svg>
+                        </div>
+                        <div class="preview-title">${fileData.name}</div>
+                        <div class="preview-meta">${fileData.size} • ${fileData.pages || '未知'} 页</div>
+                    </div>
+                    <div class="preview-content-area">
+                        ${fileData.content || `
+                            <div class="preview-placeholder">
+                                <p>PDF 预览功能</p>
+                                <p>文件包含详细的市场分析报告和供应商信息</p>
+                            </div>
+                        `}
+                    </div>
+                    <div class="preview-actions">
+                        <button class="preview-action-btn" onclick="downloadFile('${fileData.id}')">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="7,10 12,15 17,10"></polyline>
+                                <line x1="12" y1="15" x2="12" y2="3"></line>
+                            </svg>
+                            下载
+                        </button>
+                        <button class="preview-action-btn" onclick="shareFile('${fileData.id}')">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path>
+                                <polyline points="16,6 12,2 8,6"></polyline>
+                                <line x1="12" y1="2" x2="12" y2="15"></line>
+                            </svg>
+                            分享
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Render document preview
+        function renderDocumentPreview(fileData) {
+            return `
+                <div class="file-content-preview">
+                    <div class="preview-header">
+                        <div class="preview-icon-large doc">
+                            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14,2 14,8 20,8"></polyline>
+                                <text x="12" y="18" text-anchor="middle" style="font-size: 5px; fill: currentColor;">DOC</text>
+                            </svg>
+                        </div>
+                        <div class="preview-title">${fileData.name}</div>
+                        <div class="preview-meta">${fileData.size} • Word文档</div>
+                    </div>
+                    <div class="preview-content-area">
+                        ${fileData.content || `
+                            <div class="document-content">
+                                <h3>文档摘要</h3>
+                                <p>这是一份关于${fileData.topic || '贸易业务'}的详细分析文档，包含以下主要内容：</p>
+                                <ul>
+                                    <li>市场分析和趋势预测</li>
+                                    <li>供应商评估和推荐</li>
+                                    <li>风险评估和建议</li>
+                                    <li>实施策略和时间表</li>
+                                </ul>
+                            </div>
+                        `}
+                    </div>
+                    <div class="preview-actions">
+                        <button class="preview-action-btn" onclick="downloadFile('${fileData.id}')">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="7,10 12,15 17,10"></polyline>
+                                <line x1="12" y1="15" x2="12" y2="3"></line>
+                            </svg>
+                            下载
+                        </button>
+                        <button class="preview-action-btn" onclick="shareFile('${fileData.id}')">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path>
+                                <polyline points="16,6 12,2 8,6"></polyline>
+                                <line x1="12" y1="2" x2="12" y2="15"></line>
+                            </svg>
+                            分享
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Render spreadsheet preview
+        function renderSpreadsheetPreview(fileData) {
+            return `
+                <div class="file-content-preview">
+                    <div class="preview-header">
+                        <div class="preview-icon-large xls">
+                            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14,2 14,8 20,8"></polyline>
+                                <text x="12" y="18" text-anchor="middle" style="font-size: 5px; fill: currentColor;">XLS</text>
+                            </svg>
+                        </div>
+                        <div class="preview-title">${fileData.name}</div>
+                        <div class="preview-meta">${fileData.size} • Excel表格</div>
+                    </div>
+                    <div class="preview-content-area">
+                        <div class="spreadsheet-preview">
+                            <table class="preview-table">
+                                <thead>
+                                    <tr>
+                                        <th>供应商名称</th>
+                                        <th>产品类别</th>
+                                        <th>价格范围</th>
+                                        <th>评级</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>深圳光明电子</td>
+                                        <td>LED灯具</td>
+                                        <td>$2.5-$15</td>
+                                        <td>⭐⭐⭐⭐⭐</td>
+                                    </tr>
+                                    <tr>
+                                        <td>广东华强科技</td>
+                                        <td>电子元件</td>
+                                        <td>$0.5-$8</td>
+                                        <td>⭐⭐⭐⭐</td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="4" style="text-align: center; font-style: italic;">... 更多数据请下载查看</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="preview-actions">
+                        <button class="preview-action-btn" onclick="downloadFile('${fileData.id}')">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="7,10 12,15 17,10"></polyline>
+                                <line x1="12" y1="15" x2="12" y2="3"></line>
+                            </svg>
+                            下载
+                        </button>
+                        <button class="preview-action-btn" onclick="shareFile('${fileData.id}')">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path>
+                                <polyline points="16,6 12,2 8,6"></polyline>
+                                <line x1="12" y1="2" x2="12" y2="15"></line>
+                            </svg>
+                            分享
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Render text preview
+        function renderTextPreview(fileData) {
+            return `
+                <div class="file-content-preview">
+                    <div class="preview-header">
+                        <div class="preview-icon-large txt">
+                            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14,2 14,8 20,8"></polyline>
+                                <text x="12" y="18" text-anchor="middle" style="font-size: 5px; fill: currentColor;">TXT</text>
+                            </svg>
+                        </div>
+                        <div class="preview-title">${fileData.name}</div>
+                        <div class="preview-meta">${fileData.size} • 文本文档</div>
+                    </div>
+                    <div class="preview-content-area">
+                        <div class="text-content">
+                            ${fileData.content || `
+                                <pre>贸易合作意向书
+
+供应商信息：
+公司名称：深圳市创新科技有限公司
+主要产品：LED照明产品、电子配件
+生产能力：月产量50,000件
+认证资质：CE、FCC、RoHS
+
+合作条件：
+- 最小订单量：1,000件
+- 付款条件：30% T/T预付，70% 发货前付清
+- 交货周期：15-20个工作日
+- 质保期：2年
+
+联系方式：
+电话：+86-755-12345678
+邮箱：sales@innovation-tech.com
+地址：深圳市南山区科技园...</pre>
+                            `}
+                        </div>
+                    </div>
+                    <div class="preview-actions">
+                        <button class="preview-action-btn" onclick="downloadFile('${fileData.id}')">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="7,10 12,15 17,10"></polyline>
+                                <line x1="12" y1="15" x2="12" y2="3"></line>
+                            </svg>
+                            下载
+                        </button>
+                        <button class="preview-action-btn" onclick="shareFile('${fileData.id}')">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path>
+                                <polyline points="16,6 12,2 8,6"></polyline>
+                                <line x1="12" y1="2" x2="12" y2="15"></line>
+                            </svg>
+                            分享
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Render image preview
+        function renderImagePreview(fileData) {
+            return `
+                <div class="file-content-preview">
+                    <div class="preview-header">
+                        <div class="preview-icon-large image">
+                            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                                <polyline points="21,15 16,10 5,21"></polyline>
+                            </svg>
+                        </div>
+                        <div class="preview-title">${fileData.name}</div>
+                        <div class="preview-meta">${fileData.size} • ${fileData.dimensions || '图片'}</div>
+                    </div>
+                    <div class="preview-content-area">
+                        <div class="image-preview">
+                            <img src="${fileData.url || 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE1MCIgdmlld0JveD0iMCAwIDIwMCAxNTAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjIwMCIgaGVpZ2h0PSIxNTAiIGZpbGw9IiNmMGYwZjAiLz48dGV4dCB4PSIxMDAiIHk9Ijc1IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjOTk5IiBmb250LXNpemU9IjE0Ij7lm77niYfpooTop4g8L3RleHQ+PC9zdmc+'}" alt="${fileData.name}" style="max-width: 100%; height: auto; border-radius: 8px;" />
+                        </div>
+                    </div>
+                    <div class="preview-actions">
+                        <button class="preview-action-btn" onclick="downloadFile('${fileData.id}')">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="7,10 12,15 17,10"></polyline>
+                                <line x1="12" y1="15" x2="12" y2="3"></line>
+                            </svg>
+                            下载
+                        </button>
+                        <button class="preview-action-btn" onclick="shareFile('${fileData.id}')">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path>
+                                <polyline points="16,6 12,2 8,6"></polyline>
+                                <line x1="12" y1="2" x2="12" y2="15"></line>
+                            </svg>
+                            分享
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Render default preview for unknown file types
+        function renderDefaultPreview(fileData) {
+            return `
+                <div class="file-content-preview">
+                    <div class="preview-header">
+                        <div class="preview-icon-large default">
+                            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14,2 14,8 20,8"></polyline>
+                            </svg>
+                        </div>
+                        <div class="preview-title">${fileData.name}</div>
+                        <div class="preview-meta">${fileData.size} • ${fileData.type.toUpperCase()}文件</div>
+                    </div>
+                    <div class="preview-content-area">
+                        <div class="preview-placeholder">
+                            <p>此文件类型暂不支持预览</p>
+                            <p>您可以下载文件到本地查看</p>
+                        </div>
+                    </div>
+                    <div class="preview-actions">
+                        <button class="preview-action-btn" onclick="downloadFile('${fileData.id}')">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="7,10 12,15 17,10"></polyline>
+                                <line x1="12" y1="15" x2="12" y2="3"></line>
+                            </svg>
+                            下载
+                        </button>
+                        <button class="preview-action-btn" onclick="shareFile('${fileData.id}')">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path>
+                                <polyline points="16,6 12,2 8,6"></polyline>
+                                <line x1="12" y1="2" x2="12" y2="15"></line>
+                            </svg>
+                            分享
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        // File action functions
+        function downloadFile(fileId) {
+            // Placeholder for download functionality
+            alert('下载功能：' + fileId);
+        }
+
+        function shareFile(fileId) {
+            // Placeholder for share functionality
+            alert('分享功能：' + fileId);
+        }
+
+        // Generate file card HTML
+        function generateFileCardHTML(fileData) {
+            const fileExtension = fileData.type.toLowerCase();
+            let iconSVG;
+            
+            // Choose appropriate icon based on file type
+            switch (fileExtension) {
+                case 'pdf':
+                    iconSVG = `
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14,2 14,8 20,8"></polyline>
+                            <text x="12" y="18" text-anchor="middle" style="font-size: 6px; fill: currentColor;">PDF</text>
+                        </svg>
+                    `;
+                    break;
+                case 'doc':
+                case 'docx':
+                    iconSVG = `
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14,2 14,8 20,8"></polyline>
+                            <text x="12" y="18" text-anchor="middle" style="font-size: 5px; fill: currentColor;">DOC</text>
+                        </svg>
+                    `;
+                    break;
+                case 'xls':
+                case 'xlsx':
+                    iconSVG = `
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14,2 14,8 20,8"></polyline>
+                            <text x="12" y="18" text-anchor="middle" style="font-size: 5px; fill: currentColor;">XLS</text>
+                        </svg>
+                    `;
+                    break;
+                case 'ppt':
+                case 'pptx':
+                    iconSVG = `
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14,2 14,8 20,8"></polyline>
+                            <text x="12" y="18" text-anchor="middle" style="font-size: 5px; fill: currentColor;">PPT</text>
+                        </svg>
+                    `;
+                    break;
+                case 'txt':
+                    iconSVG = `
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14,2 14,8 20,8"></polyline>
+                            <text x="12" y="18" text-anchor="middle" style="font-size: 5px; fill: currentColor;">TXT</text>
+                        </svg>
+                    `;
+                    break;
+                case 'jpg':
+                case 'jpeg':
+                case 'png':
+                case 'gif':
+                    iconSVG = `
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                            <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                            <polyline points="21,15 16,10 5,21"></polyline>
+                        </svg>
+                    `;
+                    break;
+                default:
+                    iconSVG = `
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14,2 14,8 20,8"></polyline>
+                        </svg>
+                    `;
+            }
+            
+            return `
+                <div class="file-card ${fileExtension}" onclick="handleFileCardClick('${fileData.id}')" data-file-id="${fileData.id}">
+                    <div class="file-card-icon">
+                        ${iconSVG}
+                    </div>
+                    <div class="file-card-content">
+                        <div class="file-card-title" title="${fileData.name}">${fileData.name}</div>
+                        <div class="file-card-meta">
+                            <div class="file-card-size">${fileData.size}</div>
+                            <div class="file-card-type">${fileData.type.toUpperCase()}</div>
+                        </div>
+                    </div>
+                    <div class="file-card-actions">
+                        <button class="file-card-action" onclick="event.stopPropagation(); downloadFile('${fileData.id}')" title="下载">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="7,10 12,15 17,10"></polyline>
+                                <line x1="12" y1="15" x2="12" y2="3"></line>
+                            </svg>
+                        </button>
+                        <button class="file-card-action" onclick="event.stopPropagation(); shareFile('${fileData.id}')" title="分享">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path>
+                                <polyline points="16,6 12,2 8,6"></polyline>
+                                <line x1="12" y1="2" x2="12" y2="15"></line>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        // File storage for quick access
+        const fileStorage = {};
+
+        // Store file data for later retrieval
+        function storeFileData(fileData) {
+            fileStorage[fileData.id] = fileData;
+        }
+
+        // Handle file card click
+        function handleFileCardClick(fileId) {
+            const fileData = fileStorage[fileId];
+            if (fileData) {
+                openFilePreview(fileData);
+            } else {
+                console.error('File data not found for ID:', fileId);
+            }
+        }
+
+        // Add message with file attachment
+        function addMessageWithFile(text, sender, fileData = null) {
+            const chatMessages = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}`;
+            
+            const avatar = document.createElement('div');
+            avatar.className = 'message-avatar';
+            avatar.textContent = sender === 'user' ? 'M' : 'AI';
+            
+            const content = document.createElement('div');
+            content.className = 'message-content';
+            
+            // Add text content if provided
+            if (text) {
+                const messageText = document.createElement('div');
+                messageText.className = 'message-text';
+                messageText.innerHTML = text;
+                content.appendChild(messageText);
+            }
+            
+            // Add file card if provided
+            if (fileData) {
+                storeFileData(fileData);
+                const fileCardContainer = document.createElement('div');
+                fileCardContainer.className = 'message-file-container';
+                fileCardContainer.innerHTML = generateFileCardHTML(fileData);
+                content.appendChild(fileCardContainer);
+            }
+            
+            const messageTime = document.createElement('div');
+            messageTime.className = 'message-time';
+            messageTime.textContent = new Date().toLocaleTimeString();
+            
+            content.appendChild(messageTime);
+            messageDiv.appendChild(avatar);
+            messageDiv.appendChild(content);
+            chatMessages.appendChild(messageDiv);
+            
+            // Auto-scroll to show new message
+            setTimeout(() => scrollToBottom(), 100);
+        }
+
+        // Enhanced add message function to support files
+        function addMessage(text, sender, options = {}) {
+            if (options.fileData) {
+                addMessageWithFile(text, sender, options.fileData);
+            } else {
+                // Use existing addMessage logic
+                const chatMessages = document.getElementById('chatMessages');
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `message ${sender}`;
+                
+                const avatar = document.createElement('div');
+                avatar.className = 'message-avatar';
+                avatar.textContent = sender === 'user' ? 'M' : 'AI';
+                
+                const content = document.createElement('div');
+                content.className = 'message-content';
+                
+                const messageText = document.createElement('div');
+                messageText.className = 'message-text';
+                messageText.innerHTML = text;
+                
+                const messageTime = document.createElement('div');
+                messageTime.className = 'message-time';
+                messageTime.textContent = new Date().toLocaleTimeString();
+                
+                content.appendChild(messageText);
+                content.appendChild(messageTime);
+                messageDiv.appendChild(avatar);
+                messageDiv.appendChild(content);
+                chatMessages.appendChild(messageDiv);
+                
+                // Auto-scroll to show new message
+                setTimeout(() => scrollToBottom(), 100);
+            }
+        }
         
+        // Initialize file data for demo
+        function initializeFileData() {
+            const demoFiles = [
+                {
+                    id: 'file_001',
+                    name: '美国LED灯具市场调研报告2024',
+                    type: 'pdf',
+                    size: '2.3 MB',
+                    pages: '45页',
+                    content: `
+                        <div class="document-content">
+                            <h3>美国LED灯具市场调研报告 2024</h3>
+                            <p>本报告深入分析了美国LED照明市场的现状和未来发展趋势，为中国制造商进入美国市场提供详细的市场洞察。</p>
+                            
+                            <h4>主要发现：</h4>
+                            <ul>
+                                <li><strong>市场规模：</strong> 2024年美国LED照明市场规模达到156亿美元</li>
+                                <li><strong>增长趋势：</strong> 年复合增长率预计为8.3%，预计2027年达到198亿美元</li>
+                                <li><strong>应用领域：</strong> 商业照明占比42%，住宅照明占比35%，工业照明占比23%</li>
+                                <li><strong>进口依存度：</strong> 68%的LED产品依赖进口，中国是最大供应国</li>
+                            </ul>
+                            
+                            <h4>市场机遇：</h4>
+                            <ul>
+                                <li>智能照明系统需求快速增长</li>
+                                <li>节能环保政策推动市场升级</li>
+                                <li>商业建筑翻新带来大量需求</li>
+                                <li>价格竞争激烈但质量要求提高</li>
+                            </ul>
+                        </div>
+                    `
+                },
+                {
+                    id: 'file_002',
+                    name: 'Bright Solutions LLC 买家详细资料表',
+                    type: 'xlsx',
+                    size: '456 KB',
+                    content: `
+                        <div class="spreadsheet-preview">
+                            <h4>Bright Solutions LLC - 买家详细信息</h4>
+                            <table class="preview-table">
+                                <thead>
+                                    <tr>
+                                        <th>信息类别</th>
+                                        <th>详细内容</th>
+                                        <th>备注</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>公司名称</td>
+                                        <td>Bright Solutions LLC</td>
+                                        <td>成立于2018年</td>
+                                    </tr>
+                                    <tr>
+                                        <td>业务类型</td>
+                                        <td>商业照明分销商</td>
+                                        <td>B2B为主</td>
+                                    </tr>
+                                    <tr>
+                                        <td>年采购额</td>
+                                        <td>$5-8M USD</td>
+                                        <td>逐年增长</td>
+                                    </tr>
+                                    <tr>
+                                        <td>主要产品</td>
+                                        <td>LED面板灯、筒灯、轨道灯</td>
+                                        <td>商业级产品</td>
+                                    </tr>
+                                    <tr>
+                                        <td>采购频次</td>
+                                        <td>月订单1000-3000套</td>
+                                        <td>稳定需求</td>
+                                    </tr>
+                                    <tr>
+                                        <td>付款条件</td>
+                                        <td>30% T/T预付，余款发货前</td>
+                                        <td>信用良好</td>
+                                    </tr>
+                                    <tr>
+                                        <td>联系人</td>
+                                        <td>Sarah Johnson</td>
+                                        <td>采购总监</td>
+                                    </tr>
+                                    <tr>
+                                        <td>邮箱</td>
+                                        <td>procurement@brightsolutions.com</td>
+                                        <td>工作日回复</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    `
+                },
+                {
+                    id: 'file_003',
+                    name: '开发邮件模板 - Bright Solutions LLC',
+                    type: 'docx',
+                    size: '124 KB',
+                    topic: 'LED灯具开发邮件',
+                    content: `
+                        <div class="document-content">
+                            <h3>开发邮件模板 - Bright Solutions LLC</h3>
+                            
+                            <div style="border: 1px solid #e0e0e0; padding: 1rem; margin: 1rem 0; border-radius: 8px; background: #f9f9f9;">
+                                <h4>邮件主题：</h4>
+                                <p><strong>Premium LED Lighting Solutions - CE/FCC Certified | Direct Manufacturer</strong></p>
+                                
+                                <h4>邮件正文：</h4>
+                                <div style="background: white; padding: 1rem; border-radius: 4px;">
+                                    <p>Dear Sarah Johnson,</p>
+                                    
+                                    <p>I hope this email finds you well. My name is [您的姓名] from [公司名称], a leading LED lighting manufacturer based in China with over [X] years of experience in producing high-quality commercial lighting solutions.</p>
+                                    
+                                    <p>I came across Bright Solutions LLC through my research and learned about your focus on commercial LED lighting distribution. I believe we could be an excellent manufacturing partner for your business needs.</p>
+                                    
+                                    <p><strong>Why choose us as your supplier:</strong></p>
+                                    <ul>
+                                        <li>✓ CE & FCC certified products ensuring compliance with US standards</li>
+                                        <li>✓ Competitive pricing with MOQ starting from 500-1000 pieces</li>
+                                        <li>✓ Fast delivery: 15-20 working days</li>
+                                        <li>✓ OEM/ODM services available</li>
+                                        <li>✓ 2-year warranty on all products</li>
+                                    </ul>
+                                    
+                                    <p><strong>Our main products include:</strong></p>
+                                    <ul>
+                                        <li>LED Panel Lights (600x600mm): $28-32 FOB</li>
+                                        <li>LED Downlights (12W): $8-12 FOB</li>
+                                        <li>LED Track Lights: $15-25 FOB</li>
+                                    </ul>
+                                    
+                                    <p>I would be happy to send you our latest catalog and arrange a video call to discuss your specific requirements. We can also provide samples for your evaluation.</p>
+                                    
+                                    <p>Looking forward to the opportunity to work together.</p>
+                                    
+                                    <p>Best regards,<br>
+                                    [您的姓名]<br>
+                                    [您的职位]<br>
+                                    [公司名称]<br>
+                                    Email: [您的邮箱]<br>
+                                    WhatsApp: [您的电话]</p>
+                                </div>
+                                
+                                <h4>发送建议：</h4>
+                                <ul>
+                                    <li>最佳发送时间：周二-周四，美西时间上午10-11点</li>
+                                    <li>如无回复，3-5天后可发送跟进邮件</li>
+                                    <li>建议同时准备产品目录和认证文件</li>
+                                </ul>
+                            </div>
+                        </div>
+                    `
+                }
+            ];
+            
+            // Store all demo files
+            demoFiles.forEach(file => {
+                storeFileData(file);
+            });
+        }
+
         // Initialize the application when the page loads
         document.addEventListener('DOMContentLoaded', function() {
             initializeApp();
             initializeAgentPanel();
+            initializeFileData(); // Initialize demo file data
             // 初始调整聊天布局
             setTimeout(adjustChatLayout, 100); // 延迟确保元素已渲染
         });
