@@ -1,0 +1,1206 @@
+openapi: 3.1.0
+info:
+  title: TradeFlow API
+  description: |
+    TradeFlow B2B贸易智能助手API接口规范
+    
+    本API提供以下核心功能：
+    - OAuth 2.0认证（Google/GitHub）
+    - AI Agent对话（买家开发、供应商匹配）
+    - 文件管理和预览
+    - 订阅和支付管理
+    - 实时流式对话（SSE）
+  version: 1.0.0
+  contact:
+    name: TradeFlow API Support
+    email: api-support@tradeflow.com
+  license:
+    name: Proprietary
+    
+servers:
+  - url: https://api.tradeflow.com/api/v1
+    description: Production server
+  - url: https://staging-api.tradeflow.com/api/v1
+    description: Staging server
+  - url: http://localhost:8000/api/v1
+    description: Development server
+
+tags:
+  - name: Authentication
+    description: OAuth认证和用户管理
+  - name: Chat
+    description: AI Agent对话接口
+  - name: Files
+    description: 文件管理和预览
+  - name: Buyers
+    description: 买家开发相关接口
+  - name: Suppliers
+    description: 供应商匹配接口
+  - name: Subscription
+    description: 订阅和支付管理
+  - name: System
+    description: 系统健康和状态
+
+paths:
+  # ============ Authentication ============
+  /auth/oauth/{provider}:
+    get:
+      tags:
+        - Authentication
+      summary: 发起OAuth登录
+      operationId: initiateOAuth
+      parameters:
+        - name: provider
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [google, github]
+          description: OAuth提供商
+        - name: redirect_uri
+          in: query
+          required: true
+          schema:
+            type: string
+            format: uri
+          description: 登录成功后的回调地址
+        - name: state
+          in: query
+          required: false
+          schema:
+            type: string
+          description: 防CSRF状态参数
+      responses:
+        '302':
+          description: 重定向到OAuth提供商
+          headers:
+            Location:
+              schema:
+                type: string
+                format: uri
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  /auth/oauth/{provider}/callback:
+    get:
+      tags:
+        - Authentication
+      summary: OAuth回调处理
+      operationId: handleOAuthCallback
+      parameters:
+        - name: provider
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [google, github]
+        - name: code
+          in: query
+          required: true
+          schema:
+            type: string
+          description: OAuth授权码
+        - name: state
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 登录成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /auth/refresh:
+    post:
+      tags:
+        - Authentication
+      summary: 刷新访问令牌
+      operationId: refreshToken
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - refresh_token
+              properties:
+                refresh_token:
+                  type: string
+                  description: 刷新令牌
+      responses:
+        '200':
+          description: 令牌刷新成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  access_token:
+                    type: string
+                  expires_in:
+                    type: integer
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /auth/me:
+    get:
+      tags:
+        - Authentication
+      summary: 获取当前用户信息
+      operationId: getCurrentUser
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: 用户信息
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  # ============ Chat ============
+  /chat:
+    post:
+      tags:
+        - Chat
+      summary: 发起AI对话
+      operationId: createChat
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChatRequest'
+      responses:
+        '200':
+          description: 对话响应
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChatResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '429':
+          $ref: '#/components/responses/RateLimitExceeded'
+
+  /chat/stream:
+    get:
+      tags:
+        - Chat
+      summary: 建立SSE流式对话连接
+      operationId: streamChat
+      parameters:
+        - name: token
+          in: query
+          required: true
+          schema:
+            type: string
+          description: JWT访问令牌
+        - name: session_id
+          in: query
+          required: false
+          schema:
+            type: string
+          description: 会话ID
+      responses:
+        '200':
+          description: SSE事件流
+          content:
+            text/event-stream:
+              schema:
+                type: string
+                format: event-stream
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /chat/history:
+    get:
+      tags:
+        - Chat
+      summary: 获取对话历史
+      operationId: getChatHistory
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: session_id
+          in: query
+          schema:
+            type: string
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+            maximum: 100
+      responses:
+        '200':
+          description: 对话历史列表
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChatHistoryResponse'
+
+  # ============ Files ============
+  /files:
+    get:
+      tags:
+        - Files
+      summary: 获取文件列表
+      operationId: listFiles
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: session_id
+          in: query
+          schema:
+            type: string
+          description: 按会话ID筛选
+        - name: file_type
+          in: query
+          schema:
+            type: string
+            enum: [code, document, data, image]
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: 文件列表
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FileListResponse'
+
+    post:
+      tags:
+        - Files
+      summary: 上传文件
+      operationId: uploadFile
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - file
+              properties:
+                file:
+                  type: string
+                  format: binary
+                session_id:
+                  type: string
+                description:
+                  type: string
+      responses:
+        '201':
+          description: 文件上传成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FileMetadata'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  /files/{file_id}:
+    get:
+      tags:
+        - Files
+      summary: 获取文件详情
+      operationId: getFile
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: file_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 文件详情
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FileMetadata'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /files/{file_id}/content:
+    get:
+      tags:
+        - Files
+      summary: 获取文件内容
+      operationId: getFileContent
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: file_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 文件内容
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+            text/plain:
+              schema:
+                type: string
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /files/{file_id}/preview:
+    get:
+      tags:
+        - Files
+      summary: 获取文件预览
+      operationId: previewFile
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: file_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 文件预览内容
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FilePreview'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # ============ Buyers ============
+  /buyers/recommend:
+    post:
+      tags:
+        - Buyers
+      summary: 获取买家推荐
+      operationId: recommendBuyers
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BuyerRecommendRequest'
+      responses:
+        '200':
+          description: 买家推荐列表
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BuyerRecommendResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  /buyers/{buyer_id}:
+    get:
+      tags:
+        - Buyers
+      summary: 获取买家详情
+      operationId: getBuyerDetails
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: buyer_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 买家详情
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BuyerDetails'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # ============ Suppliers ============
+  /suppliers/search:
+    post:
+      tags:
+        - Suppliers
+      summary: 搜索供应商
+      operationId: searchSuppliers
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SupplierSearchRequest'
+      responses:
+        '200':
+          description: 供应商搜索结果
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupplierSearchResponse'
+
+  /suppliers/compare:
+    post:
+      tags:
+        - Suppliers
+      summary: 供应商对比
+      operationId: compareSuppliers
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - supplier_ids
+              properties:
+                supplier_ids:
+                  type: array
+                  items:
+                    type: string
+                  minItems: 2
+                  maxItems: 5
+      responses:
+        '200':
+          description: 供应商对比结果
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupplierComparisonResponse'
+
+  # ============ Subscription ============
+  /subscription/plans:
+    get:
+      tags:
+        - Subscription
+      summary: 获取订阅计划
+      operationId: getSubscriptionPlans
+      responses:
+        '200':
+          description: 订阅计划列表
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubscriptionPlansResponse'
+
+  /subscription/create:
+    post:
+      tags:
+        - Subscription
+      summary: 创建订阅
+      operationId: createSubscription
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateSubscriptionRequest'
+      responses:
+        '201':
+          description: 订阅创建成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubscriptionResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  # ============ System ============
+  /health:
+    get:
+      tags:
+        - System
+      summary: 健康检查
+      operationId: healthCheck
+      responses:
+        '200':
+          description: 系统健康状态
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthStatus'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    # ============ Common Schemas ============
+    BaseResponse:
+      type: object
+      required:
+        - success
+        - timestamp
+        - request_id
+      properties:
+        success:
+          type: boolean
+        timestamp:
+          type: string
+          format: date-time
+        request_id:
+          type: string
+
+    ErrorResponse:
+      allOf:
+        - $ref: '#/components/schemas/BaseResponse'
+        - type: object
+          required:
+            - error
+          properties:
+            success:
+              type: boolean
+              enum: [false]
+            error:
+              type: object
+              required:
+                - code
+                - message
+              properties:
+                code:
+                  type: string
+                message:
+                  type: string
+                details:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      field:
+                        type: string
+                      message:
+                        type: string
+
+    PaginationInfo:
+      type: object
+      properties:
+        page:
+          type: integer
+          minimum: 1
+        limit:
+          type: integer
+          minimum: 1
+          maximum: 100
+        total:
+          type: integer
+        total_pages:
+          type: integer
+        has_next:
+          type: boolean
+        has_prev:
+          type: boolean
+
+    # ============ Auth Schemas ============
+    AuthResponse:
+      allOf:
+        - $ref: '#/components/schemas/BaseResponse'
+        - type: object
+          properties:
+            data:
+              type: object
+              required:
+                - access_token
+                - refresh_token
+                - expires_in
+                - user
+              properties:
+                access_token:
+                  type: string
+                refresh_token:
+                  type: string
+                expires_in:
+                  type: integer
+                user:
+                  $ref: '#/components/schemas/User'
+
+    User:
+      type: object
+      required:
+        - id
+        - email
+        - name
+      properties:
+        id:
+          type: string
+        email:
+          type: string
+          format: email
+        name:
+          type: string
+        avatar_url:
+          type: string
+          format: uri
+        auth_provider:
+          type: string
+          enum: [google, github]
+        language_preference:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+
+    UserProfile:
+      allOf:
+        - $ref: '#/components/schemas/BaseResponse'
+        - type: object
+          properties:
+            data:
+              type: object
+              properties:
+                user:
+                  allOf:
+                    - $ref: '#/components/schemas/User'
+                    - type: object
+                      properties:
+                        company:
+                          $ref: '#/components/schemas/Company'
+                        subscription:
+                          $ref: '#/components/schemas/SubscriptionStatus'
+
+    Company:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        verification_status:
+          type: string
+          enum: [pending, verified, rejected]
+        trust_score:
+          type: integer
+          minimum: 0
+          maximum: 100
+
+    # ============ Chat Schemas ============
+    ChatRequest:
+      type: object
+      required:
+        - message
+        - agent_type
+      properties:
+        message:
+          type: string
+          minLength: 1
+          maxLength: 5000
+        agent_type:
+          type: string
+          enum: [buyer, supplier, general]
+        session_id:
+          type: string
+        context:
+          type: object
+          properties:
+            product_info:
+              type: object
+            user_preferences:
+              type: object
+        stream:
+          type: boolean
+          default: false
+
+    ChatResponse:
+      allOf:
+        - $ref: '#/components/schemas/BaseResponse'
+        - type: object
+          properties:
+            data:
+              type: object
+              properties:
+                response:
+                  type: object
+                  properties:
+                    content:
+                      type: string
+                    agent_type:
+                      type: string
+                    session_id:
+                      type: string
+                    recommendations:
+                      type: array
+                      items:
+                        type: object
+                    files:
+                      type: array
+                      items:
+                        $ref: '#/components/schemas/FileMetadata'
+                    metadata:
+                      type: object
+                      properties:
+                        tokens_used:
+                          type: integer
+                        processing_time:
+                          type: number
+                        confidence_score:
+                          type: number
+
+    ChatHistoryResponse:
+      allOf:
+        - $ref: '#/components/schemas/BaseResponse'
+        - type: object
+          properties:
+            data:
+              type: object
+              properties:
+                items:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/ChatMessage'
+                pagination:
+                  $ref: '#/components/schemas/PaginationInfo'
+
+    ChatMessage:
+      type: object
+      properties:
+        id:
+          type: string
+        session_id:
+          type: string
+        agent_type:
+          type: string
+        user_message:
+          type: string
+        agent_response:
+          type: string
+        files:
+          type: array
+          items:
+            type: string
+        tokens_used:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+
+    # ============ File Schemas ============
+    FileMetadata:
+      type: object
+      required:
+        - id
+        - name
+        - type
+        - size
+        - created_at
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        type:
+          type: string
+          enum: [code, document, data, image, other]
+        mime_type:
+          type: string
+        size:
+          type: integer
+        session_id:
+          type: string
+        description:
+          type: string
+        url:
+          type: string
+          format: uri
+        created_at:
+          type: string
+          format: date-time
+
+    FileListResponse:
+      allOf:
+        - $ref: '#/components/schemas/BaseResponse'
+        - type: object
+          properties:
+            data:
+              type: object
+              properties:
+                items:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/FileMetadata'
+                pagination:
+                  $ref: '#/components/schemas/PaginationInfo'
+
+    FilePreview:
+      type: object
+      properties:
+        content:
+          type: string
+        preview_type:
+          type: string
+          enum: [text, code, markdown, table, image]
+        language:
+          type: string
+        line_count:
+          type: integer
+        truncated:
+          type: boolean
+
+    # ============ Buyer Schemas ============
+    BuyerRecommendRequest:
+      type: object
+      required:
+        - product_info
+      properties:
+        product_info:
+          type: object
+          required:
+            - name
+            - category
+          properties:
+            name:
+              type: string
+            category:
+              type: string
+            description:
+              type: string
+            hs_code:
+              type: string
+            price_range:
+              type: object
+              properties:
+                min:
+                  type: number
+                max:
+                  type: number
+                currency:
+                  type: string
+        target_markets:
+          type: array
+          items:
+            type: string
+        preferences:
+          type: object
+
+    BuyerRecommendResponse:
+      allOf:
+        - $ref: '#/components/schemas/BaseResponse'
+        - type: object
+          properties:
+            data:
+              type: object
+              properties:
+                recommendations:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/BuyerRecommendation'
+                total:
+                  type: integer
+
+    BuyerRecommendation:
+      type: object
+      properties:
+        id:
+          type: string
+        company_name:
+          type: string
+        country:
+          type: string
+        match_score:
+          type: number
+          minimum: 0
+          maximum: 1
+        buyer_profile:
+          type: object
+        trade_info:
+          type: object
+        contact_info:
+          type: object
+        match_reasons:
+          type: array
+          items:
+            type: string
+
+    BuyerDetails:
+      allOf:
+        - $ref: '#/components/schemas/BaseResponse'
+        - type: object
+          properties:
+            data:
+              type: object
+              properties:
+                buyer:
+                  allOf:
+                    - $ref: '#/components/schemas/BuyerRecommendation'
+                    - type: object
+                      properties:
+                        basic_info:
+                          type: object
+                        business_details:
+                          type: object
+                        trade_history:
+                          type: object
+                        verification:
+                          type: object
+
+    # ============ Supplier Schemas ============
+    SupplierSearchRequest:
+      type: object
+      required:
+        - product_requirements
+      properties:
+        product_requirements:
+          type: object
+          properties:
+            category:
+              type: string
+            specifications:
+              type: object
+            quantity:
+              type: object
+        supplier_preferences:
+          type: object
+        trade_terms:
+          type: object
+
+    SupplierSearchResponse:
+      allOf:
+        - $ref: '#/components/schemas/BaseResponse'
+        - type: object
+          properties:
+            data:
+              type: object
+              properties:
+                suppliers:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Supplier'
+                total:
+                  type: integer
+
+    Supplier:
+      type: object
+      properties:
+        id:
+          type: string
+        company_name:
+          type: string
+        country:
+          type: string
+        match_score:
+          type: number
+        capabilities:
+          type: object
+        certifications:
+          type: array
+          items:
+            type: object
+        pricing:
+          type: object
+        quality_assurance:
+          type: object
+
+    SupplierComparisonResponse:
+      allOf:
+        - $ref: '#/components/schemas/BaseResponse'
+        - type: object
+          properties:
+            data:
+              type: object
+              properties:
+                comparison:
+                  type: object
+                  properties:
+                    suppliers:
+                      type: array
+                      items:
+                        type: object
+                    summary:
+                      type: object
+
+    # ============ Subscription Schemas ============
+    SubscriptionPlansResponse:
+      allOf:
+        - $ref: '#/components/schemas/BaseResponse'
+        - type: object
+          properties:
+            data:
+              type: object
+              properties:
+                plans:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/SubscriptionPlan'
+
+    SubscriptionPlan:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        price:
+          type: object
+          properties:
+            monthly:
+              type: number
+            yearly:
+              type: number
+            currency:
+              type: string
+        features:
+          type: object
+        limits:
+          type: object
+
+    CreateSubscriptionRequest:
+      type: object
+      required:
+        - plan_id
+        - billing_cycle
+      properties:
+        plan_id:
+          type: string
+        billing_cycle:
+          type: string
+          enum: [monthly, yearly]
+        payment_method:
+          type: string
+        stripe_payment_method_id:
+          type: string
+
+    SubscriptionResponse:
+      allOf:
+        - $ref: '#/components/schemas/BaseResponse'
+        - type: object
+          properties:
+            data:
+              type: object
+              properties:
+                subscription:
+                  $ref: '#/components/schemas/SubscriptionStatus'
+                invoice:
+                  type: object
+
+    SubscriptionStatus:
+      type: object
+      properties:
+        plan:
+          type: string
+        status:
+          type: string
+          enum: [active, cancelled, expired]
+        credits_remaining:
+          type: integer
+        expires_at:
+          type: string
+          format: date-time
+
+    # ============ System Schemas ============
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [healthy, degraded, unhealthy]
+        timestamp:
+          type: string
+          format: date-time
+        version:
+          type: string
+        services:
+          type: object
+          additionalProperties:
+            type: string
+
+  responses:
+    BadRequest:
+      description: 请求参数错误
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            success: false
+            error:
+              code: "VALIDATION_ERROR"
+              message: "参数验证失败"
+              details:
+                - field: "email"
+                  message: "邮箱格式不正确"
+            timestamp: "2024-01-01T12:00:00Z"
+            request_id: "req_123456"
+
+    Unauthorized:
+      description: 未授权访问
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            success: false
+            error:
+              code: "UNAUTHORIZED"
+              message: "访问令牌无效或已过期"
+            timestamp: "2024-01-01T12:00:00Z"
+            request_id: "req_123456"
+
+    NotFound:
+      description: 资源不存在
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            success: false
+            error:
+              code: "NOT_FOUND"
+              message: "请求的资源不存在"
+            timestamp: "2024-01-01T12:00:00Z"
+            request_id: "req_123456"
+
+    RateLimitExceeded:
+      description: 请求频率超限
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            success: false
+            error:
+              code: "RATE_LIMIT_EXCEEDED"
+              message: "请求频率超过限制，请稍后重试"
+            timestamp: "2024-01-01T12:00:00Z"
+            request_id: "req_123456"
