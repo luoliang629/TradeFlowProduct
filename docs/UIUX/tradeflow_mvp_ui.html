@@ -43,29 +43,30 @@
 
         .focused-input-box {
             background: var(--bg-secondary);
-            border: 2px solid var(--border-color);
-            border-radius: var(--radius-xl); /* 使用更大的圆角保持一致 */
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg); /* 使用中等圆角 */
             overflow: hidden;
             transition: all 0.2s;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); /* 添加更突出的阴影 */
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05); /* 更柔和的阴影 */
         }
 
         .focused-input-box:focus-within {
             border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.1), 0 2px 8px rgba(0, 0, 0, 0.12);
+            box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.08), 0 2px 6px rgba(0, 0, 0, 0.08);
+            background: var(--bg-primary);
         }
 
         .focused-input-field {
             width: 100%;
-            padding: 1.5rem 2rem;
+            padding: 1.25rem 1.5rem;
             background: transparent;
             border: none;
-            font-size: 1.125rem;
-            line-height: 1.6;
+            font-size: 1rem;
+            line-height: 1.5;
             color: var(--text-primary);
             resize: none;
-            min-height: 100px;
-            max-height: 300px;
+            min-height: 80px;
+            max-height: 200px;
         }
 
         .focused-input-field:focus {
@@ -74,12 +75,12 @@
 
         .focused-input-field::placeholder {
             color: var(--text-secondary);
-            opacity: 0.6;
+            opacity: 0.5;
         }
 
         .focused-input-toolbar {
-            padding: 1.25rem 1.5rem;
-            background: var(--bg-tertiary);
+            padding: 1rem 1.25rem;
+            background: rgba(248, 250, 252, 0.5);
             border-top: 1px solid var(--border-color);
             display: flex;
             align-items: center;
@@ -92,11 +93,11 @@
         }
 
         .focused-input-tool {
-            width: 40px;
-            height: 40px;
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
-            background: var(--bg-secondary);
-            border: none;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
             color: var(--text-secondary);
             cursor: pointer;
             display: flex;
@@ -106,41 +107,42 @@
         }
 
         .focused-input-tool:hover {
-            background: var(--bg-primary);
+            background: var(--bg-secondary);
             color: var(--primary-color);
+            border-color: var(--primary-color);
             transform: scale(1.05);
         }
 
         .focused-input-actions {
             display: flex;
             align-items: center;
-            gap: 1rem;
+            gap: 0.75rem;
         }
 
         .focused-char-count {
-            font-size: 0.875rem;
+            font-size: 0.8125rem;
             color: var(--text-secondary);
         }
 
         .focused-input-submit {
-            padding: 0.875rem 2rem;
+            padding: 0.625rem 1.5rem;
             background: var(--primary-color);
             color: var(--text-inverse);
             border: none;
             border-radius: var(--radius-md);
-            font-size: 1rem;
+            font-size: 0.9rem;
             font-weight: 600;
             cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 0.4rem;
             transition: all 0.2s;
         }
 
         .focused-input-submit:hover:not(:disabled) {
             background: var(--primary-dark);
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(30, 58, 138, 0.3);
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(30, 58, 138, 0.25);
         }
 
         .focused-input-submit:disabled {
@@ -830,7 +832,7 @@
             margin-right: 0;
             min-height: 0 !important;
             position: relative;
-            height: calc(100vh - 71px) !important; /* 减去header高度 */
+            height: calc(100vh - 70px) !important; /* 减去header高度 */
         }
 
         /* Regular Chat View Layout - 修复输入框显示问题 */
@@ -928,8 +930,8 @@
             width: 100%;
             margin-left: auto;
             margin-right: auto;
-            /* 优化聊天区域间距：增加底部留白以配合输入框 */
-            padding: 2rem 1.25rem 2rem 1.25rem; /* 底部增加到2rem */
+            /* 优化聊天区域间距：减少底部留白，让过渡更自然 */
+            padding: 1.5rem 1.25rem 1rem 1.25rem; /* 适度的上下间距 */
             box-sizing: border-box;
             background: var(--bg-chat);
             /* 美化滚动条 */
@@ -1765,9 +1767,9 @@
         /* Chat Input - Modern Integrated Design */
         .chat-input-container {
             background: var(--bg-primary);
-            border-top: 1px solid var(--border-color);
-            /* 优化的垂直间距设计 */
-            padding: 3rem 2rem 2rem 2rem; /* 上方3rem增加呼吸感，下方2rem保持平衡 */
+            border-top: 1px solid transparent;
+            /* 优化的垂直间距设计 - 更紧凑和谐 */
+            padding: 1.25rem 1.5rem 1.5rem 1.5rem; /* 减少上下间距，让输入框更贴近内容 */
             z-index: 100;
             flex: 0 0 auto !important;
             flex-shrink: 0 !important;
@@ -1776,35 +1778,31 @@
             display: flex;
             justify-content: center; /* 水平居中 */
             align-items: center;
-            /* 添加微妙的渐变背景增强视觉分离效果 */
-            background: linear-gradient(to bottom, 
-                rgba(255, 255, 255, 0.01) 0%, 
-                rgba(255, 255, 255, 0.02) 25%, 
-                var(--bg-primary) 50%
+            /* 更柔和的背景过渡 */
+            background: linear-gradient(to top, 
+                var(--bg-primary) 0%,
+                rgba(248, 250, 252, 0.98) 100%
             );
-            /* 添加微妙的内阴影增强层次感 */
-            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            /* 移除内阴影，使用更自然的分隔线 */
             /* 平滑过渡效果 */
             transition: all 0.3s cubic-bezier(0.2, 0, 0.2, 1);
         }
         
         /* 暗色模式优化 */
         [data-theme="dark"] .chat-input-container {
-            background: linear-gradient(to bottom, 
-                rgba(255, 255, 255, 0.005) 0%, 
-                rgba(255, 255, 255, 0.01) 25%, 
-                var(--bg-primary) 50%
+            background: linear-gradient(to top, 
+                var(--bg-primary) 0%,
+                rgba(31, 41, 55, 0.98) 100%
             );
-            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
         }
         
         /* 输入框主容器 - 与对话区域宽度对齐 */
         .chat-input-wrapper {
-            background: var(--bg-primary);
-            border: 2px solid var(--border-color);
-            border-radius: 24px; /* 大圆角 */
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 16px; /* 更协调的圆角 */
             transition: all 0.3s cubic-bezier(0.2, 0, 0.2, 1);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 1px 6px rgba(0, 0, 0, 0.04), 0 2px 12px rgba(0, 0, 0, 0.02);
             position: relative;
             overflow: hidden;
             /* 与chat-messages保持相同的最大宽度和居中对齐 */
@@ -1818,20 +1816,18 @@
         
         .chat-input-wrapper:focus-within {
             border-color: var(--primary-color);
-            box-shadow: 0 0 0 4px rgba(30, 58, 138, 0.12), 0 8px 32px rgba(30, 58, 138, 0.15);
-            transform: translateY(-2px);
+            box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.08), 0 4px 16px rgba(30, 58, 138, 0.06);
+            transform: translateY(-1px);
+            background: var(--bg-primary);
         }
         
         /* 增强输入框容器的微交互效果 */
         .chat-input-container:has(.chat-input-wrapper:focus-within) {
             /* 当输入框获得焦点时，轻微调整容器背景 */
-            background: linear-gradient(to bottom, 
-                rgba(30, 58, 138, 0.02) 0%, 
-                rgba(30, 58, 138, 0.03) 25%, 
-                var(--bg-primary) 50%
+            background: linear-gradient(to top, 
+                var(--bg-primary) 0%,
+                rgba(248, 250, 252, 1) 100%
             );
-            /* 增强顶部边框视觉效果 */
-            border-top-color: rgba(30, 58, 138, 0.2);
         }
 
         /* 输入区域容器 */
@@ -1839,8 +1835,8 @@
             display: flex;
             align-items: flex-end;
             gap: 0.75rem;
-            padding: 1.5rem 2rem;
-            min-height: 80px;
+            padding: 1rem 1.25rem; /* 减少内边距 */
+            min-height: 60px; /* 减少最小高度 */
         }
         
         /* 文本输入框容器 */
@@ -1852,14 +1848,14 @@
         
         .chat-input {
             width: 100%;
-            min-height: 50px; /* 适中的最小高度 */
-            max-height: 150px; /* 适中的最大高度 */
+            min-height: 40px; /* 更自然的最小高度 */
+            max-height: 120px; /* 更合理的最大高度 */
             border: none;
             outline: none;
             resize: none;
             font-family: var(--font-family);
-            font-size: 1.1rem;
-            line-height: 1.6;
+            font-size: 0.95rem; /* 稍微减小字体 */
+            line-height: 1.5;
             background: transparent;
             color: var(--text-primary);
             padding: 0;
@@ -1868,9 +1864,9 @@
         }
 
         .chat-input::placeholder {
-            color: var(--text-light);
-            font-size: 1.1rem;
-            opacity: 0.7;
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            opacity: 0.6;
         }
 
         /* 按钮容器 - 集成在输入框内 */
@@ -1886,12 +1882,12 @@
             background: transparent;
             border: none;
             cursor: pointer;
-            padding: 0.75rem;
-            border-radius: 12px;
+            padding: 0.5rem;
+            border-radius: 10px;
             color: var(--text-secondary);
             transition: all 0.2s cubic-bezier(0.2, 0, 0.2, 1);
-            width: 44px;
-            height: 44px;
+            width: 36px;
+            height: 36px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -1909,30 +1905,30 @@
             background: var(--primary-color);
             color: var(--text-inverse);
             border: none;
-            border-radius: 16px;
-            padding: 0.875rem 1.5rem; /* 适中的内边距 */
-            font-size: 1rem;
+            border-radius: 12px;
+            padding: 0.625rem 1.25rem; /* 更紧凑的内边距 */
+            font-size: 0.9rem; /* 稍微减小字体 */
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s cubic-bezier(0.2, 0, 0.2, 1);
-            box-shadow: 0 2px 8px rgba(30, 58, 138, 0.3);
-            height: 44px; /* 固定高度与附件按钮对齐 */
+            box-shadow: 0 1px 4px rgba(30, 58, 138, 0.2);
+            height: 36px; /* 与附件按钮高度一致 */
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 0.5rem;
-            min-width: 80px; /* 最小宽度确保视觉平衡 */
+            gap: 0.4rem;
+            min-width: 72px; /* 更合理的最小宽度 */
         }
 
         .send-btn:hover:not(:disabled) {
             background: var(--primary-dark);
             transform: translateY(-1px);
-            box-shadow: 0 4px 16px rgba(30, 58, 138, 0.4);
+            box-shadow: 0 2px 8px rgba(30, 58, 138, 0.3);
         }
 
         .send-btn:active:not(:disabled) {
             transform: translateY(0);
-            box-shadow: 0 2px 8px rgba(30, 58, 138, 0.3);
+            box-shadow: 0 1px 4px rgba(30, 58, 138, 0.2);
         }
 
         .send-btn:disabled {
