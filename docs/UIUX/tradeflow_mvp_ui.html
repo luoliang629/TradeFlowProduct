@@ -814,7 +814,7 @@
             max-width: none;
             padding: 2rem 20px;
             overflow: hidden;
-            margin-right: 360px; /* Give space for agent panel */
+            margin-right: 0;
         }
 
         .welcome-section {
@@ -1657,15 +1657,11 @@
 
         /* Chat Input */
         .chat-input-container {
-            position: fixed;
-            bottom: 20px;
-            left: 300px;
-            right: 380px; /* Give space for agent panel (360px + 20px margin) */
+            position: relative;
             background: var(--bg-primary);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-lg);
+            border-top: 1px solid var(--border-color);
+            margin-top: auto;
             padding: 1rem 1.25rem;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
             z-index: 100;
             max-height: 200px; /* 限制最大高度 */
             min-height: 70px; /* 最小高度 */
@@ -2351,14 +2347,14 @@
                 height: 100vh;
             }
             .chat-messages {
-                height: calc(100vh - 160px); /* 为移动端调整高度计算 */
+                flex: 1;
                 padding: 0 1rem;
-                padding-bottom: 100px;
+                padding-bottom: 0;
             }
             .chat-input-container {
-                left: 20px;
-                right: 20px;
-                bottom: 20px;
+                position: relative;
+                margin: 0;
+                padding: 1rem;
                 max-height: 150px; /* 移动端减小最大高度 */
             }
         }
@@ -4783,39 +4779,16 @@
         // Adjust main content when panel state changes
         // 统一的布局管理函数
         function updateLayoutForPanels() {
+            // With flex layout, panels handle their own sizing
+            // This function is kept for compatibility but simplified
             const mainContent = document.querySelector('.main-content');
-            const chatInput = document.querySelector('.chat-input-container');
             
             if (!mainContent) return;
             
-            // 检查面板状态
-            const agentPanel = document.querySelector('.agent-panel');
-            const filePanel = document.querySelector('.file-preview-panel');
-            const isAgentPanelOpen = agentPanel && !agentPanel.classList.contains('closed');
-            const isFilePanelOpen = filePanel && !filePanel.classList.contains('closed');
-            
-            // 根据面板状态调整布局
-            let marginRight = '0';
-            let inputRight = '20px';
-            let panelWidth = '0px';
-            
-            // 使用固定宽度400px作为面板宽度
-            const fixedPanelWidth = 400;
-            
-            if (isAgentPanelOpen && isFilePanelOpen) {
-                // 两个面板都打开
-                marginRight = `${fixedPanelWidth * 2}px`;
-                inputRight = `${fixedPanelWidth * 2 + 20}px`;
-                panelWidth = `${fixedPanelWidth * 2}px`;
-            } else if (isAgentPanelOpen || isFilePanelOpen) {
-                // 单个面板打开
-                marginRight = `${fixedPanelWidth}px`;
-                inputRight = `${fixedPanelWidth + 20}px`;
-                panelWidth = `${fixedPanelWidth}px`;
-            }
-            
-            // 新的2:4:4布局不需要动态调整margin
-            // 面板通过display控制显示隐藏
+            // Just trigger a layout recalculation if needed
+            mainContent.style.display = 'none';
+            mainContent.offsetHeight; // Force reflow
+            mainContent.style.display = 'flex';
         }
         
         // 自动调整文本区域高度
@@ -4851,23 +4824,11 @@
 
         // 动态调整聊天布局
         function adjustChatLayout() {
+            // With flex layout, we don't need to manually calculate heights
+            // The flex: 1 on chat-messages will handle it automatically
             const chatMessages = document.querySelector('.chat-messages');
-            const chatInputContainer = document.querySelector('.chat-input-container');
-            const header = document.querySelector('.header');
             
-            if (chatMessages && chatInputContainer && header) {
-                const headerHeight = header.offsetHeight;
-                const inputHeight = chatInputContainer.offsetHeight;
-                const windowHeight = window.innerHeight;
-                
-                // 计算聊天消息区域的最佳高度
-                const availableHeight = windowHeight - headerHeight - inputHeight - 40; // 40px for margins
-                chatMessages.style.height = `${availableHeight}px`;
-                
-                // 确保输入框底部间距正确
-                const inputBottomMargin = 20;
-                chatMessages.style.paddingBottom = `${inputHeight + inputBottomMargin}px`;
-                
+            if (chatMessages) {
                 // 布局调整后保持在底部（如果已经在底部）
                 const wasAtBottom = chatMessages.scrollHeight - chatMessages.scrollTop <= chatMessages.clientHeight + 50;
                 if (wasAtBottom) {
