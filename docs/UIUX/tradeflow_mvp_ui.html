@@ -427,13 +427,13 @@
             display: flex;
             height: 100vh;
             overflow: hidden;
+            width: 100%;
         }
 
         /* Left Sidebar - Navigation */
         .sidebar {
             width: 20%;
-            min-width: 200px;
-            max-width: 350px;
+            flex: 0 0 20%;
             background: var(--bg-dark);
             color: var(--text-inverse);
             display: flex;
@@ -727,10 +727,9 @@
         /* Middle Column - Chat Interface */
         .main-content {
             width: 40%;
-            flex: none;
+            flex: 0 0 40%;
             display: flex;
             flex-direction: column;
-            min-width: 400px;
             height: 100vh;
             overflow: hidden;
             transition: all 0.3s cubic-bezier(0.2, 0, 0.2, 1);
@@ -1750,7 +1749,7 @@
         /* Right Column - File Preview Panel */
         .file-preview-panel {
             width: 40%;
-            min-width: 400px;
+            flex: 0 0 40%;
             height: 100vh;
             background: var(--bg-primary);
             border-left: 1px solid var(--border-color);
@@ -1763,6 +1762,14 @@
         
         .file-preview-panel.closed {
             display: none;
+            width: 0;
+            flex: 0 0 0;
+        }
+        
+        /* 当文件预览面板关闭时，主内容区扩展 */
+        .app-container:has(.file-preview-panel.closed) .main-content {
+            width: 80%;
+            flex: 0 0 80%;
         }
         
         /* File preview panel is always visible now */
