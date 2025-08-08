@@ -1,0 +1,143 @@
+version: '3.8'
+
+services:
+  # PostgreSQL数据库
+  postgres:
+    image: postgres:16
+    container_name: tradeflow_postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: mydb
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # MongoDB数据库
+  mongodb:
+    image: mongo:7
+    container_name: tradeflow_mongodb
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: root
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 10s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+
+  # Redis缓存
+  redis:
+    image: redis:7-alpine
+    container_name: tradeflow_redis
+    command: redis-server --requirepass root --appendonly yes
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "root", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+    restart: unless-stopped
+
+  # MinIO对象存储
+  minio:
+    image: quay.io/minio/minio:latest
+    container_name: tradeflow_minio
+    environment:
+      MINIO_ROOT_USER: root
+      MINIO_ROOT_PASSWORD: rootpassword
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio_data:/data
+    command: server /data --console-address ":9001"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+    restart: unless-stopped
+
+  # TradeFlow后端应用
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: tradeflow_backend
+    environment:
+      - ENVIRONMENT=development
+      - DEBUG=true
+      - POSTGRES_URL=postgresql+asyncpg://postgres:root@postgres:5432/mydb
+      - MONGODB_URL=mongodb://admin:root@mongodb:27017
+      - REDIS_URL=redis://:root@redis:6379/0
+      - MINIO_ENDPOINT=minio:9000
+      - MINIO_ACCESS_KEY=root
+      - MINIO_SECRET_KEY=rootpassword
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      mongodb:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+    volumes:
+      - .:/app
+      - /app/.venv  # 排除虚拟环境
+    restart: unless-stopped
+    develop:
+      watch:
+        - action: sync
+          path: ./app
+          target: /app/app
+          ignore:
+            - __pycache__/
+        - action: rebuild
+          path: requirements.txt
+
+  # Nginx反向代理（可选）
+  nginx:
+    image: nginx:alpine
+    container_name: tradeflow_nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - backend
+    restart: unless-stopped
+    profiles:
+      - production
+
+volumes:
+  postgres_data:
+    name: tradeflow_postgres_data
+  mongodb_data:
+    name: tradeflow_mongodb_data
+  redis_data:
+    name: tradeflow_redis_data
+  minio_data:
+    name: tradeflow_minio_data
+
+networks:
+  default:
+    name: tradeflow_network
