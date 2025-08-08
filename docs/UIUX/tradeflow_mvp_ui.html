@@ -222,6 +222,8 @@
             overflow: hidden;
             margin: 0;
             padding: 0;
+            /* 确保body底部有空间给输入框的margin */
+            box-sizing: border-box;
         }
 
         /* Loading Animation */
@@ -748,6 +750,9 @@
             overflow: hidden;
             position: relative;
             transition: all 0.3s cubic-bezier(0.2, 0, 0.2, 1);
+            /* 确保内容区域为输入框底部间距留出空间 */
+            padding-bottom: 0;
+            box-sizing: border-box;
         }
 
         .header {
@@ -1768,8 +1773,9 @@
         .chat-input-container {
             background: var(--bg-primary);
             border-top: 1px solid transparent;
-            /* 优化的垂直间距设计 - 底部精确10px */
-            padding: 1.25rem 1.5rem 10px 1.5rem; /* 底部改为精确的10px */
+            /* 确保底部10px间距 - 使用margin-bottom而不是padding-bottom */
+            padding: 1.25rem 1.5rem 0 1.5rem;
+            margin-bottom: 10px; /* 确保离底部精确10px */
             z-index: 100;
             flex: 0 0 auto !important;
             flex-shrink: 0 !important;
@@ -2516,8 +2522,9 @@
         /* 平板端响应式优化 - 为更好的垂直间距体验 */
         @media (max-width: 1024px) and (min-width: 769px) {
             .chat-input-container {
-                /* 平板端适中的垂直间距：在桌面端和移动端之间取平衡 */
-                padding: 2.5rem 1.5rem 1.75rem 1.5rem;
+                /* 平板端适中的垂直间距：保持底部10px间距 */
+                padding: 2.5rem 1.5rem 0 1.5rem;
+                margin-bottom: 10px; /* 确保底部10px间距 */
                 background: linear-gradient(to bottom, 
                     rgba(255, 255, 255, 0.008) 0%, 
                     rgba(255, 255, 255, 0.015) 28%, 
@@ -2568,9 +2575,9 @@
             }
             .chat-input-container {
                 position: relative;
-                margin: 0;
-                /* 移动端优化的垂直间距：适当减少但保持比例 */
-                padding: 2rem 1rem 1.5rem 1rem; /* 上方2rem 左右1rem 下方1.5rem */
+                /* 移动端优化的垂直间距：保持底部10px间距 */
+                padding: 2rem 1rem 0 1rem; /* 上方2rem 左右1rem 底部0 */
+                margin-bottom: 10px; /* 确保底部10px间距 */
                 /* 保持渐变效果但适配移动端 */
                 background: linear-gradient(to bottom, 
                     rgba(255, 255, 255, 0.01) 0%, 
