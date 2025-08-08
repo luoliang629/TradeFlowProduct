@@ -746,7 +746,7 @@
             flex: 0 0 40%;
             display: flex;
             flex-direction: column;
-            height: 100vh;
+            height: calc(100vh - 10px); /* 为底部margin留出10px空间 */
             overflow: hidden;
             position: relative;
             transition: all 0.3s cubic-bezier(0.2, 0, 0.2, 1);
@@ -1802,19 +1802,20 @@
             );
         }
         
-        /* 输入框主容器 - 与对话区域宽度对齐 */
+        /* 输入框主容器 - 与对话区域宽度对齐，始终保持焦点高亮样式 */
         .chat-input-wrapper {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-color);
+            background: var(--bg-primary); /* 使用焦点时的背景色 */
+            border: 1px solid var(--primary-color); /* 始终显示蓝色边框 */
             border-radius: 16px; /* 更协调的圆角 */
             transition: all 0.3s cubic-bezier(0.2, 0, 0.2, 1);
-            box-shadow: 0 1px 6px rgba(0, 0, 0, 0.04), 0 2px 12px rgba(0, 0, 0, 0.02);
+            box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.08), 0 4px 16px rgba(30, 58, 138, 0.06); /* 始终显示焦点阴影 */
             position: relative;
             overflow: hidden;
             /* 与chat-messages保持相同的最大宽度和居中对齐 */
             max-width: 800px; /* 缩减为2/3宽度，与聊天区域保持一致 */
             width: 100%;
             margin: 0 auto;
+            transform: translateY(-1px); /* 始终保持轻微上移效果 */
             /* 使用flexbox布局内部元素 */
             display: flex;
             flex-direction: column;
@@ -1969,6 +1970,12 @@
         .app-container:has(.file-preview-panel.closed) .main-content {
             width: 80%;
             flex: 0 0 80%;
+        }
+        
+        /* 当文件预览面板打开时，输入框左右留出10px空间 */
+        .app-container:has(.file-preview-panel:not(.closed)) .chat-input-container {
+            padding-left: calc(1.25rem + 10px); /* 原有左边距 + 10px */
+            padding-right: calc(1.25rem + 10px); /* 原有右边距 + 10px */
         }
         
         /* File preview panel is always visible now */
