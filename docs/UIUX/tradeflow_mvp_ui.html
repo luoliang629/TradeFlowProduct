@@ -926,7 +926,7 @@
             overflow-x: hidden !important;
             min-height: 0 !important;
             height: auto !important;
-            max-width: 1200px;
+            max-width: 800px; /* 缩减为2/3宽度，提升聚焦感 */
             width: 100%;
             margin-left: auto;
             margin-right: auto;
@@ -1768,8 +1768,8 @@
         .chat-input-container {
             background: var(--bg-primary);
             border-top: 1px solid transparent;
-            /* 优化的垂直间距设计 - 更紧凑和谐 */
-            padding: 1.25rem 1.5rem 1.5rem 1.5rem; /* 减少上下间距，让输入框更贴近内容 */
+            /* 优化的垂直间距设计 - 底部精确10px */
+            padding: 1.25rem 1.5rem 10px 1.5rem; /* 底部改为精确的10px */
             z-index: 100;
             flex: 0 0 auto !important;
             flex-shrink: 0 !important;
@@ -1806,7 +1806,7 @@
             position: relative;
             overflow: hidden;
             /* 与chat-messages保持相同的最大宽度和居中对齐 */
-            max-width: 1200px;
+            max-width: 800px; /* 缩减为2/3宽度，与聊天区域保持一致 */
             width: 100%;
             margin: 0 auto;
             /* 使用flexbox布局内部元素 */
