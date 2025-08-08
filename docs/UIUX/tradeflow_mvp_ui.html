@@ -1761,28 +1761,37 @@
         }
         }
 
-        /* Chat Input - DeepSeek Inspired Design */
+        /* Chat Input - Modern Integrated Design */
         .chat-input-container {
             background: var(--bg-primary);
             border-top: 1px solid var(--border-color);
-            padding: 2rem; /* 增加更大的间距 */
+            padding: 2rem; /* 容器外边距 */
             z-index: 100;
             flex: 0 0 auto !important;
             flex-shrink: 0 !important;
             backdrop-filter: blur(10px);
             position: relative;
+            display: flex;
+            justify-content: center; /* 水平居中 */
+            align-items: center;
         }
         
-        /* DeepSeek风格的大型输入框设计 */
+        /* 输入框主容器 - 与对话区域宽度对齐 */
         .chat-input-wrapper {
             background: var(--bg-primary);
             border: 2px solid var(--border-color);
-            border-radius: 24px; /* 更大的圆角 */
-            padding: 1.5rem 2rem; /* 增加内边距 */
+            border-radius: 24px; /* 大圆角 */
             transition: all 0.3s cubic-bezier(0.2, 0, 0.2, 1);
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.05);
             position: relative;
             overflow: hidden;
+            /* 与chat-messages保持相同的最大宽度和居中对齐 */
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+            /* 使用flexbox布局内部元素 */
+            display: flex;
+            flex-direction: column;
         }
         
         .chat-input-wrapper:focus-within {
@@ -1791,19 +1800,35 @@
             transform: translateY(-2px);
         }
 
+        /* 输入区域容器 */
+        .chat-input-area {
+            display: flex;
+            align-items: flex-end;
+            gap: 0.75rem;
+            padding: 1.5rem 2rem;
+            min-height: 80px;
+        }
+        
+        /* 文本输入框容器 */
+        .chat-input-field-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
         .chat-input {
             width: 100%;
-            min-height: 60px; /* 增加最小高度 */
-            max-height: 200px; /* 增加最大高度 */
+            min-height: 50px; /* 适中的最小高度 */
+            max-height: 150px; /* 适中的最大高度 */
             border: none;
             outline: none;
             resize: none;
             font-family: var(--font-family);
-            font-size: 1.1rem; /* 增大字体 */
+            font-size: 1.1rem;
             line-height: 1.6;
             background: transparent;
             color: var(--text-primary);
-            padding: 0.5rem 0; /* 添加垂直内边距 */
+            padding: 0;
             overflow-y: auto;
             transition: all 0.2s ease;
         }
@@ -1814,24 +1839,18 @@
             opacity: 0.7;
         }
 
-        .chat-input-footer {
+        /* 按钮容器 - 集成在输入框内 */
+        .chat-input-buttons {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            margin-top: 1rem;
-            padding-top: 1rem;
-            border-top: 1px solid var(--border-color);
+            gap: 0.5rem;
+            flex-shrink: 0;
         }
 
-        .input-actions {
-            display: flex;
-            gap: 0.75rem;
-            align-items: center;
-        }
-
-        .input-btn {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-color);
+        /* 附件按钮样式 */
+        .attachment-btn {
+            background: transparent;
+            border: none;
             cursor: pointer;
             padding: 0.75rem;
             border-radius: 12px;
@@ -1843,36 +1862,37 @@
             align-items: center;
             justify-content: center;
         }
-
-        .input-btn:hover {
-            background: var(--primary-color);
-            color: var(--text-inverse);
-            border-color: var(--primary-color);
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(30, 58, 138, 0.2);
+        
+        .attachment-btn:hover {
+            background: var(--bg-tertiary);
+            color: var(--primary-color);
+            transform: scale(1.05);
         }
+
+
 
         .send-btn {
             background: var(--primary-color);
             color: var(--text-inverse);
             border: none;
-            border-radius: 16px; /* 更大的圆角 */
-            padding: 1rem 2rem; /* 增加内边距 */
+            border-radius: 16px;
+            padding: 0.875rem 1.5rem; /* 适中的内边距 */
             font-size: 1rem;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s cubic-bezier(0.2, 0, 0.2, 1);
+            transition: all 0.3s cubic-bezier(0.2, 0, 0.2, 1);
             box-shadow: 0 2px 8px rgba(30, 58, 138, 0.3);
-            min-height: 48px;
+            height: 44px; /* 固定高度与附件按钮对齐 */
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 0.5rem;
+            min-width: 80px; /* 最小宽度确保视觉平衡 */
         }
 
         .send-btn:hover:not(:disabled) {
             background: var(--primary-dark);
-            transform: translateY(-2px);
+            transform: translateY(-1px);
             box-shadow: 0 4px 16px rgba(30, 58, 138, 0.4);
         }
 
@@ -2501,12 +2521,23 @@
             .chat-input-container {
                 position: relative;
                 margin: 0;
-                padding: 1.25rem 1rem; /* 移动端保持合适间距，但稍微减少左右间距 */
-                max-height: 150px; /* 移动端减小最大高度 */
+                padding: 1.25rem 1rem; /* 移动端保持合适间距 */
             }
             
-            .chat-input-wrapper {
-                padding: 0.875rem 1rem; /* 移动端减少输入框内边距 */
+            .chat-input-area {
+                padding: 1rem 1.25rem; /* 移动端减少输入框内边距 */
+                min-height: 60px;
+            }
+            
+            .send-btn {
+                padding: 0.75rem 1.25rem; /* 移动端调整按钮尺寸 */
+                height: 40px;
+                min-width: 70px;
+            }
+            
+            .attachment-btn {
+                width: 40px;
+                height: 40px;
             }
         }
 
@@ -3464,37 +3495,39 @@
                     <!-- Chat Input -->
                     <div class="chat-input-container">
                         <div class="chat-input-wrapper">
-                            <textarea 
-                                id="chatInput" 
-                                class="chat-input" 
-                                placeholder="与TradeFlow AI对话，探索全球贸易机会..." 
-                                data-i18n-placeholder="chat-placeholder"
-                                onkeydown="handleInputKeydown(event)"
-                                oninput="adjustTextareaHeight()"
-                            ></textarea>
-                        </div>
-                        
-                        <div class="chat-input-footer">
-                            <div class="input-actions">
-                                <button class="input-btn" onclick="attachFile()" title="Attach file">
-                                    <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
-                                        <path d="M16.5 6v11.5c0 2.21-1.79 4-4 4s-4-1.79-4-4V5c0-1.38 1.12-2.5 2.5-2.5s2.5 1.12 2.5 2.5v10.5c0 .55-.45 1-1 1s-1-.45-1-1V6H10v9.5c0 1.38 1.12 2.5 2.5 2.5s2.5-1.12 2.5-2.5V5c0-2.21-1.79-4-4-4S7 2.79 7 5v12.5c0 3.04 2.46 5.5 5.5 5.5s5.5-2.46 5.5-5.5V6h-1.5z"/>
-                                    </svg>
-                                </button>
+                            <div class="chat-input-area">
+                                <div class="chat-input-field-container">
+                                    <textarea 
+                                        id="chatInput" 
+                                        class="chat-input" 
+                                        placeholder="与TradeFlow AI对话，探索全球贸易机会..." 
+                                        data-i18n-placeholder="chat-placeholder"
+                                        onkeydown="handleInputKeydown(event)"
+                                        oninput="adjustTextareaHeight()"
+                                    ></textarea>
+                                </div>
+                                
+                                <div class="chat-input-buttons">
+                                    <button class="attachment-btn" onclick="attachFile()" title="附件">
+                                        <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+                                            <path d="M16.5 6v11.5c0 2.21-1.79 4-4 4s-4-1.79-4-4V5c0-1.38 1.12-2.5 2.5-2.5s2.5 1.12 2.5 2.5v10.5c0 .55-.45 1-1 1s-1-.45-1-1V6H10v9.5c0 1.38 1.12 2.5 2.5 2.5s2.5-1.12 2.5-2.5V5c0-2.21-1.79-4-4-4S7 2.79 7 5v12.5c0 3.04 2.46 5.5 5.5 5.5s5.5-2.46 5.5-5.5V6h-1.5z"/>
+                                        </svg>
+                                    </button>
+                                    
+                                    <button 
+                                        id="sendButton" 
+                                        class="send-btn" 
+                                        onclick="sendMessage()" 
+                                        disabled
+                                        data-i18n="send"
+                                    >
+                                        <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+                                            <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+                                        </svg>
+                                        发送
+                                    </button>
+                                </div>
                             </div>
-                            
-                            <button 
-                                id="sendButton" 
-                                class="send-btn" 
-                                onclick="sendMessage()" 
-                                disabled
-                                data-i18n="send"
-                            >
-                                <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
-                                </svg>
-                                发送
-                            </button>
                         </div>
                     </div>
                 </div>
