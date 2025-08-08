@@ -928,7 +928,8 @@
             width: 100%;
             margin-left: auto;
             margin-right: auto;
-            padding: 2rem 1.25rem 1rem;
+            /* 优化聊天区域间距：增加底部留白以配合输入框 */
+            padding: 2rem 1.25rem 2rem 1.25rem; /* 底部增加到2rem */
             box-sizing: border-box;
             background: var(--bg-chat);
             /* 美化滚动条 */
@@ -1765,7 +1766,8 @@
         .chat-input-container {
             background: var(--bg-primary);
             border-top: 1px solid var(--border-color);
-            padding: 2rem; /* 容器外边距 */
+            /* 优化的垂直间距设计 */
+            padding: 3rem 2rem 2rem 2rem; /* 上方3rem增加呼吸感，下方2rem保持平衡 */
             z-index: 100;
             flex: 0 0 auto !important;
             flex-shrink: 0 !important;
@@ -1774,6 +1776,26 @@
             display: flex;
             justify-content: center; /* 水平居中 */
             align-items: center;
+            /* 添加微妙的渐变背景增强视觉分离效果 */
+            background: linear-gradient(to bottom, 
+                rgba(255, 255, 255, 0.01) 0%, 
+                rgba(255, 255, 255, 0.02) 25%, 
+                var(--bg-primary) 50%
+            );
+            /* 添加微妙的内阴影增强层次感 */
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            /* 平滑过渡效果 */
+            transition: all 0.3s cubic-bezier(0.2, 0, 0.2, 1);
+        }
+        
+        /* 暗色模式优化 */
+        [data-theme="dark"] .chat-input-container {
+            background: linear-gradient(to bottom, 
+                rgba(255, 255, 255, 0.005) 0%, 
+                rgba(255, 255, 255, 0.01) 25%, 
+                var(--bg-primary) 50%
+            );
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
         }
         
         /* 输入框主容器 - 与对话区域宽度对齐 */
@@ -1798,6 +1820,18 @@
             border-color: var(--primary-color);
             box-shadow: 0 0 0 4px rgba(30, 58, 138, 0.12), 0 8px 32px rgba(30, 58, 138, 0.15);
             transform: translateY(-2px);
+        }
+        
+        /* 增强输入框容器的微交互效果 */
+        .chat-input-container:has(.chat-input-wrapper:focus-within) {
+            /* 当输入框获得焦点时，轻微调整容器背景 */
+            background: linear-gradient(to bottom, 
+                rgba(30, 58, 138, 0.02) 0%, 
+                rgba(30, 58, 138, 0.03) 25%, 
+                var(--bg-primary) 50%
+            );
+            /* 增强顶部边框视觉效果 */
+            border-top-color: rgba(30, 58, 138, 0.2);
         }
 
         /* 输入区域容器 */
@@ -2482,6 +2516,24 @@
                 margin-right: 0 !important;
             }
         }
+        
+        /* 平板端响应式优化 - 为更好的垂直间距体验 */
+        @media (max-width: 1024px) and (min-width: 769px) {
+            .chat-input-container {
+                /* 平板端适中的垂直间距：在桌面端和移动端之间取平衡 */
+                padding: 2.5rem 1.5rem 1.75rem 1.5rem;
+                background: linear-gradient(to bottom, 
+                    rgba(255, 255, 255, 0.008) 0%, 
+                    rgba(255, 255, 255, 0.015) 28%, 
+                    var(--bg-primary) 55%
+                );
+            }
+            
+            .chat-messages {
+                /* 平板端协调的消息区域间距 */
+                padding: 1.5rem 1rem 1.75rem 1rem;
+            }
+        }
 
         @media (max-width: 768px) {
             .sidebar {
@@ -2515,13 +2567,20 @@
             }
             .chat-messages {
                 flex: 1;
-                padding: 0 1rem;
-                padding-bottom: 0;
+                /* 移动端优化间距：保持协调性 */
+                padding: 1rem 1rem 1.5rem 1rem; /* 底部1.5rem与输入框形成良好比例 */
             }
             .chat-input-container {
                 position: relative;
                 margin: 0;
-                padding: 1.25rem 1rem; /* 移动端保持合适间距 */
+                /* 移动端优化的垂直间距：适当减少但保持比例 */
+                padding: 2rem 1rem 1.5rem 1rem; /* 上方2rem 左右1rem 下方1.5rem */
+                /* 保持渐变效果但适配移动端 */
+                background: linear-gradient(to bottom, 
+                    rgba(255, 255, 255, 0.01) 0%, 
+                    rgba(255, 255, 255, 0.015) 30%, 
+                    var(--bg-primary) 60%
+                );
             }
             
             .chat-input-area {
