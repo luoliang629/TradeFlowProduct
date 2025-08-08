@@ -810,15 +810,15 @@
         /* Chat Interface */
         .chat-container {
             flex: 1;
-            display: flex;
-            flex-direction: column;
+            display: flex !important;
+            flex-direction: column !important;
             max-width: none;
             padding: 0;
             overflow: hidden;
             margin-right: 0;
-            min-height: 0;
+            min-height: 0 !important;
             position: relative;
-            height: calc(100vh - 71px); /* 减去header高度 */
+            height: calc(100vh - 71px) !important; /* 减去header高度 */
         }
 
         .welcome-section {
@@ -888,10 +888,11 @@
         }
 
         .chat-messages {
-            flex: 1 1 0%;
-            overflow-y: auto;
-            overflow-x: hidden;
-            min-height: 0;
+            flex: 1 !important;
+            overflow-y: auto !important;
+            overflow-x: hidden !important;
+            min-height: 0 !important;
+            height: auto !important;
             max-width: 1200px;
             width: 100%;
             margin-left: auto;
@@ -1663,7 +1664,8 @@
             border-top: 1px solid var(--border-color);
             padding: 1rem 1.25rem;
             z-index: 100;
-            flex: 0 0 auto;
+            flex: 0 0 auto !important;
+            flex-shrink: 0 !important;
             backdrop-filter: blur(10px);
             position: relative;
         }
@@ -4711,7 +4713,7 @@
 
         // Toggle Agent Panel (Minimize/Restore)
         function toggleAgentPanel() {
-            const panel = document.querySelector('.agent-panel');
+            const panel = document.querySelector('.file-preview-panel');
             const toggle = document.getElementById('agentPanelToggle');
             
             if (!panel || !toggle) {
@@ -4730,7 +4732,7 @@
         
         // Open Agent Panel
         function openAgentPanel() {
-            const panel = document.querySelector('.agent-panel');
+            const panel = document.querySelector('.file-preview-panel');
             const toggle = document.getElementById('agentPanelToggle');
             
             if (panel && toggle) {
@@ -4745,7 +4747,7 @@
         
         // Minimize Agent Panel
         function minimizeAgentPanel() {
-            const panel = document.querySelector('.agent-panel');
+            const panel = document.querySelector('.file-preview-panel');
             const toggle = document.getElementById('agentPanelToggle');
             
             if (panel && toggle) {
@@ -4761,7 +4763,7 @@
         
         // Close Agent Panel completely
         function closeAgentPanel() {
-            const panel = document.querySelector('.agent-panel');
+            const panel = document.querySelector('.file-preview-panel');
             const toggle = document.getElementById('agentPanelToggle');
             
             if (panel && toggle) {
@@ -4838,7 +4840,7 @@
 
         // Handle window resize
         function handleWindowResize() {
-            const panel = document.querySelector('.agent-panel');
+            const panel = document.querySelector('.file-preview-panel');
             const toggle = document.getElementById('agentPanelToggle');
             const mainContent = document.querySelector('.main-content');
             
@@ -4876,7 +4878,7 @@
             }
             // Escape to close panel if it's open
             else if (event.key === 'Escape') {
-                const panel = document.querySelector('.agent-panel');
+                const panel = document.querySelector('.file-preview-panel');
                 if (panel && !panel.classList.contains('closed')) {
                     minimizeAgentPanel();
                 }
@@ -4929,7 +4931,7 @@
         
         // Initialize agent panel state
         function initializeAgentPanel() {
-            const panel = document.querySelector('.agent-panel');
+            const panel = document.querySelector('.file-preview-panel');
             const toggle = document.getElementById('agentPanelToggle');
             
             if (panel && toggle) {
