@@ -4695,6 +4695,12 @@
 
         function addActivity(text, status) {
             const activityList = document.getElementById('activityList');
+            // 检查元素是否存在，避免JavaScript错误
+            if (!activityList) {
+                console.log('Activity list element not found');
+                return;
+            }
+            
             const activityItem = document.createElement('div');
             activityItem.className = 'activity-item';
             
@@ -4710,7 +4716,7 @@
             activityCount++;
             
             // Keep only last 10 activities
-            if (activityCount > 10) {
+            if (activityCount > 10 && activityList.lastChild) {
                 activityList.removeChild(activityList.lastChild);
             }
         }
