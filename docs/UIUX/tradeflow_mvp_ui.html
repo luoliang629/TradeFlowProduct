@@ -205,12 +205,15 @@
             box-sizing: border-box;
         }
 
-        body {
+        html, body {
             font-family: var(--font-family);
             background-color: var(--bg-secondary);
             color: var(--text-primary);
             line-height: 1.6;
-            overflow-x: hidden;
+            height: 100vh;
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
         }
 
         /* Loading Animation */
@@ -428,9 +431,9 @@
 
         /* Left Sidebar - Navigation */
         .sidebar {
-            width: 280px;
-            min-width: 280px;
-            max-width: 280px;
+            width: 20%;
+            min-width: 200px;
+            max-width: 350px;
             background: var(--bg-dark);
             color: var(--text-inverse);
             display: flex;
@@ -723,15 +726,14 @@
 
         /* Middle Column - Chat Interface */
         .main-content {
-            flex: 1;
-            width: calc(100% - 280px - var(--panel-width, 0px));
+            width: 40%;
+            flex: none;
             display: flex;
             flex-direction: column;
-            min-width: 0; /* Important for flex shrinking */
-            margin-right: 0; /* 默认无右边距，由JavaScript动态调整 */
+            min-width: 400px;
+            height: 100vh;
+            overflow: hidden;
             transition: all 0.3s cubic-bezier(0.2, 0, 0.2, 1);
-            height: 100vh; /* 设置明确的高度 */
-            overflow: hidden; /* 防止整体滚动 */
         }
 
         .header {
@@ -894,8 +896,6 @@
             padding: 0 1.25rem;
             /* 为固定输入框预留空间 */
             padding-bottom: 120px; /* 动态调整的底部间距 */
-            /* 确保滚动区域有明确的边界 */
-            height: calc(100vh - 120px); /* 减去头部和输入框的高度 */
             box-sizing: border-box;
             /* 美化滚动条 */
             scrollbar-width: thin;
@@ -1205,8 +1205,6 @@
             border: 1px solid var(--border-color);
             border-radius: 8px;
             padding: 1rem;
-            height: calc(100vh - 200px); /* 减去header和actions的高度 */
-            max-height: calc(100vh - 200px);
         }
         
         .preview-placeholder {
@@ -1749,28 +1747,22 @@
             cursor: not-allowed;
         }
 
-        /* Right Column - File Preview Panel (Drawer Style) */
+        /* Right Column - File Preview Panel */
         .file-preview-panel {
-            position: fixed;
-            right: 0;
-            top: 0;
-            height: 100vh;
-            width: 400px;
+            width: 40%;
             min-width: 400px;
-            max-width: 400px;
+            height: 100vh;
             background: var(--bg-primary);
             border-left: 1px solid var(--border-color);
             display: flex;
             flex-direction: column;
             overflow: hidden;
-            z-index: 1000;
             box-shadow: -4px 0 15px rgba(0, 0, 0, 0.1);
-            transform: translateX(0);
-            transition: transform 0.3s cubic-bezier(0.2, 0, 0.2, 1);
+            transition: all 0.3s cubic-bezier(0.2, 0, 0.2, 1);
         }
         
         .file-preview-panel.closed {
-            transform: translateX(100%);
+            display: none;
         }
         
         /* File preview panel is always visible now */
@@ -4815,17 +4807,8 @@
                 panelWidth = `${fixedPanelWidth}px`;
             }
             
-            // 应用布局调整
-            if (window.innerWidth > 1024) {
-                mainContent.style.marginRight = marginRight;
-                mainContent.style.setProperty('--panel-width', panelWidth);
-                if (chatInput) chatInput.style.right = inputRight;
-            } else {
-                // 移动端重置为默认
-                mainContent.style.marginRight = '0';
-                mainContent.style.setProperty('--panel-width', '0px');
-                if (chatInput) chatInput.style.right = '20px';
-            }
+            // 新的2:4:4布局不需要动态调整margin
+            // 面板通过display控制显示隐藏
         }
         
         // 自动调整文本区域高度
@@ -4904,8 +4887,7 @@
                     }
                 }
             } else {
-                // Desktop behavior
-                updateLayoutForPanels();
+                // Desktop behavior - 2:4:4布局不需要动态调整
                 if (toggle && !panel.classList.contains('closed')) {
                     toggle.classList.remove('visible');
                 }
