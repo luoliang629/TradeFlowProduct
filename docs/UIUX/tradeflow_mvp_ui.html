@@ -812,9 +812,10 @@
             display: flex;
             flex-direction: column;
             max-width: none;
-            padding: 2rem 20px;
+            padding: 2rem 20px 0;
             overflow: hidden;
             margin-right: 0;
+            min-height: 0;
         }
 
         .welcome-section {
@@ -892,9 +893,7 @@
             width: 100%;
             margin-left: auto;
             margin-right: auto;
-            padding: 0 1.25rem;
-            /* 为固定输入框预留空间 */
-            padding-bottom: 120px; /* 动态调整的底部间距 */
+            padding: 0 1.25rem 1rem;
             box-sizing: border-box;
             /* 美化滚动条 */
             scrollbar-width: thin;
@@ -1663,9 +1662,7 @@
             margin-top: auto;
             padding: 1rem 1.25rem;
             z-index: 100;
-            max-height: 200px; /* 限制最大高度 */
-            min-height: 70px; /* 最小高度 */
-            /* 确保输入框不会被遮挡 */
+            flex-shrink: 0;
             backdrop-filter: blur(10px);
         }
         
