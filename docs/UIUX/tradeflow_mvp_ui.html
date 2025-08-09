@@ -8,7 +8,7 @@
         /* CSS Variables for Design System */
         /* Focused Input View Styles */
         .focused-input-view {
-            display: flex;
+            display: none;
             flex-direction: column;
             align-items: center;
             justify-content: center;
@@ -842,20 +842,20 @@
 
         /* Regular Chat View Layout - 修复输入框显示问题 */
         #regularChatView {
-            display: flex !important;
-            flex-direction: column !important;
-            height: 100% !important;
-            min-height: 0 !important;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            min-height: 0;
             overflow: hidden;
         }
         
-        /* Regular Chat View Layout */
-        #regularChatView {
+        /* 输入视图控制类 */
+        .input-view-hidden {
+            display: none !important;
+        }
+        
+        .input-view-visible {
             display: flex !important;
-            flex-direction: column !important;
-            height: 100% !important;
-            min-height: 0 !important;
-            overflow: hidden;
         }
 
         .welcome-section {
@@ -3108,7 +3108,7 @@
             <!-- Chat Container -->
             <div id="mainChatContainer" class="chat-container">
                 <!-- Focused Input View (for new chats) -->
-                <div id="focusedInputView" class="focused-input-view" style="display: none;">
+                <div id="focusedInputView" class="focused-input-view input-view-hidden">
                     <div class="focused-input-content">
                         <h1 class="focused-input-title" data-i18n="focused-title">
                             What can I do for you?
@@ -3160,7 +3160,7 @@
                 </div>
 
                 <!-- Regular Chat View -->
-                <div id="regularChatView">
+                <div id="regularChatView" class="input-view-visible">
                     <!-- Chat Messages -->
                     <div id="chatMessages" class="chat-messages">
                         <!-- 完整对话示例 - 寻找美国LED灯具买家 -->
@@ -4093,7 +4093,7 @@
             }
             
             // 清空输入框中的文本
-            const regularInputField = document.getElementById('userInput');
+            const regularInputField = document.getElementById('chatInput');
             const focusedInputField = document.getElementById('focusedInputField');
             if (regularInputField) {
                 regularInputField.value = '';
@@ -4161,9 +4161,11 @@
                 submitBtn.innerHTML = '发送 <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>';
             }
             
-            // 隐藏常规视图，显示专注视图
-            regularView.style.display = 'none';
-            focusedView.style.display = 'flex';
+            // 使用CSS类控制显示状态，确保互斥
+            regularView.classList.add('input-view-hidden');
+            regularView.classList.remove('input-view-visible');
+            focusedView.classList.add('input-view-visible');
+            focusedView.classList.remove('input-view-hidden');
             
             // 清空并聚焦输入框
             textarea.value = '';
@@ -5221,8 +5223,12 @@
             const agentToggle = document.getElementById('agentPanelToggle');
             
             if (focusedView && regularView) {
-                focusedView.style.display = 'none';
-                regularView.style.display = 'block';
+                // 使用CSS类控制显示状态，确保互斥
+                focusedView.classList.add('input-view-hidden');
+                focusedView.classList.remove('input-view-visible');
+                regularView.classList.add('input-view-visible');
+                regularView.classList.remove('input-view-hidden');
+                
                 // Restore agent panel in chat mode
                 if (agentPanel) {
                     agentPanel.classList.remove('closed');
@@ -6140,13 +6146,23 @@
             }
             
             // 确保输入框是空的
-            const regularInputField = document.getElementById('userInput');
+            const regularInputField = document.getElementById('chatInput');
             const focusedInputField = document.getElementById('focusedInputField');
             if (regularInputField) {
                 regularInputField.value = '';
             }
             if (focusedInputField) {
                 focusedInputField.value = '';
+            }
+            
+            // 确保输入视图的初始状态正确
+            const focusedView = document.getElementById('focusedInputView');
+            const regularView = document.getElementById('regularChatView');
+            if (focusedView && regularView) {
+                // 初始状态：隐藏常规视图，准备显示聚焦视图
+                regularView.classList.add('input-view-hidden');
+                regularView.classList.remove('input-view-visible');
+                focusedView.classList.remove('input-view-hidden');
             }
             
             // 显示专注输入视图作为默认界面
