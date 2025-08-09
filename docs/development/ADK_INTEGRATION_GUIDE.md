@@ -14,14 +14,18 @@
 
 ## 概述
 
-Google Agent Development Kit (ADK) 是一个开源的、代码优先的 Python 工具包，用于构建、评估和部署复杂的 AI Agent。本指南将详细介绍如何将 Google ADK 集成到 TradeFlow 应用中，为 B2B 贸易用户提供智能化的买家开发、供应商匹配和市场分析服务。
+Google Agent Development Kit (ADK) 是一个开源的、代码优先的 Python 工具包，用于构建、评估和部署复杂的 AI Agent。
+
+> **实现状态**: ✅ TradeFlowAgent已通过ADK完整实现
+> **代码位置**: `src/agent/TradeFlowAgent/`
+> **开发状态**: 功能完整，已通过测试，待与后端集成
 
 ### 为什么选择 Google ADK
 
-- **灵活性高**：支持自定义工具和复杂的业务逻辑
-- **与 Google 生态系统深度集成**：优化支持 Gemini 模型和 Vertex AI
-- **生产就绪**：内置部署、监控和扩展能力
-- **开源免费**：降低技术成本，社区支持活跃
+- **灵活性高**：支持自定义工具和复杂的业务逻辑 ✅ 已实现14+自定义工具
+- **与 Google 生态系统深度集成**：优化支持 Gemini 模型和 Vertex AI ✅ 支持多模型
+- **生产就绪**：内置部署、监控和扩展能力 ✅ 已验证
+- **开源免费**：降低技术成本，社区支持活跃 ✅
 
 ## 架构设计
 
@@ -57,27 +61,25 @@ graph TB
         REGISTRY --> ARTIFACT
     end
     
-    subgraph "Agent Layer (Google ADK)"
-        subgraph "src/agent/buyer_agent"
-            BA["Buyer Agent"]
-            BT["Trade Tools"]
-            BA --> BT
+    subgraph "Agent Layer (Google ADK) ✅ 已实现"
+        subgraph "src/agent/TradeFlowAgent"
+            OA["主协调Agent (main_agent.py)"]
+            SA["搜索Agent (search_agent.py)"]
+            TA["贸易Agent (trade_agent.py)"]
+            CA["企业Agent (company_agent.py)"]
+            EA["企业发现Agent (enterprise_discovery_agent.py)"]
+            
+            OA --> SA
+            OA --> TA
+            OA --> CA
+            OA --> EA
         end
         
-        subgraph "src/agent/supplier_agent"
-            SA["Supplier Agent"]
-            ST["Supplier Tools"]
-            SA --> ST
-        end
-        
-        subgraph "src/agent/market_agent"
-            MA["Market Agent"]
-            MT["Market Tools"]
-            MA --> MT
-        end
-        
-        subgraph "src/agent/general_agent"
-            GA["General Agent"]
+        subgraph "工具集 (14+ tools)"
+            WT["Web搜索工具 (Jina)"]
+            TT["贸易数据工具 (Tendata)"]
+            CT["企业信息工具"]
+            FT["文件生成工具"]
         end
     end
     

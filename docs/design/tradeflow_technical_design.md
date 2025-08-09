@@ -124,10 +124,15 @@ graph TD
 - **Payment Service**: Stripe支付集成
 - **File Service**: 文件上传、存储、预览和管理服务，支持多种文件格式
 
-#### 4. Google ADK Agent Layer
-- **Buyer Agent**: 买家开发智能助手
-- **Supplier Agent**: 供应商匹配助手
-- **Market Analysis Agent**: 市场分析助手
+#### 4. Google ADK Agent Layer 【✅ 已实现】
+> **实现状态**: 已通过ADK独立开发完成，位于 `src/agent/TradeFlowAgent/`
+
+- **Main Orchestrator Agent**: 系统级ReAct主协调器 ✅
+- **Search Agent**: 网络搜索专家 ✅
+- **Trade Agent**: 贸易数据专家（海关数据查询） ✅
+- **Company Agent**: 企业信息专家 ✅
+- **Enterprise Discovery Agent**: 企业发现专家（供应商匹配） ✅
+- **Web Analyzer Agent**: 商品页面解析专家 ✅
 
 #### 5. Data Layer
 - **PostgreSQL**: 存储用户、企业、产品等结构化数据，以及文件元数据
@@ -1084,122 +1089,117 @@ class FileService:
 
 ---
 
-## Google ADK Agent开发方案
+## Google ADK Agent开发方案 【✅ 已实现】
 
-### Agent架构设计
+> **实现状态**: TradeFlowAgent已完整实现，采用层次化ReAct架构
+> **代码位置**: `src/agent/TradeFlowAgent/`
+> **开发状态**: 功能完整，已通过测试，待集成
 
-```python
-# src/agent/base_agent.py
-from google.adk.agents import LlmAgent
-from abc import ABC, abstractmethod
-from typing import Dict, Any, List
+### 已实现的Agent架构
 
-class BaseTradeAgent(ABC):
-    """TradeFlow Agent基类"""
-    
-    def __init__(self, name: str, model: str = "gemini-2.0-flash"):
-        self.name = name
-        self.model = model
-        self.tools = self._init_tools()
-        self.agent = self._create_agent()
-    
-    @abstractmethod
-    def _init_tools(self) -> List:
-        """初始化Agent工具"""
-        pass
-    
-    @abstractmethod
-    def _get_instruction(self) -> str:
-        """获取Agent指令"""
-        pass
-    
-    def _create_agent(self) -> LlmAgent:
-        """创建LLM Agent"""
-        return LlmAgent(
-            model=self.model,
-            name=self.name,
-            instruction=self._get_instruction(),
-            tools=self.tools,
-            generate_content_config={
-                "temperature": 0.7,
-                "max_output_tokens": 2048,
-            }
-        )
-    
-    async def process(
-        self, 
-        message: str, 
-        context: Dict[str, Any]
-    ) -> Dict[str, Any]:
-        """处理用户请求"""
-        response = await self.agent.run_async(
-            message=message,
-            context=context
-        )
-        
-        return self._format_response(response)
-    
-    @abstractmethod
-    def _format_response(self, response: Any) -> Dict[str, Any]:
-        """格式化响应"""
-        pass
+#### 层次化ReAct架构设计
+```
+TradeFlow Agent System
+├── 🧠 系统级ReAct - 主协调Agent
+│   ├── 使用PlanReActPlanner进行系统级推理
+│   ├── 动态Agent选择和协调
+│   └── 质量评估和策略调整
+├── 🎯 专业级ReAct - 供应商分析Agent  
+│   ├── 供应商数据聚合和评分
+│   ├── 供应链关系分析
+│   └── 匹配推荐算法
+└── ⚡ 执行级工具 - 6个专业Agent
+    ├── search_agent (Jina Search)
+    ├── trade_agent (Tendata API)
+    ├── company_agent (企业信息查询)
+    ├── enterprise_discovery_agent (B2B平台搜索)
+    ├── web_analyzer_agent (Jina Reader)
+    └── state_manager_agent (会话状态管理)
 ```
 
-### 买家开发Agent实现
+#### 实际实现代码结构
+```python
+# src/agent/TradeFlowAgent/trade_flow/main_agent.py
+from google.adk.agents import Agent
+from google.adk.planners import PlanReActPlanner
+
+# 创建主协调Agent（系统级ReAct）
+root_agent = Agent(
+    name="trade_flow_orchestrator",
+    model=get_model_config(),
+    planner=PlanReActPlanner(),  # 系统级推理
+    description="贸易数据查询和分析的主协调器",
+    instruction="""使用ReAct模式进行系统级推理...""",
+    agents=[search_agent, trade_agent, company_agent]
+)
+```
+
+### 已实现的核心工具集
+
+#### 1. 搜索分析工具
+- **web_search.py**: Jina Search API集成，高质量网页搜索
+- **jina_reader.py**: 网页内容提取，支持商品页面解析
+- **enterprise_discovery.py**: B2B平台企业发现
+
+#### 2. 贸易数据工具
+- **tendata_api.py**: 海关数据查询接口
+- **trade_data_query.py**: 贸易统计分析
+- **company_trade_profile.py**: 企业贸易画像生成
+
+#### 3. 企业信息工具
+- **company_info.py**: 企业资质查询
+- **company_query.py**: 企业背景调查
+- **supplier_profile.py**: 供应商档案管理
+
+#### 4. 文件处理工具
+- **artifacts_manager.py**: 文件生成管理
+- **csv_converter.py**: CSV报告生成
+- **download_artifact.py**: 文件下载服务
+
+### 已验证的核心功能
+
+#### 1. 商品供应商发现 ✅
+**输入示例**: `"分析这个商品的供应商：https://www.walmart.com/ip/Apple-iPhone-15"`
+**输出能力**:
+- 完整供应链层级：零售商→品牌方→代工厂→原材料供应商
+- 具体企业信息：富士康、比亚迪电子等主要代工厂
+- 联系方式：包含电话、邮箱、联系人姓名
+- 贸易数据验证：基于真实海关出口记录
+
+#### 2. 贸易数据查询 ✅
+**输入示例**: `"查询2024年手机对美国的出口数据"`
+**输出能力**:
+- 出口总额和趋势分析
+- 主要出口国家和份额
+- 热门品牌和产品分布
+- 关税和贸易政策影响
+
+#### 3. 企业背景调查 ✅
+**输入示例**: `"分析比亚迪电子的供应商资质"`
+**输出能力**:
+- 企业资质认证（ISO、行业认证）
+- 贸易能力评估（年出口额、覆盖国家）
+- 主要客户和产品线
+- 风险评估和合作建议
+
+### Agent与后端集成方案（待实施）
 
 ```python
-# src/agent/buyer_agent.py
-from .base_agent import BaseTradeAgent
-from ..tools import (
-    TradeDataSearchTool,
-    BuyerRecommendationTool,
-    EmailGeneratorTool,
-    TranslationTool
-)
-
-class BuyerDevelopmentAgent(BaseTradeAgent):
-    """买家开发Agent"""
+# 计划的集成接口
+class AgentGatewayService:
+    """Agent网关服务，负责调度TradeFlowAgent"""
     
-    def __init__(self):
-        super().__init__(name="buyer_development_agent")
-    
-    def _init_tools(self):
-        return [
-            TradeDataSearchTool(),
-            BuyerRecommendationTool(),
-            EmailGeneratorTool(),
-            TranslationTool()
-        ]
-    
-    def _get_instruction(self):
-        return """
-        你是TradeFlow的专业买家开发助手，帮助出口商找到合适的海外买家。
-        
-        核心能力：
-        1. 根据产品信息智能匹配潜在买家
-        2. 分析目标市场需求和趋势
-        3. 生成专业的开发信模板
-        4. 提供文化适配的沟通建议
-        
-        工作流程：
-        1. 理解用户的产品和目标市场
-        2. 搜索相关贸易数据和买家信息
-        3. 基于匹配度推荐最合适的买家
-        4. 提供个性化的联系策略
-        
-        注意事项：
-        - 始终基于真实数据
-        - 考虑文化差异
-        - 提供可执行的建议
-        """
-    
-    def _format_response(self, response):
-        return {
-            "content": response.content,
-            "recommendations": self._extract_recommendations(response),
-            "contact_templates": self._generate_templates(response),
-            "metadata": {
-                "confidence": 0.85,
+    async def process_query(
+        self, 
+        query: str,
+        user_id: int,
+        session_id: str
+    ) -> AsyncGenerator:
+        """处理用户查询并返回流式响应"""
+        # 1. 调用TradeFlowAgent
+        # 2. 通过SSE返回结果
+        # 3. 保存对话历史到MongoDB
+        pass
                 "data_sources": ["trade_data", "company_db"]
             }
         }
