@@ -6,8 +6,9 @@ from typing import AsyncGenerator
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 
+from app.api.v1 import api_router
 from app.api.v1.health import router as health_router
-from app.api.v1.auth import router as auth_router
+from app.api.monitoring import router as monitoring_router
 from app.config import settings
 from app.core.database import close_databases, init_databases
 from app.core.logging import configure_logging, get_logger
@@ -15,6 +16,7 @@ from app.middleware.cors import add_cors_middleware
 from app.middleware.error_handler import ErrorHandlerMiddleware
 from app.middleware.logging import LoggingMiddleware
 from app.middleware.performance import PerformanceMiddleware, RateLimitMiddleware
+from app.middleware.metrics import MetricsMiddleware, PerformanceMonitoringMiddleware
 from app.utils.minio_client import init_minio
 from app.utils.redis_client import close_redis, init_redis
 
@@ -85,22 +87,27 @@ def create_app() -> FastAPI:
     # 1. CORS中间件（最外层）
     add_cors_middleware(app)
     
-    # 2. 性能监控中间件
-    app.add_middleware(PerformanceMiddleware, slow_request_threshold=2.0)
+    # 2. 指标收集中间件
+    app.add_middleware(MetricsMiddleware)
     
-    # 3. 速率限制中间件（开发环境跳过）
+    # 3. 性能监控中间件
+    app.add_middleware(PerformanceMiddleware, slow_request_threshold=2.0)
+    app.add_middleware(PerformanceMonitoringMiddleware, slow_request_threshold=1.0)
+    
+    # 4. 速率限制中间件（开发环境跳过）
     if not settings.is_development:
         app.add_middleware(RateLimitMiddleware, requests_per_minute=120)
     
-    # 4. 请求日志中间件
+    # 5. 请求日志中间件
     app.add_middleware(LoggingMiddleware)
     
-    # 5. 错误处理中间件（最内层）
+    # 6. 错误处理中间件（最内层）
     app.add_middleware(ErrorHandlerMiddleware)
     
     # 注册路由
     app.include_router(health_router, prefix=settings.API_V1_PREFIX)
-    app.include_router(auth_router, prefix=settings.API_V1_PREFIX)
+    app.include_router(api_router, prefix=settings.API_V1_PREFIX)  # 所有v1 API路由
+    app.include_router(monitoring_router, prefix="")  # 监控路由不加版本前缀
     
     # 根路径处理
     @app.get("/", include_in_schema=False)
