@@ -17,6 +17,8 @@ const TradePage = lazy(() => import('../pages/TradePage'));
 const LoginPage = lazy(() => import('../pages/auth/LoginPage'));
 const OAuthCallbackPage = lazy(() => import('../pages/auth/OAuthCallbackPage'));
 const UserProfilePage = lazy(() => import('../pages/user/UserProfilePage'));
+const BuyersPageComponent = lazy(() => import('../pages/business/BuyersPage'));
+const SuppliersPageComponent = lazy(() => import('../pages/business/SuppliersPage'));
 
 // TODO: 这些页面组件将在后续任务中实现
 const ContactsPage = () => <div className="p-6">客户管理 - 待实现</div>;
@@ -105,11 +107,19 @@ export const router = createBrowserRouter([
         children: [
           {
             path: 'buyers',
-            element: <BuyersPage />,
+            element: (
+              <RouteWrapper>
+                <BuyersPageComponent />
+              </RouteWrapper>
+            ),
           },
           {
             path: 'suppliers',
-            element: <SuppliersPage />,
+            element: (
+              <RouteWrapper>
+                <SuppliersPageComponent />
+              </RouteWrapper>
+            ),
           },
           {
             path: 'products',
@@ -146,6 +156,22 @@ export const router = createBrowserRouter([
         element: (
           <RouteWrapper>
             <UserProfilePage />
+          </RouteWrapper>
+        ),
+      },
+      {
+        path: 'buyers',
+        element: (
+          <RouteWrapper>
+            <BuyersPageComponent />
+          </RouteWrapper>
+        ),
+      },
+      {
+        path: 'suppliers',
+        element: (
+          <RouteWrapper>
+            <SuppliersPageComponent />
           </RouteWrapper>
         ),
       },

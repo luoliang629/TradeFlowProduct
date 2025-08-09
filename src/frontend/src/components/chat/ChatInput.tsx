@@ -1,4 +1,4 @@
-import React, { useState, useRef, KeyboardEvent } from 'react';
+import React, { useState, useRef, type KeyboardEvent } from 'react';
 import { Input, Button, Upload, Space, Tooltip, Popover, message } from 'antd';
 import {
   SendOutlined,
@@ -8,7 +8,7 @@ import {
   FileTextOutlined,
   DeleteOutlined,
 } from '@ant-design/icons';
-import type { UploadFile, RcFile } from 'antd/es/upload';
+import type { UploadFile } from 'antd/es/upload';
 
 const { TextArea } = Input;
 
@@ -78,7 +78,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
     
     // 限制文件数量
     if (fileList.length > 5) {
-      message.warning('最多只能上传5个文件');
+      message?.warning('最多只能上传5个文件');
       return;
     }
 

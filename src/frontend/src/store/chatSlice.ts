@@ -56,7 +56,7 @@ export const createNewSession = createAsyncThunk(
 export const sendMessage = createAsyncThunk(
   'chat/sendMessage',
   async (
-    { content, sessionId }: { content: string; sessionId: string },
+    { content, sessionId, files }: { content: string; sessionId: string; files?: File[] },
     { rejectWithValue }
   ) => {
     try {
@@ -66,10 +66,23 @@ export const sendMessage = createAsyncThunk(
         role: 'user',
         timestamp: new Date().toISOString(),
         session_id: sessionId,
+        files: files?.map(f => ({ name: f.name, size: f.size, type: f.type })),
       };
       return userMessage;
     } catch (error) {
       return rejectWithValue('发送消息失败');
+    }
+  }
+);
+
+export const fetchMessages = createAsyncThunk(
+  'chat/fetchMessages',
+  async (sessionId: string, { rejectWithValue }) => {
+    try {
+      // API调用获取消息历史
+      return [];
+    } catch (error) {
+      return rejectWithValue('获取消息历史失败');
     }
   }
 );
@@ -149,6 +162,18 @@ const chatSlice = createSlice({
             state.sessions[sessionIndex].message_count++;
           }
         }
+      })
+      // 获取消息历史
+      .addCase(fetchMessages.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(fetchMessages.fulfilled, (state, action) => {
+        state.loading = false;
+        state.messages = action.payload;
+      })
+      .addCase(fetchMessages.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
       });
   },
 });
