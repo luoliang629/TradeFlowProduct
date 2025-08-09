@@ -12,7 +12,7 @@ from collections import defaultdict
 from datetime import datetime, timedelta
 
 from app.core.logging import get_logger
-from app.utils.redis_client import get_redis
+from app.utils.redis_client import get_redis_client
 from app.config import settings
 
 logger = get_logger(__name__)
@@ -194,7 +194,7 @@ class ResponseCache:
             return None
         
         try:
-            redis = await get_redis()
+            redis = await get_redis_client()
             cache_key = self._generate_cache_key(user_id, query, context)
             
             cached_data = await redis.get(cache_key)
@@ -237,7 +237,7 @@ class ResponseCache:
             return False
         
         try:
-            redis = await get_redis()
+            redis = await get_redis_client()
             cache_key = self._generate_cache_key(user_id, query, context)
             
             ttl = ttl or self.default_ttl
@@ -276,7 +276,7 @@ class ResponseCache:
             清除的缓存数量
         """
         try:
-            redis = await get_redis()
+            redis = await get_redis_client()
             pattern = f"{self._cache_prefix}:*"
             
             keys = await redis.keys(pattern)
@@ -308,7 +308,7 @@ class ResponseCache:
     async def get_cache_stats(self) -> Dict[str, Any]:
         """获取缓存统计信息"""
         try:
-            redis = await get_redis()
+            redis = await get_redis_client()
             pattern = f"{self._cache_prefix}:*"
             keys = await redis.keys(pattern)
             

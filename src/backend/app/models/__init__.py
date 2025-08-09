@@ -1,5 +1,5 @@
 """数据模型模块."""
 
-from app.models.base import BaseModel
+from app.models.base import Base
 
-__all__ = ["BaseModel"]
+__all__ = ["Base"]

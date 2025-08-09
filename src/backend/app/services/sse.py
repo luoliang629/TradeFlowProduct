@@ -52,13 +52,15 @@ class SSEManager:
         self._connection_map: Dict[str, SSEConnection] = {}
         # 心跳任务
         self._heartbeat_task: Optional[asyncio.Task] = None
-        # 启动心跳任务
-        self._start_heartbeat()
+        # 标记是否已初始化
+        self._initialized = False
     
-    def _start_heartbeat(self) -> None:
+    async def _start_heartbeat(self) -> None:
         """启动心跳任务."""
-        if not self._heartbeat_task or self._heartbeat_task.done():
-            self._heartbeat_task = asyncio.create_task(self._heartbeat_loop())
+        if not self._initialized:
+            self._initialized = True
+            if not self._heartbeat_task or self._heartbeat_task.done():
+                self._heartbeat_task = asyncio.create_task(self._heartbeat_loop())
     
     async def _heartbeat_loop(self) -> None:
         """心跳循环."""
@@ -88,6 +90,9 @@ class SSEManager:
         request: Request
     ) -> SSEConnection:
         """建立SSE连接."""
+        # 确保心跳任务已启动
+        await self._start_heartbeat()
+        
         connection_id = str(uuid.uuid4())
         connection = SSEConnection(connection_id, user_id, session_id)
         

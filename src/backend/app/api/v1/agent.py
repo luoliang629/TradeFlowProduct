@@ -4,7 +4,7 @@ Agent API端点 - 提供TradeFlowAgent的HTTP接口
 
 import uuid
 from typing import Dict, Any, Optional
-from fastapi import APIRouter, HTTPException, Depends, BackgroundTasks
+from fastapi import APIRouter, HTTPException, Depends, BackgroundTasks, Query
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
 
@@ -114,9 +114,9 @@ async def query_agent_sync(
     description="发送查询到TradeFlowAgent并获取流式响应"
 )
 async def query_agent_stream(
-    query: str = Field(..., description="查询内容", min_length=1),
-    session_id: Optional[str] = Field(None, description="会话ID"),
-    auto_create_session: bool = Field(True, description="是否自动创建会话"),
+    query: str = Query(..., description="查询内容", min_length=1),
+    session_id: Optional[str] = Query(None, description="会话ID"),
+    auto_create_session: bool = Query(True, description="是否自动创建会话"),
     current_user: UserResponse = Depends(get_current_user)
 ):
     """
@@ -241,7 +241,7 @@ async def create_session(
     description="获取当前用户的所有Agent会话"
 )
 async def get_user_sessions(
-    limit: int = Field(20, description="返回数量限制", ge=1, le=100),
+    limit: int = Query(20, description="返回数量限制", ge=1, le=100),
     current_user: UserResponse = Depends(get_current_user)
 ) -> Dict[str, Any]:
     """
@@ -317,7 +317,7 @@ async def get_session_detail(
 )
 async def get_session_history(
     session_id: str,
-    limit: int = Field(50, description="返回数量限制", ge=1, le=200),
+    limit: int = Query(50, description="返回数量限制", ge=1, le=200),
     current_user: UserResponse = Depends(get_current_user)
 ) -> Dict[str, Any]:
     """

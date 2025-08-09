@@ -267,7 +267,7 @@ class UsageRecord(Base):
     period_end = Column(DateTime(timezone=True), comment="周期结束")
     
     # 元数据
-    metadata = Column(JSON, comment="元数据")
+    meta_data = Column(JSON, comment="元数据")
     
     # 时间戳
     created_at = Column(

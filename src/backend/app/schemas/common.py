@@ -6,6 +6,15 @@ from typing import Any, Dict, List, Optional
 from pydantic import BaseModel, Field
 
 
+class ResponseModel(BaseModel):
+    """通用响应模型."""
+    
+    success: bool = Field(default=True, description="请求是否成功")
+    message: str = Field(default="OK", description="响应消息")
+    data: Optional[Any] = Field(default=None, description="响应数据")
+    timestamp: datetime = Field(default_factory=datetime.utcnow, description="响应时间戳")
+
+
 class BaseResponse(BaseModel):
     """基础响应模型."""
     

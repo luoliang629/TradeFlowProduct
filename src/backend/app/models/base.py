@@ -9,7 +9,7 @@ from sqlalchemy.sql import func
 
 
 @as_declarative()
-class BaseModel:
+class Base:
     """基础模型类."""
     
     id: Any

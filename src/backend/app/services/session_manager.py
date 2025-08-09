@@ -8,7 +8,7 @@ from datetime import datetime, timedelta
 from typing import Dict, Any, List, Optional
 
 from app.core.logging import get_logger
-from app.utils.redis_client import get_redis
+from app.utils.redis_client import get_redis_client
 from app.config import settings
 
 logger = get_logger(__name__)
@@ -27,7 +27,7 @@ class SessionManager:
     async def _get_redis(self):
         """获取Redis连接"""
         if not self.redis:
-            self.redis = await get_redis()
+            self.redis = await get_redis_client()
         return self.redis
     
     def _get_session_key(self, user_id: str, session_id: str) -> str:
