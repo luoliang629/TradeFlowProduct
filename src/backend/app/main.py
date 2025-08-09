@@ -7,6 +7,7 @@ from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 
 from app.api.v1.health import router as health_router
+from app.api.v1.auth import router as auth_router
 from app.config import settings
 from app.core.database import close_databases, init_databases
 from app.core.logging import configure_logging, get_logger
@@ -99,6 +100,7 @@ def create_app() -> FastAPI:
     
     # 注册路由
     app.include_router(health_router, prefix=settings.API_V1_PREFIX)
+    app.include_router(auth_router, prefix=settings.API_V1_PREFIX)
     
     # 根路径处理
     @app.get("/", include_in_schema=False)

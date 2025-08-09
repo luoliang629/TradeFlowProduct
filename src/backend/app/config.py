@@ -45,8 +45,8 @@ class Settings(BaseSettings):
         raise ValueError(v)
     
     # 数据库配置
-    POSTGRES_URL: Optional[str] = None
-    POSTGRES_TEST_URL: Optional[str] = None
+    POSTGRES_URL: str = "postgresql+asyncpg://postgres:root@127.0.0.1:5432/mydb"
+    POSTGRES_TEST_URL: str = "postgresql+asyncpg://postgres:root@127.0.0.1:5432/mydb_test"
     
     # MongoDB配置
     MONGODB_URL: str = "mongodb://localhost:27017"
@@ -54,25 +54,48 @@ class Settings(BaseSettings):
     MONGODB_TEST_DATABASE: str = "tradeflow_test"
     
     # Redis配置
-    REDIS_URL: str = "redis://localhost:6379/0"
-    REDIS_TEST_URL: str = "redis://localhost:6379/1"
+    REDIS_URL: str = "redis://:root@127.0.0.1:6379/0"
+    REDIS_TEST_URL: str = "redis://:root@127.0.0.1:6379/1"
     
     # MinIO配置
-    MINIO_ENDPOINT: str = "localhost:9000"
-    MINIO_ACCESS_KEY: str = "minioadmin"
-    MINIO_SECRET_KEY: str = "minioadmin"
+    MINIO_ENDPOINT: str = "127.0.0.1:9000"
+    MINIO_ACCESS_KEY: str = "root"
+    MINIO_SECRET_KEY: str = "rootpassword"
     MINIO_SECURE: bool = False
     MINIO_BUCKET_NAME: str = "tradeflow-storage"
     
     # JWT配置
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
-    REFRESH_TOKEN_EXPIRE_DAYS: int = 7
+    ACCESS_TOKEN_EXPIRE_HOURS: int = 4  # B2B场景适中的过期时间
+    REFRESH_TOKEN_EXPIRE_DAYS: int = 30  # 延长刷新令牌有效期
     ALGORITHM: str = "HS256"
+    JWT_SECRET_KEY: str = secrets.token_urlsafe(32)
+    
+    # OAuth配置
+    GOOGLE_CLIENT_ID: Optional[str] = None
+    GOOGLE_CLIENT_SECRET: Optional[str] = None
+    GOOGLE_REDIRECT_URI: str = "http://localhost:8000/api/v1/auth/oauth/google/callback"
+    
+    GITHUB_CLIENT_ID: Optional[str] = None
+    GITHUB_CLIENT_SECRET: Optional[str] = None
+    GITHUB_REDIRECT_URI: str = "http://localhost:8000/api/v1/auth/oauth/github/callback"
+    
+    # 认证安全配置
+    PASSWORD_MIN_LENGTH: int = 8
+    MAX_LOGIN_ATTEMPTS: int = 5
+    LOGIN_ATTEMPT_TIMEOUT_MINUTES: int = 15
+    
+    # Token黑名单配置
+    TOKEN_BLACKLIST_TTL_SECONDS: int = 86400 * 30  # 30天
     
     # 外部服务配置
     GOOGLE_ADK_API_KEY: Optional[str] = None
     STRIPE_PUBLISHABLE_KEY: Optional[str] = None
     STRIPE_SECRET_KEY: Optional[str] = None
+    
+    # 前端配置
+    FRONTEND_URL: str = "http://localhost:3000"
+    OAUTH_SUCCESS_REDIRECT: str = "http://localhost:3000/auth/success"
+    OAUTH_ERROR_REDIRECT: str = "http://localhost:3000/auth/error"
     
     # 监控配置
     SENTRY_DSN: Optional[str] = None

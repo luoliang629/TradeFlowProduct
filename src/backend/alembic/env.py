@@ -10,7 +10,9 @@ from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import create_async_engine
 
 from app.config import settings
-from app.models.base import BaseModel
+from app.models.base import Base
+# 导入所有模型以确保它们被包含在metadata中
+from app.models.user import User, TokenBlacklist
 
 # Alembic Config对象提供对.ini文件中值的访问
 config = context.config
@@ -20,7 +22,7 @@ if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
 # 为'autogenerate'支持添加您的模型的MetaData
-target_metadata = BaseModel.metadata
+target_metadata = Base.metadata
 
 # 其他在env.py中的值，根据需要由env.py定义，可以通过用户配置变化获得。
 # 我的方法是为每个环境使用指定特定命名方案的.ini文件

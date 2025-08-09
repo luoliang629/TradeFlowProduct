@@ -4086,12 +4086,55 @@
             // 创建一个临时的新对话 ID
             const tempChatId = 'temp-' + Date.now();
             
+            // 清空聊天消息区域
+            const chatMessages = document.getElementById('chatMessages');
+            if (chatMessages) {
+                chatMessages.innerHTML = '';
+            }
+            
+            // 清空输入框中的文本
+            const regularInputField = document.getElementById('userInput');
+            const focusedInputField = document.getElementById('focusedInputField');
+            if (regularInputField) {
+                regularInputField.value = '';
+            }
+            if (focusedInputField) {
+                focusedInputField.value = '';
+            }
+            
+            // 关闭文件预览面板
+            const filePanel = document.querySelector('.file-preview-panel');
+            if (filePanel) {
+                filePanel.classList.add('closed');
+            }
+            
+            // 隐藏文件预览切换按钮
+            const fileToggle = document.querySelector('.file-preview-toggle');
+            if (fileToggle) {
+                fileToggle.classList.remove('visible');
+            }
+            
+            // 关闭Agent面板
+            const agentPanel = document.querySelector('.agent-panel');
+            if (agentPanel) {
+                agentPanel.classList.add('closed');
+            }
+            
+            // 隐藏Agent切换按钮
+            const agentToggle = document.getElementById('agentPanelToggle');
+            if (agentToggle) {
+                agentToggle.classList.remove('visible');
+            }
+            
             // 显示专注输入视图
             showFocusedInputView();
             
             // 更新标题
             document.getElementById('headerTitle').textContent = 
                 currentLanguage === 'en' ? 'New Task' : '新任务';
+                
+            // 重新调整布局
+            updateLayoutForPanels();
         }
 
         // 显示专注输入视图
@@ -6064,9 +6107,51 @@
             initializeApp();
             initializeAgentPanel();
             initializeFileData(); // Initialize demo file data
+            
+            // 确保页面初始化时显示干净的欢迎界面
+            ensureCleanInitialState();
+            
             // 初始调整聊天布局
             setTimeout(adjustChatLayout, 100); // 延迟确保元素已渲染
         });
+        
+        // 确保页面初始化时状态干净
+        function ensureCleanInitialState() {
+            // 确保文件预览面板是关闭的
+            const filePanel = document.querySelector('.file-preview-panel');
+            if (filePanel && !filePanel.classList.contains('closed')) {
+                filePanel.classList.add('closed');
+            }
+            
+            // 确保Agent面板是关闭的
+            const agentPanel = document.querySelector('.agent-panel');
+            if (agentPanel && !agentPanel.classList.contains('closed')) {
+                agentPanel.classList.add('closed');
+            }
+            
+            // 隐藏切换按钮
+            const fileToggle = document.querySelector('.file-preview-toggle');
+            const agentToggle = document.getElementById('agentPanelToggle');
+            if (fileToggle) {
+                fileToggle.classList.remove('visible');
+            }
+            if (agentToggle) {
+                agentToggle.classList.remove('visible');
+            }
+            
+            // 确保输入框是空的
+            const regularInputField = document.getElementById('userInput');
+            const focusedInputField = document.getElementById('focusedInputField');
+            if (regularInputField) {
+                regularInputField.value = '';
+            }
+            if (focusedInputField) {
+                focusedInputField.value = '';
+            }
+            
+            // 显示专注输入视图作为默认界面
+            showFocusedInputView();
+        }
     </script>
     
     <!-- Agent Panel Toggle Button -->
