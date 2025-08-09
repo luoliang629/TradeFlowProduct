@@ -3153,8 +3153,8 @@
                         </div>
                         
                         <div class="focused-input-hints">
-                            <span class="focused-input-hint">Enter to send</span>
-                            <span class="focused-input-hint">Shift + Enter for new line</span>
+                            <span class="focused-input-hint" data-i18n="enter-to-send">Enter to send</span>
+                            <span class="focused-input-hint" data-i18n="shift-enter-new-line">Shift + Enter for new line</span>
                         </div>
                     </div>
                 </div>
@@ -3869,7 +3869,9 @@
                 'observation': 'Observation',
                 'focused-title': 'What can I do for you?',
                 'focused-subtitle': 'Tell me your trade needs, I\'ll help you find the best solution',
-                'focused-placeholder': 'Type your requirements...'
+                'focused-placeholder': 'Type your requirements...',
+                'enter-to-send': 'Enter to send',
+                'shift-enter-new-line': 'Shift + Enter for new line'
             },
             'zh': {
                 'tagline': 'AI驱动的全球B2B贸易助手',
@@ -3916,12 +3918,14 @@
                 'observation': '观察',
                 'focused-title': '我能为您做些什么？',
                 'focused-subtitle': '告诉我您的贸易需求，我将帮您找到最佳解决方案',
-                'focused-placeholder': '请输入您的需求...'
+                'focused-placeholder': '请输入您的需求...',
+                'enter-to-send': '回车发送',
+                'shift-enter-new-line': 'Shift + 回车换行'
             }
         };
 
         // Current language
-        let currentLanguage = 'en';
+        let currentLanguage = 'zh';
         let isThinking = false;
         let activityCount = 1;
 
@@ -4092,13 +4096,25 @@
             // 创建一个临时的新对话 ID
             const tempChatId = 'temp-' + Date.now();
             
-            // 移除所有对话记录的选中状态
-            document.querySelectorAll('.chat-item').forEach(item => {
+            // 确保移除所有对话记录的选中状态
+            const chatItems = document.querySelectorAll('.chat-item');
+            chatItems.forEach(item => {
                 item.classList.remove('active');
+                // 强制移除所有可能的选中状态样式
+                item.style.backgroundColor = '';
+                item.style.borderLeft = '';
             });
             
             // 清除当前对话ID，表示没有选中任何对话
             currentChatId = null;
+            
+            // 使用setTimeout确保DOM更新完成后再进行下一步操作
+            setTimeout(() => {
+                // 再次检查并移除任何残留的active类
+                document.querySelectorAll('.chat-item.active').forEach(item => {
+                    item.classList.remove('active');
+                });
+            }, 0);
             
             // 清空聊天消息区域
             const chatMessages = document.getElementById('chatMessages');
