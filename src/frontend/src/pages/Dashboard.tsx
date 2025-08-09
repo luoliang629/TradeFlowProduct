@@ -3,7 +3,7 @@ import {
   MessageOutlined,
   TeamOutlined,
   ShoppingOutlined,
-  TrendingUpOutlined,
+  RiseOutlined,
   PlusOutlined 
 } from '@ant-design/icons';
 
@@ -63,7 +63,7 @@ const Dashboard: React.FC = () => {
               <Statistic
                 title="匹配成功率"
                 value={78.5}
-                prefix={<TrendingUpOutlined />}
+                prefix={<RiseOutlined />}
                 valueStyle={{ color: '#f5222d' }}
                 suffix="%"
               />
