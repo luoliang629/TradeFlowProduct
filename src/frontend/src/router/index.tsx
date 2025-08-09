@@ -40,7 +40,6 @@ const RouteWrapper = ({ children }: { children: React.ReactNode }) => (
 export const router = createBrowserRouter([
   {
     path: '/auth',
-    element: <div>Auth Layout</div>, // TODO: AuthLayout组件
     children: [
       {
         path: 'login',
