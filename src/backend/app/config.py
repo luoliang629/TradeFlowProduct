@@ -89,8 +89,18 @@ class Settings(BaseSettings):
     
     # 外部服务配置
     GOOGLE_ADK_API_KEY: Optional[str] = None
+    GOOGLE_ADK_MODEL: str = "gemini-2.0-flash"
     STRIPE_PUBLISHABLE_KEY: Optional[str] = None
     STRIPE_SECRET_KEY: Optional[str] = None
+    
+    # Agent配置
+    AGENT_TIMEOUT_SECONDS: int = 30
+    AGENT_MAX_RETRIES: int = 3
+    AGENT_ENABLE_CACHE: bool = True
+    AGENT_RUNNER_POOL_SIZE: int = 5
+    AGENT_RUNNER_IDLE_TIMEOUT: int = 300
+    AGENT_CACHE_TTL: int = 3600
+    AGENT_CACHE_MAX_SIZE: int = 1000
     
     # 前端配置
     FRONTEND_URL: str = "http://localhost:3000"

@@ -19,6 +19,7 @@ from app.middleware.performance import PerformanceMiddleware, RateLimitMiddlewar
 from app.middleware.metrics import MetricsMiddleware, PerformanceMonitoringMiddleware
 from app.utils.minio_client import init_minio
 from app.utils.redis_client import close_redis, init_redis
+from app.services.agent_service import initialize_agent_service, cleanup_agent_service
 
 # 配置日志
 configure_logging()
@@ -44,6 +45,14 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
         await init_minio()
         logger.info("MinIO initialized")
         
+        # 初始化Agent服务
+        try:
+            await initialize_agent_service()
+            logger.info("Agent service initialized")
+        except Exception as e:
+            logger.warning(f"Agent service initialization failed: {e}")
+            # Agent服务初始化失败不应该阻止应用启动
+        
         logger.info("Application startup completed successfully")
         
     except Exception as e:
@@ -63,6 +72,13 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
         # 关闭Redis连接
         await close_redis()
         logger.info("Redis connection closed")
+        
+        # 清理Agent服务
+        try:
+            await cleanup_agent_service()
+            logger.info("Agent service cleaned up")
+        except Exception as e:
+            logger.warning(f"Agent service cleanup failed: {e}")
         
         logger.info("Application shutdown completed successfully")
         

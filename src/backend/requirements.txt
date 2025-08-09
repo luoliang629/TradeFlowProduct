@@ -47,6 +47,11 @@ email-validator==2.1.0
 sse-starlette==1.8.2
 tenacity==8.2.3
 
+# AI Agent Support
+google-adk>=0.1.0
+litellm>=1.0.0
+orjson>=3.9.0
+
 # Development
 pytest==7.4.3
 pytest-asyncio==0.21.1

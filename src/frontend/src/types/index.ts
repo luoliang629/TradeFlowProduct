@@ -61,6 +61,18 @@ export interface FileInfo {
   created_at: string;
 }
 
+// 文件附件类型
+export interface FileAttachment {
+  id?: string;
+  name: string;
+  size?: number;
+  type?: string;
+  url?: string;
+  preview_url?: string;
+  content?: string;
+  created_at?: string;
+}
+
 // 业务相关类型
 export interface Buyer {
   id: string;
