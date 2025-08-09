@@ -4086,6 +4086,14 @@
             // 创建一个临时的新对话 ID
             const tempChatId = 'temp-' + Date.now();
             
+            // 移除所有对话记录的选中状态
+            document.querySelectorAll('.chat-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // 清除当前对话ID，表示没有选中任何对话
+            currentChatId = null;
+            
             // 清空聊天消息区域
             const chatMessages = document.getElementById('chatMessages');
             if (chatMessages) {
