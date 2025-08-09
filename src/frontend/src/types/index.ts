@@ -78,8 +78,16 @@ export interface Buyer {
   id: string;
   company_name: string;
   contact_person: string;
+  position?: string;
   country: string;
+  country_code?: string;
+  city?: string;
   industry: string;
+  company_size: string;
+  annual_volume: string;
+  credit_rating: number;
+  certifications: string[];
+  logo_url?: string;
   products_interested: string[];
   contact_info: {
     email?: string;
@@ -93,15 +101,30 @@ export interface Buyer {
 export interface Supplier {
   id: string;
   company_name: string;
+  contact_person: string;
+  position?: string;
   country: string;
-  products: string[];
+  country_code?: string;
+  city?: string;
+  main_products: string[];
+  established_year: number;
+  employee_count: string;
+  min_order: string;
+  rating: number;
+  review_count: number;
+  level: 'gold' | 'silver' | 'bronze' | 'verified';
   certifications: string[];
+  logo_url?: string;
   contact_info: {
     email?: string;
     phone?: string;
     website?: string;
   };
-  rating: number;
+  trade_capacity: {
+    export_percentage: number;
+    main_markets: string[];
+    annual_sales: string;
+  };
   verified: boolean;
 }
 
