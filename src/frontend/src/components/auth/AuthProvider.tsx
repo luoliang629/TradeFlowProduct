@@ -17,6 +17,8 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   useEffect(() => {
     const initializeAuth = async () => {
+      dispatch(setAuthLoading(true));
+      
       try {
         // 尝试从本地存储恢复认证状态
         const authState = await authService.restoreAuthState();
@@ -26,9 +28,9 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           dispatch(setTokens({
             token: authState.token,
             refreshToken: authState.refreshToken,
+            user: authState.user,
           }));
           
-          // 这里可以继续设置用户信息等
           console.log('认证状态已恢复');
         } else {
           console.log('无有效的认证状态');
@@ -38,6 +40,8 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         // 清理可能损坏的认证数据
         localStorage.removeItem('access_token');
         localStorage.removeItem('refresh_token');
+      } finally {
+        dispatch(setAuthLoading(false));
       }
     };
 

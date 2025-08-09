@@ -112,7 +112,7 @@ export const navigationConfig: NavMenuItem[] = [
       {
         key: 'profile',
         label: '个人资料',
-        path: '/settings/profile',
+        path: '/profile',
       },
       {
         key: 'preferences',

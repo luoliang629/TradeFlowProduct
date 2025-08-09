@@ -16,6 +16,7 @@ const ChatPage = lazy(() => import('../pages/ChatPage'));
 const TradePage = lazy(() => import('../pages/TradePage'));
 const LoginPage = lazy(() => import('../pages/auth/LoginPage'));
 const OAuthCallbackPage = lazy(() => import('../pages/auth/OAuthCallbackPage'));
+const UserProfilePage = lazy(() => import('../pages/user/UserProfilePage'));
 
 // TODO: 这些页面组件将在后续任务中实现
 const ContactsPage = () => <div className="p-6">客户管理 - 待实现</div>;
@@ -140,6 +141,14 @@ export const router = createBrowserRouter([
       {
         path: 'help',
         element: <HelpPage />,
+      },
+      {
+        path: 'profile',
+        element: (
+          <RouteWrapper>
+            <UserProfilePage />
+          </RouteWrapper>
+        ),
       },
     ],
   },
