@@ -4411,7 +4411,11 @@
                             filesContainer.className = 'message-file-container';
                             
                             msg.files.forEach(file => {
-                                if (file && file.id) {
+                                if (file) {
+                                    // 如果文件没有id，生成一个
+                                    if (!file.id) {
+                                        file.id = 'file_' + Math.random().toString(36).substr(2, 9);
+                                    }
                                     // 存储文件数据
                                     storeFileData(file);
                                     // 生成文件卡片
@@ -4489,7 +4493,11 @@
                     filesContainer.className = 'message-file-container';
                     
                     msg.files.forEach(file => {
-                        if (file && file.id) {
+                        if (file) {
+                            // 如果文件没有id，生成一个
+                            if (!file.id) {
+                                file.id = 'file_' + Math.random().toString(36).substr(2, 9);
+                            }
                             storeFileData(file);
                             filesContainer.innerHTML += generateFileCardHTML(file);
                         }
