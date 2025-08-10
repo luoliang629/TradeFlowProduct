@@ -4277,42 +4277,63 @@
                     chat.messages.forEach(msg => {
                         const messageDiv = document.createElement('div');
                         const isUser = (msg.type || msg.role) === 'user';
-                        messageDiv.className = isUser ? 'message user-message' : 'message ai-message';
+                        // 修正CSS类名：使用 'message user' 和 'message assistant'
+                        messageDiv.className = `message ${isUser ? 'user' : 'assistant'}`;
                         
-                        let messageContent = `
-                            <div class="message-avatar">${isUser ? 'U' : 'AI'}</div>
-                            <div class="message-content">
-                                <div class="message-header">
-                                    <span class="message-sender">${isUser ? 'You' : 'TradeFlow AI'}</span>
-                                    <span class="message-time">Just now</span>
-                                </div>
-                                <div class="message-text">${msg.content.replace(/\n/g, '<br>')}</div>`;
+                        // 创建消息头像
+                        const avatar = document.createElement('div');
+                        avatar.className = 'message-avatar';
+                        avatar.textContent = isUser ? 
+                            (currentLanguage === 'en' ? 'U' : '用') : 
+                            (currentLanguage === 'en' ? 'AI' : 'AI');
+                        
+                        // 创建消息内容容器
+                        const contentDiv = document.createElement('div');
+                        contentDiv.className = 'message-content';
+                        
+                        // 创建消息文本
+                        const messageText = document.createElement('div');
+                        messageText.className = 'message-text';
+                        messageText.innerHTML = msg.content.replace(/\n/g, '<br>');
+                        contentDiv.appendChild(messageText);
                         
                         // 如果有文件附件，添加文件卡片
                         if (msg.files && msg.files.length > 0) {
-                            messageContent += '<div class="message-files">';
+                            const filesContainer = document.createElement('div');
+                            filesContainer.className = 'message-file-container';
+                            
                             msg.files.forEach(file => {
-                                const fileIcon = file.type === 'pdf' ? '📄' : file.type === 'excel' ? '📊' : file.type === 'word' ? '📝' : '📎';
-                                messageContent += `
-                                    <div class="file-card" onclick="previewFile('${file.name}', '${file.type}', \`${file.content}\`)">
-                                        <div class="file-icon">${fileIcon}</div>
-                                        <div class="file-info">
-                                            <div class="file-name">${file.name}</div>
-                                            <div class="file-size">${file.size}</div>
-                                        </div>
-                                    </div>
-                                `;
+                                if (file && file.id) {
+                                    // 存储文件数据
+                                    storeFileData(file);
+                                    // 生成文件卡片
+                                    filesContainer.innerHTML += generateFileCardHTML(file);
+                                }
                             });
-                            messageContent += '</div>';
+                            
+                            contentDiv.appendChild(filesContainer);
                         }
                         
-                        messageContent += `
-                            </div>
-                        `;
+                        // 创建时间戳
+                        const messageTime = document.createElement('div');
+                        messageTime.className = 'message-time';
+                        // 如果有时间戳则使用，否则显示"刚刚"
+                        if (msg.timestamp) {
+                            const date = new Date(msg.timestamp);
+                            messageTime.textContent = date.toLocaleTimeString();
+                        } else {
+                            messageTime.textContent = currentLanguage === 'en' ? 'Just now' : '刚刚';
+                        }
+                        contentDiv.appendChild(messageTime);
                         
-                        messageDiv.innerHTML = messageContent;
+                        // 组装消息元素
+                        messageDiv.appendChild(avatar);
+                        messageDiv.appendChild(contentDiv);
                         messagesContainer.appendChild(messageDiv);
                     });
+                    
+                    // 滚动到最新消息
+                    setTimeout(() => scrollToBottom(), 100);
                 }
             }
         }
