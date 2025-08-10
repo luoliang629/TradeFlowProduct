@@ -1771,14 +1771,15 @@
 
         /* Chat Input - Modern Integrated Design */
         .chat-input-container {
-            background: transparent; /* 透明背景，让卡片更突出 */
-            border-top: none;
-            /* 确保底部间距 - 增加顶部padding让卡片有足够空间 */
-            padding: 2rem 1.5rem 1rem 1.5rem;
-            margin-bottom: 10px;
+            background: var(--bg-primary);
+            border-top: 1px solid transparent;
+            /* 确保底部10px间距 - 使用margin-bottom而不是padding-bottom */
+            padding: 1.25rem 1.5rem 0 1.5rem;
+            margin-bottom: 10px; /* 确保离底部精确10px */
             z-index: 100;
             flex: 0 0 auto !important;
             flex-shrink: 0 !important;
+            backdrop-filter: blur(10px);
             position: relative;
             display: flex;
             justify-content: center; /* 水平居中 */
@@ -1801,13 +1802,13 @@
             );
         }
         
-        /* 输入框主容器 - 卡片式设计，更突出的视觉层次 */
+        /* 输入框主容器 - 与对话区域宽度对齐，默认使用柔和的边框 */
         .chat-input-wrapper {
-            background: white;
-            border: none; /* 移除边框，使用阴影创建层次 */
-            border-radius: 20px;
+            background: var(--bg-primary);
+            border: 1px solid #e5e7eb; /* 柔和的灰色边框，避免与用户消息背景冲突 */
+            border-radius: 16px;
             transition: all 0.3s cubic-bezier(0.2, 0, 0.2, 1);
-            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.05); /* 更明显的阴影创建卡片效果 */
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02); /* 轻微的阴影 */
             position: relative;
             overflow: hidden;
             /* 与chat-messages保持相同的最大宽度和居中对齐 */
@@ -1821,9 +1822,10 @@
         }
         
         .chat-input-wrapper:focus-within {
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.06);
-            transform: translateY(-2px); /* 聚焦时轻微上浮效果 */
-            background: white;
+            border-color: #60a5fa; /* 使用更亮的蓝色，与深蓝色消息背景形成对比 */
+            box-shadow: 0 0 0 2px rgba(96, 165, 250, 0.15), 0 2px 8px rgba(96, 165, 250, 0.08);
+            transform: translateY(-1px);
+            background: var(--bg-primary);
         }
         
         /* 增强输入框容器的微交互效果 */
@@ -1852,28 +1854,20 @@
         }
         
         .chat-input {
-            width: calc(100% - 2rem); /* 减去边距 */
-            min-height: 44px; /* 更舒适的最小高度 */
-            max-height: 120px;
-            border: 1px solid #e5e7eb;
-            border-radius: 12px;
+            width: 100%;
+            min-height: 40px; /* 更自然的最小高度 */
+            max-height: 120px; /* 更合理的最大高度 */
+            border: none;
             outline: none;
             resize: none;
             font-family: var(--font-family);
-            font-size: 0.95rem;
+            font-size: 0.95rem; /* 稍微减小字体 */
             line-height: 1.5;
-            background: #f9fafb; /* 浅灰色背景，创建内嵌效果 */
+            background: transparent;
             color: var(--text-primary);
-            padding: 0.75rem 1rem;
-            margin: 0.5rem 1rem; /* 内嵌边距 */
-            transition: all 0.2s;
+            padding: 0;
             overflow-y: auto;
-        }
-        
-        .chat-input:focus {
-            background: white;
-            border-color: #60a5fa;
-            box-shadow: 0 0 0 2px rgba(96, 165, 250, 0.1);
+            transition: all 0.2s ease;
         }
 
         .chat-input::placeholder {
