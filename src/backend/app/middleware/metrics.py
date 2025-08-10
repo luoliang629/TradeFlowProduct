@@ -202,34 +202,39 @@ class PerformanceMonitoringMiddleware:
             ['method', 'endpoint']
         )
     
-    async def __call__(self, request: Request, call_next: Callable) -> Response:
+    async def __call__(self, scope, receive, send):
         """监控请求性能."""
+        if scope["type"] != "http":
+            await self.app(scope, receive, send)
+            return
+            
         start_time = time.time()
         
         # 获取请求信息
-        path = request.url.path
-        method = request.method
+        path = scope["path"]
+        method = scope["method"]
         
-        # 处理请求
-        response = await call_next(request)
-        
-        # 计算耗时
-        duration = time.time() - start_time
-        
-        # 检查是否为慢请求
-        if duration > self.slow_request_threshold:
-            endpoint = self._normalize_path(path)
+        async def wrapped_send(message):
+            if message["type"] == "http.response.start":
+                # 计算耗时
+                duration = time.time() - start_time
+                
+                # 检查是否为慢请求
+                if duration > self.slow_request_threshold:
+                    endpoint = self._normalize_path(path)
+                    
+                    self.slow_requests.labels(
+                        method=method,
+                        endpoint=endpoint
+                    ).inc()
+                    
+                    logger.warning(
+                        f"Slow request detected: {method} {path} took {duration:.3f}s"
+                    )
             
-            self.slow_requests.labels(
-                method=method,
-                endpoint=endpoint
-            ).inc()
-            
-            logger.warning(
-                f"Slow request detected: {method} {path} took {duration:.3f}s"
-            )
+            await send(message)
         
-        return response
+        await self.app(scope, receive, wrapped_send)
     
     def _normalize_path(self, path: str) -> str:
         """规范化路径."""

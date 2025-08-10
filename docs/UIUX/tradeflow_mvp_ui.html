@@ -4081,9 +4081,10 @@
                 saveChats();
             }
             renderChatList();
-            if (chats.length > 0 && !currentChatId) {
-                switchChat(chats[0].id);
-            }
+            // 不再自动切换到第一个对话，保持新任务状态
+            // if (chats.length > 0 && !currentChatId) {
+            //     switchChat(chats[0].id);
+            // }
         }
 
         // 保存对话数据
@@ -4998,6 +4999,9 @@
             
             // Update user panel info
             updateUserPanelInfo();
+            
+            // 确保登录后显示新任务状态（聚焦输入视图），没有对话被选中
+            ensureCleanInitialState();
         }
 
         // Enhanced updateLanguage function to include credit display
@@ -6177,6 +6181,9 @@
         
         // 确保页面初始化时状态干净
         function ensureCleanInitialState() {
+            // 重置当前对话ID，确保没有对话被选中
+            currentChatId = null;
+            
             // 确保文件预览面板是关闭的
             const filePanel = document.querySelector('.file-preview-panel');
             if (filePanel && !filePanel.classList.contains('closed')) {
@@ -6207,6 +6214,17 @@
             }
             if (focusedInputField) {
                 focusedInputField.value = '';
+            }
+            
+            // 清除所有对话的选中状态
+            document.querySelectorAll('.chat-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // 更新标题为默认标题
+            const headerTitle = document.getElementById('headerTitle');
+            if (headerTitle) {
+                headerTitle.textContent = currentLanguage === 'en' ? 'New Task' : '新任务';
             }
             
             // 确保输入视图的初始状态正确

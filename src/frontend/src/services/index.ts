@@ -128,6 +128,29 @@ export const apiService = {
   
   // 买家推荐API
   buyers: {
+    search: async (params?: any) => {
+      if (USE_MOCK) {
+        return mockApi.buyers.recommend(params?.keyword || '');
+      }
+      return apiClient.post<Buyer[]>('/buyers/search', params);
+    },
+    
+    getStatistics: async () => {
+      if (USE_MOCK) {
+        return {
+          success: true,
+          data: {
+            total_buyers: 45230,
+            verified_buyers: 32150,
+            premium_buyers: 12480,
+            countries: 189,
+            average_volume: '2.5M USD',
+          }
+        };
+      }
+      return apiClient.get('/buyers/statistics');
+    },
+    
     getRecommendations: async (query: string, filters?: any) => {
       if (USE_MOCK) {
         return mockApi.buyers.recommend(query);
@@ -158,11 +181,27 @@ export const apiService = {
   
   // 供应商搜索API
   suppliers: {
-    search: async (query: string, filters?: any) => {
+    search: async (params?: any) => {
       if (USE_MOCK) {
-        return mockApi.suppliers.search(query);
+        return mockApi.suppliers.search(params?.keyword || '');
       }
-      return apiClient.post<Supplier[]>('/suppliers/search', { query, ...filters });
+      return apiClient.post<Supplier[]>('/suppliers/search', params);
+    },
+    
+    getStatistics: async () => {
+      if (USE_MOCK) {
+        return {
+          success: true,
+          data: {
+            total_suppliers: 25680,
+            verified_suppliers: 18234,
+            gold_suppliers: 5432,
+            countries: 156,
+            average_rating: 4.3,
+          }
+        };
+      }
+      return apiClient.get('/suppliers/statistics');
     },
     
     getDetail: async (id: string) => {
