@@ -4272,9 +4272,49 @@
             const messagesContainer = document.getElementById('chatMessages');
             if (messagesContainer && chat) {
                 messagesContainer.innerHTML = '';
-                // 加载历史消息
+                // 加载历史消息 - 只加载最新的30条消息
                 if (chat.messages && chat.messages.length > 0) {
-                    chat.messages.forEach(msg => {
+                    // 获取最新的30条消息
+                    const messagesToShow = 30;
+                    const recentMessages = chat.messages.slice(-messagesToShow);
+                    
+                    // 如果消息数量超过显示数量，添加一个提示
+                    if (chat.messages.length > messagesToShow) {
+                        const loadMoreDiv = document.createElement('div');
+                        loadMoreDiv.className = 'load-more-hint';
+                        loadMoreDiv.style.cssText = `
+                            text-align: center;
+                            padding: 1rem;
+                            color: var(--text-secondary);
+                            font-size: 0.875rem;
+                            cursor: pointer;
+                            transition: color 0.2s;
+                        `;
+                        loadMoreDiv.innerHTML = `
+                            <div style="display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="18 15 12 9 6 15"></polyline>
+                                </svg>
+                                <span>${currentLanguage === 'en' ? 
+                                    `${chat.messages.length - messagesToShow} earlier messages` : 
+                                    `还有 ${chat.messages.length - messagesToShow} 条更早的消息`}</span>
+                            </div>
+                        `;
+                        loadMoreDiv.onmouseover = function() {
+                            this.style.color = 'var(--primary-color)';
+                        };
+                        loadMoreDiv.onmouseout = function() {
+                            this.style.color = 'var(--text-secondary)';
+                        };
+                        // 点击加载全部历史消息
+                        loadMoreDiv.onclick = function() {
+                            loadAllMessages(chatId);
+                        };
+                        messagesContainer.appendChild(loadMoreDiv);
+                    }
+                    
+                    // 渲染最新的消息
+                    recentMessages.forEach(msg => {
                         const messageDiv = document.createElement('div');
                         const isUser = (msg.type || msg.role) === 'user';
                         // 修正CSS类名：使用 'message user' 和 'message assistant'
@@ -4332,10 +4372,105 @@
                         messagesContainer.appendChild(messageDiv);
                     });
                     
-                    // 滚动到最新消息
-                    setTimeout(() => scrollToBottom(), 100);
+                    // 直接将滚动条定位到底部（不使用动画）
+                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
                 }
             }
+        }
+
+        // 加载全部历史消息
+        function loadAllMessages(chatId) {
+            const chat = chats.find(c => c.id === chatId);
+            const messagesContainer = document.getElementById('chatMessages');
+            
+            if (!chat || !messagesContainer) return;
+            
+            // 记录当前滚动位置的高度
+            const currentScrollHeight = messagesContainer.scrollHeight;
+            const currentScrollTop = messagesContainer.scrollTop;
+            
+            // 清空容器并重新加载所有消息
+            messagesContainer.innerHTML = '';
+            
+            // 渲染所有消息
+            chat.messages.forEach(msg => {
+                const messageDiv = document.createElement('div');
+                const isUser = (msg.type || msg.role) === 'user';
+                messageDiv.className = `message ${isUser ? 'user' : 'assistant'}`;
+                
+                // 创建消息头像
+                const avatar = document.createElement('div');
+                avatar.className = 'message-avatar';
+                avatar.textContent = isUser ? 
+                    (currentLanguage === 'en' ? 'U' : '用') : 
+                    (currentLanguage === 'en' ? 'AI' : 'AI');
+                
+                // 创建消息内容容器
+                const contentDiv = document.createElement('div');
+                contentDiv.className = 'message-content';
+                
+                // 创建消息文本
+                const messageText = document.createElement('div');
+                messageText.className = 'message-text';
+                messageText.innerHTML = msg.content.replace(/\n/g, '<br>');
+                contentDiv.appendChild(messageText);
+                
+                // 如果有文件附件，添加文件卡片
+                if (msg.files && msg.files.length > 0) {
+                    const filesContainer = document.createElement('div');
+                    filesContainer.className = 'message-file-container';
+                    
+                    msg.files.forEach(file => {
+                        if (file && file.id) {
+                            storeFileData(file);
+                            filesContainer.innerHTML += generateFileCardHTML(file);
+                        }
+                    });
+                    
+                    contentDiv.appendChild(filesContainer);
+                }
+                
+                // 创建时间戳
+                const messageTime = document.createElement('div');
+                messageTime.className = 'message-time';
+                if (msg.timestamp) {
+                    const date = new Date(msg.timestamp);
+                    messageTime.textContent = date.toLocaleTimeString();
+                } else {
+                    messageTime.textContent = currentLanguage === 'en' ? 'Just now' : '刚刚';
+                }
+                contentDiv.appendChild(messageTime);
+                
+                // 组装消息元素
+                messageDiv.appendChild(avatar);
+                messageDiv.appendChild(contentDiv);
+                messagesContainer.appendChild(messageDiv);
+            });
+            
+            // 计算新的滚动位置，保持用户大致在原来查看的位置
+            const newScrollHeight = messagesContainer.scrollHeight;
+            const scrollDiff = newScrollHeight - currentScrollHeight;
+            messagesContainer.scrollTop = currentScrollTop + scrollDiff;
+            
+            // 添加一个视觉提示，表示已加载全部消息
+            const allLoadedDiv = document.createElement('div');
+            allLoadedDiv.style.cssText = `
+                text-align: center;
+                padding: 0.5rem;
+                color: var(--success-color);
+                font-size: 0.75rem;
+                opacity: 1;
+                transition: opacity 2s;
+            `;
+            allLoadedDiv.textContent = currentLanguage === 'en' ? 
+                'All messages loaded' : '已加载全部消息';
+            messagesContainer.insertBefore(allLoadedDiv, messagesContainer.firstChild);
+            
+            // 2秒后淡出提示
+            setTimeout(() => {
+                allLoadedDiv.style.opacity = '0';
+                setTimeout(() => allLoadedDiv.remove(), 2000);
+            }, 1000);
         }
 
         // 重命名对话
