@@ -4175,29 +4175,55 @@
             const textarea = document.getElementById('focusedInputField');
             const charCount = document.getElementById('focusedCharCount');
             
+            if (!focusedView || !regularView) {
+                console.error('视图元素未找到');
+                return;
+            }
+            
             // 不再硬编码文本，让updateLanguage()函数处理data-i18n属性
             // 这样在语言切换时会自动更新
             
-            // 使用CSS类控制显示状态，确保互斥
-            regularView.classList.add('input-view-hidden');
-            regularView.classList.remove('input-view-visible');
-            focusedView.classList.add('input-view-visible');
-            focusedView.classList.remove('input-view-hidden');
+            // 确保focusedView有正确的类
+            focusedView.className = 'focused-input-view input-view-visible';
+            // 隐藏常规聊天视图
+            regularView.className = 'input-view-hidden';
+            
+            // 强制设置样式以确保显示
+            focusedView.style.display = 'flex';
+            regularView.style.display = 'none';
             
             // 清空并聚焦输入框
-            textarea.value = '';
-            charCount.textContent = '0';
-            setTimeout(() => textarea.focus(), 100);
+            if (textarea) {
+                textarea.value = '';
+                setTimeout(() => textarea.focus(), 100);
+                // 添加键盘事件监听
+                textarea.onkeydown = handleFocusedInputKeydown;
+                textarea.oninput = updateFocusedCharCount;
+            }
             
-            // 添加键盘事件监听
-            textarea.onkeydown = handleFocusedInputKeydown;
-            textarea.oninput = updateFocusedCharCount;
+            if (charCount) {
+                charCount.textContent = '0';
+            }
         }
 
         // 隐藏专注输入视图
         function hideFocusedInputView() {
-            // Use showChatView to properly handle agent panel toggle visibility
-            showChatView();
+            const focusedView = document.getElementById('focusedInputView');
+            const regularView = document.getElementById('regularChatView');
+            
+            if (!focusedView || !regularView) {
+                console.error('视图元素未找到');
+                return;
+            }
+            
+            // 隐藏聚焦输入视图
+            focusedView.className = 'focused-input-view input-view-hidden';
+            // 显示常规聊天视图
+            regularView.className = 'input-view-visible';
+            
+            // 强制设置样式以确保显示
+            focusedView.style.display = 'none';
+            regularView.style.display = 'flex';
         }
 
         // 处理专注输入键盘事件
