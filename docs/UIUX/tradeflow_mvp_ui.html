@@ -4094,8 +4094,8 @@
 
         // 创建新对话 - 显示专注输入界面
         function createNewChat() {
-            // 创建一个临时的新对话 ID
-            const tempChatId = 'temp-' + Date.now();
+            // 清除当前对话ID，表示没有选中任何对话
+            currentChatId = null;
             
             // 确保移除所有对话记录的选中状态
             const chatItems = document.querySelectorAll('.chat-item');
@@ -4105,17 +4105,6 @@
                 item.style.backgroundColor = '';
                 item.style.borderLeft = '';
             });
-            
-            // 清除当前对话ID，表示没有选中任何对话
-            currentChatId = null;
-            
-            // 使用setTimeout确保DOM更新完成后再进行下一步操作
-            setTimeout(() => {
-                // 再次检查并移除任何残留的active类
-                document.querySelectorAll('.chat-item.active').forEach(item => {
-                    item.classList.remove('active');
-                });
-            }, 0);
             
             // 清空聊天消息区域
             const chatMessages = document.getElementById('chatMessages');
@@ -4131,6 +4120,11 @@
             }
             if (focusedInputField) {
                 focusedInputField.value = '';
+                // 重置字符计数
+                const charCount = document.getElementById('focusedCharCount');
+                if (charCount) {
+                    charCount.textContent = '0';
+                }
             }
             
             // 关闭文件预览面板
@@ -4157,15 +4151,20 @@
                 agentToggle.classList.remove('visible');
             }
             
-            // 显示专注输入视图
-            showFocusedInputView();
-            
             // 更新标题
-            document.getElementById('headerTitle').textContent = 
-                currentLanguage === 'en' ? 'New Task' : '新任务';
-                
-            // 重新调整布局
-            updateLayoutForPanels();
+            const headerTitle = document.getElementById('headerTitle');
+            if (headerTitle) {
+                headerTitle.textContent = currentLanguage === 'en' ? 'New Task' : '新任务';
+            }
+            
+            // 关键：立即显示专注输入视图，使用setTimeout确保DOM更新
+            setTimeout(() => {
+                showFocusedInputView();
+                // 重新调整布局
+                if (typeof updateLayoutForPanels === 'function') {
+                    updateLayoutForPanels();
+                }
+            }, 10);
         }
 
         // 显示专注输入视图
@@ -4176,26 +4175,34 @@
             const charCount = document.getElementById('focusedCharCount');
             
             if (!focusedView || !regularView) {
-                console.error('视图元素未找到');
+                console.error('视图元素未找到', {
+                    focusedView: !!focusedView,
+                    regularView: !!regularView
+                });
                 return;
             }
             
-            // 不再硬编码文本，让updateLanguage()函数处理data-i18n属性
-            // 这样在语言切换时会自动更新
+            // 先移除所有可能的类，确保状态干净
+            focusedView.classList.remove('input-view-hidden', 'input-view-visible');
+            regularView.classList.remove('input-view-hidden', 'input-view-visible');
             
-            // 确保focusedView有正确的类
-            focusedView.className = 'focused-input-view input-view-visible';
-            // 隐藏常规聊天视图
-            regularView.className = 'input-view-hidden';
+            // 然后添加正确的类
+            focusedView.classList.add('focused-input-view', 'input-view-visible');
+            regularView.classList.add('input-view-hidden');
             
-            // 强制设置样式以确保显示
-            focusedView.style.display = 'flex';
-            regularView.style.display = 'none';
+            // 强制设置样式以确保显示（最高优先级）
+            focusedView.style.cssText = 'display: flex !important; visibility: visible !important;';
+            regularView.style.cssText = 'display: none !important;';
             
             // 清空并聚焦输入框
             if (textarea) {
                 textarea.value = '';
-                setTimeout(() => textarea.focus(), 100);
+                // 延迟聚焦，确保视图完全显示后再聚焦
+                setTimeout(() => {
+                    textarea.focus();
+                    // 确保光标在输入框内
+                    textarea.setSelectionRange(0, 0);
+                }, 150);
                 // 添加键盘事件监听
                 textarea.onkeydown = handleFocusedInputKeydown;
                 textarea.oninput = updateFocusedCharCount;
@@ -4204,6 +4211,14 @@
             if (charCount) {
                 charCount.textContent = '0';
             }
+            
+            // 调试日志
+            console.log('专注输入视图已显示', {
+                focusedViewDisplay: focusedView.style.display,
+                regularViewDisplay: regularView.style.display,
+                focusedViewClasses: focusedView.className,
+                regularViewClasses: regularView.className
+            });
         }
 
         // 隐藏专注输入视图
@@ -4216,14 +4231,17 @@
                 return;
             }
             
-            // 隐藏聚焦输入视图
-            focusedView.className = 'focused-input-view input-view-hidden';
-            // 显示常规聊天视图
-            regularView.className = 'input-view-visible';
+            // 先移除所有可能的类，确保状态干净
+            focusedView.classList.remove('input-view-hidden', 'input-view-visible');
+            regularView.classList.remove('input-view-hidden', 'input-view-visible');
             
-            // 强制设置样式以确保显示
-            focusedView.style.display = 'none';
-            regularView.style.display = 'flex';
+            // 然后添加正确的类
+            focusedView.classList.add('focused-input-view', 'input-view-hidden');
+            regularView.classList.add('input-view-visible');
+            
+            // 强制设置样式以确保显示（最高优先级）
+            focusedView.style.cssText = 'display: none !important;';
+            regularView.style.cssText = 'display: flex !important; visibility: visible !important;';
         }
 
         // 处理专注输入键盘事件
