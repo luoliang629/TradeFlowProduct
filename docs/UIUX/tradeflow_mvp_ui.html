@@ -4094,6 +4094,8 @@
 
         // 创建新对话 - 显示专注输入界面
         function createNewChat() {
+            console.log('createNewChat called');
+            
             // 清除当前对话ID，表示没有选中任何对话
             currentChatId = null;
             
@@ -4157,14 +4159,15 @@
                 headerTitle.textContent = currentLanguage === 'en' ? 'New Task' : '新任务';
             }
             
-            // 关键：立即显示专注输入视图，使用setTimeout确保DOM更新
-            setTimeout(() => {
-                showFocusedInputView();
-                // 重新调整布局
-                if (typeof updateLayoutForPanels === 'function') {
-                    updateLayoutForPanels();
-                }
-            }, 10);
+            // 关键：显示专注输入视图
+            console.log('About to call showFocusedInputView');
+            showFocusedInputView();
+            console.log('showFocusedInputView called');
+            
+            // 注释掉可能影响显示的布局调整
+            // if (typeof updateLayoutForPanels === 'function') {
+            //     updateLayoutForPanels();
+            // }
         }
 
         // 显示专注输入视图
@@ -4186,13 +4189,27 @@
             focusedView.classList.remove('input-view-hidden', 'input-view-visible');
             regularView.classList.remove('input-view-hidden', 'input-view-visible');
             
-            // 然后添加正确的类
-            focusedView.classList.add('focused-input-view', 'input-view-visible');
+            // 然后添加正确的类 - 聚焦视图显示，常规视图隐藏
+            focusedView.classList.add('input-view-visible');
             regularView.classList.add('input-view-hidden');
             
             // 强制设置样式以确保显示（最高优先级）
             focusedView.style.cssText = 'display: flex !important; visibility: visible !important;';
             regularView.style.cssText = 'display: none !important;';
+            
+            // 隐藏Agent面板（新任务时不需要显示）
+            const agentPanel = document.querySelector('.agent-panel');
+            const agentToggle = document.getElementById('agentPanelToggle');
+            if (agentPanel) {
+                agentPanel.classList.add('closed');
+            }
+            if (agentToggle) {
+                agentToggle.classList.remove('visible');
+            }
+            // 调整布局
+            if (typeof updateLayoutForPanels === 'function') {
+                updateLayoutForPanels();
+            }
             
             // 清空并聚焦输入框
             if (textarea) {
@@ -4212,13 +4229,17 @@
                 charCount.textContent = '0';
             }
             
-            // 调试日志
-            console.log('专注输入视图已显示', {
-                focusedViewDisplay: focusedView.style.display,
-                regularViewDisplay: regularView.style.display,
-                focusedViewClasses: focusedView.className,
-                regularViewClasses: regularView.className
-            });
+            // 调试日志 - 使用try-catch防止错误
+            try {
+                console.log('专注输入视图已显示', {
+                    focusedViewDisplay: focusedView.style.display,
+                    regularViewDisplay: regularView.style.display,
+                    focusedViewClasses: focusedView.className,
+                    regularViewClasses: regularView.className
+                });
+            } catch (e) {
+                console.error('日志输出错误:', e);
+            }
         }
 
         // 隐藏专注输入视图
@@ -4235,8 +4256,8 @@
             focusedView.classList.remove('input-view-hidden', 'input-view-visible');
             regularView.classList.remove('input-view-hidden', 'input-view-visible');
             
-            // 然后添加正确的类
-            focusedView.classList.add('focused-input-view', 'input-view-hidden');
+            // 然后添加正确的类 - 聚焦视图隐藏，常规视图显示
+            focusedView.classList.add('input-view-hidden');
             regularView.classList.add('input-view-visible');
             
             // 强制设置样式以确保显示（最高优先级）
@@ -4294,8 +4315,11 @@
         function switchChat(chatId) {
             currentChatId = chatId;
             
-            // 确保显示常规视图
-            hideFocusedInputView();
+            // 只有在切换到有效对话时才隐藏聚焦视图
+            // 如果chatId为null（新建任务），保持当前视图状态
+            if (chatId !== null) {
+                hideFocusedInputView();
+            }
             
             // 更新高亮状态
             document.querySelectorAll('.chat-item').forEach(item => {
@@ -5445,26 +5469,27 @@
         });
         
         // Hide agent panel when showing focused input view
-        function showFocusedInputView() {
-            const focusedView = document.getElementById('focusedInputView');
-            const regularView = document.getElementById('regularChatView');
-            const agentPanel = document.querySelector('.agent-panel');
-            const agentToggle = document.getElementById('agentPanelToggle');
-            
-            if (focusedView && regularView) {
-                focusedView.style.display = 'flex';
-                regularView.style.display = 'none';
-                // Hide agent panel for new tasks
-                if (agentPanel) {
-                    agentPanel.classList.add('closed');
-                }
-                if (agentToggle) {
-                    agentToggle.classList.remove('visible');
-                }
-                // Adjust main content
-                updateLayoutForPanels();
-            }
-        }
+        // 注释掉重复的函数定义，使用前面第4174行的定义
+        // function showFocusedInputView() {
+        //     const focusedView = document.getElementById('focusedInputView');
+        //     const regularView = document.getElementById('regularChatView');
+        //     const agentPanel = document.querySelector('.agent-panel');
+        //     const agentToggle = document.getElementById('agentPanelToggle');
+        //     
+        //     if (focusedView && regularView) {
+        //         focusedView.style.display = 'flex';
+        //         regularView.style.display = 'none';
+        //         // Hide agent panel for new tasks
+        //         if (agentPanel) {
+        //             agentPanel.classList.add('closed');
+        //         }
+        //         if (agentToggle) {
+        //             agentToggle.classList.remove('visible');
+        //         }
+        //         // Adjust main content
+        //         updateLayoutForPanels();
+        //     }
+        // }
         
         // Show agent panel when returning to chat view
         function showChatView() {
