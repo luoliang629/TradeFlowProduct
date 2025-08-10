@@ -43,7 +43,7 @@
 
         .focused-input-box {
             background: var(--bg-secondary);
-            border: 1px solid var(--border-color);
+            border: 1px solid #e5e7eb; /* 柔和的灰色边框，与常规输入框保持一致 */
             border-radius: var(--radius-lg); /* 使用中等圆角 */
             overflow: hidden;
             transition: all 0.2s;
@@ -51,8 +51,8 @@
         }
 
         .focused-input-box:focus-within {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.08), 0 2px 6px rgba(0, 0, 0, 0.08);
+            border-color: #60a5fa; /* 更亮的蓝色，与深色消息背景形成对比 */
+            box-shadow: 0 0 0 2px rgba(96, 165, 250, 0.15), 0 2px 8px rgba(96, 165, 250, 0.08);
             background: var(--bg-primary);
         }
 
@@ -1802,13 +1802,13 @@
             );
         }
         
-        /* 输入框主容器 - 与对话区域宽度对齐，始终保持焦点高亮样式 */
+        /* 输入框主容器 - 与对话区域宽度对齐，默认使用柔和的边框 */
         .chat-input-wrapper {
-            background: var(--bg-primary); /* 使用焦点时的背景色 */
-            border: 1px solid var(--primary-color); /* 始终显示蓝色边框 */
-            border-radius: 16px; /* 更协调的圆角 */
+            background: var(--bg-primary);
+            border: 1px solid #e5e7eb; /* 柔和的灰色边框，避免与用户消息背景冲突 */
+            border-radius: 16px;
             transition: all 0.3s cubic-bezier(0.2, 0, 0.2, 1);
-            box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.08), 0 4px 16px rgba(30, 58, 138, 0.06); /* 始终显示焦点阴影 */
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02); /* 轻微的阴影 */
             position: relative;
             overflow: hidden;
             /* 与chat-messages保持相同的最大宽度和居中对齐 */
@@ -1822,8 +1822,8 @@
         }
         
         .chat-input-wrapper:focus-within {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.08), 0 4px 16px rgba(30, 58, 138, 0.06);
+            border-color: #60a5fa; /* 使用更亮的蓝色，与深蓝色消息背景形成对比 */
+            box-shadow: 0 0 0 2px rgba(96, 165, 250, 0.15), 0 2px 8px rgba(96, 165, 250, 0.08);
             transform: translateY(-1px);
             background: var(--bg-primary);
         }
